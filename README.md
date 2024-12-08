@@ -8,12 +8,14 @@
 
 ---
 
+
 ## **Resumen del Proyecto**
 
 ![udd40](https://bootcampvirtual.udd.cl/assets/img/logo4.png)
 ![matteroftrust](https://matteroftrust.org/wp-content/uploads/2019/01/mot_website_logo_small.png)
 
 Este proyecto es una aplicación web interactiva diseñada para trabajar con mapas interactivos utilizando **Leaflet**, con un enfoque en la personalización y funcionalidades avanzadas. La aplicación está construida con **React** y **TypeScript**, y utiliza **Vite** como herramienta de desarrollo rápido. Los estilos son manejados con **TailwindCSS**, garantizando un diseño limpio y responsive.
+
 
 ### Funcionalidades principales:
 1. Mapas interactivos con marcadores personalizados.
@@ -24,6 +26,32 @@ Este proyecto es una aplicación web interactiva diseñada para trabajar con map
 ### Objetivo:
 Proveer una base robusta para desarrollar aplicaciones web que requieran funcionalidades geográficas y mapas interactivos, manteniendo un enfoque en el rendimiento y la usabilidad.
 
+---
+## **Requisitos Previos**
+
+Antes de empezar, asegúrate de tener instaladas las siguientes herramientas:
+- Node.js (versión recomendada: >=20.x)
+
+## **Instalación y Ejecución**
+
+1. Clona este repositorio:
+   ```bash
+   git clone https://github.com/JonaDrar/sustainmap-front.git
+   ```
+
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+
+3. Ejecuta el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+
+4. Abre el navegador en [http://localhost:3000](http://localhost:3000).
+
+---
 
 ## **Reglas de Commits**
 
@@ -56,6 +84,7 @@ Proveer una base robusta para desarrollar aplicaciones web que requieran funcion
 
 ---
 
+
 ## **Reglas de Merge Requests (MR)**
 
 ### Creación de MR
@@ -81,6 +110,7 @@ Proveer una base robusta para desarrollar aplicaciones web que requieran funcion
 - La rama `develop` contendrá los cambios aprobados para pruebas internas.
 
 ---
+
 
 ## **Uso de Ramas**
 
@@ -112,6 +142,7 @@ Proveer una base robusta para desarrollar aplicaciones web que requieran funcion
 
 ---
 
+
 ## **Guías Adicionales**
 
 ### Estilo de Código
@@ -126,9 +157,17 @@ Proveer una base robusta para desarrollar aplicaciones web que requieran funcion
 
 ---
 
+
 ## **Créditos**
 
 Este proyecto es obra de **LatamCoders**, una célula de desarrollo colaborativa parte de la iniciativa **techXcellerators** de **UDD4.0**, el programa de bootcamps de la **Universidad del Desarrollo de Chile**, en colaboración con **MatterofTrust**.
 
 ### Sobre **techXcellerators**:
 **techXcellerators** impulsa la transformación digital a través del desarrollo de talento en áreas tecnológicas clave, ofreciendo oportunidades reales para que estudiantes colaboren con empresas líderes en soluciones innovadoras.
+
+---
+
+
+## **Licencia**
+Este proyecto está bajo la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
+
