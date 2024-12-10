@@ -49,7 +49,7 @@ Antes de empezar, asegúrate de tener instaladas las siguientes herramientas:
    npm run dev
    ```
 
-4. Abre el navegador en [http://localhost:3000](http://localhost:3000).
+4. Abre el navegador en [http://localhost:5173](http://localhost:5173).
 
 ---
 
