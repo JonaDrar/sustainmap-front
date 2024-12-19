@@ -1,6 +1,6 @@
 import { Marker } from 'react-leaflet';
 import SitePopup from './SitePopup';
-import L from "leaflet"; 
+import L from 'leaflet'; 
 import 'leaflet/dist/leaflet.css'; 
 
 
