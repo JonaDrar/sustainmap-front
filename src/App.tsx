@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import Navbar from './components/Navbar';
+import LoginPage from './pages/Login';
+import SignupPage from './pages/Signup';
+import MapPage from './pages/Map';
+import { UserContext } from './contexts/UserContext';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <UserContext.Provider value={{ loggedInUser, setLoggedInUser }}>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route
+            path="/map"
+            element={
+              <ProtectedRoute loggedInUser={loggedInUser}>
+                <MapPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </UserContext.Provider>
+  );
+};
 
-export default App
+const ProtectedRoute: React.FC<{ loggedInUser: string | null; children: React.ReactNode }> = ({
+  loggedInUser,
+  children,
+}) => {
+  if (!loggedInUser) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+};
+
+export default App;
