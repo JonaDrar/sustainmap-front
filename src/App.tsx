@@ -3,8 +3,9 @@ import { useState } from 'react';
 import Navbar from './components/Navbar';
 import LoginPage from './pages/Login';
 import SignupPage from './pages/Signup';
-import MapPage from './pages/Map';
 import { UserContext } from './contexts/UserContext';
+import Map from './pages/Map';
+
 
 const App = () => {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
@@ -19,7 +20,7 @@ const App = () => {
             path="/map"
             element={
               <ProtectedRoute loggedInUser={loggedInUser}>
-                <MapPage />
+                <Map />
               </ProtectedRoute>
             }
           />
