@@ -4,6 +4,8 @@
 
 :root {
     font-family: Bahnschrift;
+    --Azul-desactivado: #E1F4FE;
+    --Azul-activado: #146FB7;
 }
 /* Navbar styles */
 .navbar {
@@ -85,9 +87,21 @@ label {
 
 input {
     width: -webkit-fill-available;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    justify-content: center;
+    padding: 16px 16px 8px 32px;
+    height: 66.81px;
+    border-radius: 8px;
+    opacity: 0px;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    background: #F5F5F5;
+    font-family: Bahnschrift;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    margin-bottom: 21px;
 }
 
 .error-text {
@@ -112,34 +126,33 @@ input {
 .submit-button {
     width: 100%;
     padding: 10px;
-    background: #007bff;
-    color: white;
-    border: none;
     border-radius: 4px;
-    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+
+    align-items: center;
+    height: 50px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    font-family: Bahnschrift;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    margin-top: 8px;
+    font-weight: 600;
 }
 
-.submit-button:hover {
-    background: #0056b3;
-}
 
 .map-container {
     text-align: -webkit-center;
 }
 
 
-.login-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: linear-gradient(90deg, #0AA538 0%, rgba(16, 132, 133, 0.394912) 60.51%, rgba(17, 125, 150, 0.262126) 73.79%, rgba(18, 121, 160, 0.183576) 81.64%, rgba(19, 117, 169, 0.112507) 88.75%, rgba(20, 114, 177, 0.0470484) 95.3%, rgba(20, 111, 183, 0) 100%);
-
-    clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
-    z-index: -1;
+.gradient-background {
+    background: linear-gradient(180deg, #0AA538 23.44%, #146FB7 100%);
 }
 
 .login-logo {
@@ -156,7 +169,7 @@ input {
 }
 
 .login-form {
-    margin-bottom: 35px;
+    margin-bottom: 42px;
 }
 
 .login-header {
@@ -184,4 +197,8 @@ input {
     margin-bottom: 50px;
     color: #494B4B;
     border-bottom: 1px solid #E0E0E0;
+}
+
+.rounded-xxl {
+    border-radius: 30px;
 }
