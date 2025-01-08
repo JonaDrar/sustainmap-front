@@ -3,6 +3,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    font-family: Bahnschrift;
+    --Azul-desactivado: #E1F4FE;
+    --Azul-activado: #146FB7;
+}
 /* Navbar styles */
 .navbar {
     display: flex;
@@ -83,9 +88,21 @@ label {
 
 input {
     width: -webkit-fill-available;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    justify-content: center;
+    padding: 16px 16px 8px 32px;
+    height: 66.81px;
+    border-radius: 8px;
+    opacity: 0px;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    background: #F5F5F5;
+    font-family: Bahnschrift;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    margin-bottom: 21px;
 }
 
 .error-text {
@@ -110,23 +127,82 @@ input {
 .submit-button {
     width: 100%;
     padding: 10px;
-    background: #007bff;
-    color: white;
-    border: none;
     border-radius: 4px;
-    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+
+    align-items: center;
+    height: 50px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    font-family: Bahnschrift;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 18px;
+    text-align: left;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    margin-top: 8px;
+    font-weight: 600;
 }
 
-.submit-button:hover {
-    background: #0056b3;
-}
 
 .map-container {
     text-align: -webkit-center;
 }
 
-/*Estilos Popup */
+
+.gradient-background {
+    background: linear-gradient(180deg, #0AA538 23.44%, #146FB7 100%);
+}
+
+.login-logo {
+    height: 90px;
+    width: 142px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.login-card {
+    margin: 25px;
+    padding: 2rem 5rem 3rem 5rem;
+    max-width: 560px;
+}
+
+.login-form {
+    margin-bottom: 42px;
+}
+
+.login-header {
+    font-family: Bahnschrift;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 37.5px;
+    letter-spacing: -0.5px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    color: #146FB7;
+    margin-bottom: 10px;
+}
+
+.login-sub-header {
+    font-family: Bahnschrift;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 30px;
+    text-align: center;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+    padding-bottom: 22px;
+    margin-bottom: 50px;
+    color: #494B4B;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.rounded-xxl {
+    border-radius: 30px;
+}
 /* Elimina bordes y márgenes del popup */
 .leaflet-popup-content-wrapper {
     padding: 0 !important;
