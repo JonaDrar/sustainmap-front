@@ -53,81 +53,91 @@ const Signup: React.FC = () => {
       navigate('/');
     }
   };
-
+  const isValidInput = Boolean(email.length && password.length && confirmPassword.length);
   return (
-    <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="gradient-background min-h-screen flex items-center justify-center">
+      <div className="bg-white shadow-md rounded-xxl p-8 w-full max-w-md login-card">
+        <div className="mb-6 text-center">
+          <img
+            src="src\assets\logo-mot.png"
+            alt="Matter of Trust Logo"
+            className="mx-auto login-logo"
+          />
+          <h2 className="login-header">Iniciar sesión</h2>
+          <p className="text-sm text-gray-700 login-sub-header">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
+        </div>
 
-      <div className="mb-10">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Regístrate
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600 mt-5">
+        <form className="login-form" onSubmit={handleSignup}>
+
+          <div>
+            <input
+              type="email"
+              placeholder="Ingresa tu correo"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {errors.email && <p className="error-text">{errors.email}</p>}
+          </div>
+          <div>
+            <input
+              type="password"
+              placeholder="Crea una contraseña"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                validatePassword(e.target.value);
+              }}
+            />
+            {errors.password && <p className="error-text">{errors.password}</p>}
+            {showValidationRequirements ? (<div className="password-tooltip">
+              <ul>
+                <li style={{ color: passwordChecks.length ? 'green' : 'red' }}>
+                  {passwordChecks.length ? '✔️' : '❌'} Al menos 8 caracteres
+                </li>
+                <li style={{ color: passwordChecks.number ? 'green' : 'red' }}>
+                  {passwordChecks.number ? '✔️' : '❌'} Incluye un número
+                </li>
+                <li style={{ color: passwordChecks.special ? 'green' : 'red' }}>
+                  {passwordChecks.special ? '✔️' : '❌'} Incluye un carácter especial
+                </li>
+              </ul>
+            </div>
+            ) : null}
+
+          </div>
+          <div>
+            <input
+              type="password"
+              placeholder="Repite tu contraseña"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            {errors.confirmPassword && <p className="error-text">{errors.confirmPassword}</p>}
+          </div>
+
+          <button
+            type="submit"
+            disabled={!isValidInput}
+            className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${
+              isValidInput
+                ? "bg-[var(--Azul-activado,#146FB7)] cursor-not-allowed text-white"
+                : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
+            }`}           >
+            Registrarse
+          </button>
+        </form>
+        <p className="mt-4 text-center text-md text-gray-400">
           ¿Ya tienes una cuenta?
           {' '}
-          <Link to="/" className="font-medium text-blue-600 hover:text-blue-500">
+          <Link to="/" 
+            className="font-medium text-gray-700 hover:text-gray-500 ml-1"
+            >
             Inicia sesión
           </Link>
         </p>
       </div>
 
-
-      <form onSubmit={handleSignup}>
-        <div className="form-field">
-          <label>Correo electrónico</label>
-          <input
-            type="email"
-            placeholder="Ingresa tu correo"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {errors.email && <p className="error-text">{errors.email}</p>}
-        </div>
-        <div className="form-field">
-          <label>Contraseña</label>
-          <input
-            type="password"
-            placeholder="Crea una contraseña"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              validatePassword(e.target.value);
-            }}
-          />
-          {errors.password && <p className="error-text">{errors.password}</p>}
-          {showValidationRequirements ? (<div className="password-tooltip">
-            <ul>
-              <li style={{ color: passwordChecks.length ? 'green' : 'red' }}>
-                {passwordChecks.length ? '✔️' : '❌'} Al menos 8 caracteres
-              </li>
-              <li style={{ color: passwordChecks.number ? 'green' : 'red' }}>
-                {passwordChecks.number ? '✔️' : '❌'} Incluye un número
-              </li>
-              <li style={{ color: passwordChecks.special ? 'green' : 'red' }}>
-                {passwordChecks.special ? '✔️' : '❌'} Incluye un carácter especial
-              </li>
-            </ul>
-          </div>
-          ) : null}
-
-        </div>
-        <div className="form-field">
-          <label>Confirmar contraseña</label>
-          <input
-            type="password"
-            placeholder="Repite tu contraseña"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          {errors.confirmPassword && <p className="error-text">{errors.confirmPassword}</p>}
-        </div>
-        <button type="submit" className="submit-button">
-          Registrarse
-        </button>
-      </form>
-    </div>
-
-  </div>
+    </div >
   );
 };
 
