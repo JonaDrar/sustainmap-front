@@ -10,6 +10,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const isValidInput = Boolean(email.length && password.length && !error.length);
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (email === 'demo@gmail.com' && password === 'password1?') {
@@ -21,51 +22,63 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="gradient-background min-h-screen flex items-center justify-center">
+      <div className="bg-white shadow-md rounded-xxl p-8 w-full max-w-md login-card">
+        <div className="mb-6 text-center">
+          <img
+            src="src\assets\logo-mot.png"
+            alt="Matter of Trust Logo"
+            className="mx-auto login-logo"
+          />
+          <h2 className="login-header">Iniciar sesión</h2>
+          <p className="text-sm text-gray-700 login-sub-header">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
+        </div>
 
-      <div className="mb-10">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Iniciar sesión
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600 mt-5">
+        <form onSubmit={handleLogin} className="login-form">
+          <div>
+            <input
+              type="email"
+              placeholder="Correo electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div >
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          <button
+            type="submit"
+            disabled={!isValidInput}
+            className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${
+              isValidInput
+                ? "bg-[var(--Azul-activado,#146FB7)] cursor-not-allowed text-white"
+                : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
+            }`}          >
+            Confirmar
+          </button>
+        </form>
+
+        <p className="mt-4 text-center text-md text-gray-400">
           ¿No tienes una cuenta?
-          {' '}
-          <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-            Regístrate
+          <Link
+            to="/signup"
+            className="font-medium text-gray-700 hover:text-gray-500 ml-1"
+          >
+            Ingresa aquí!
           </Link>
         </p>
       </div>
-
-
-      <form onSubmit={handleLogin}>
-        <div className="form-field">
-          <label>Correo electrónico</label>
-          <input
-            type="email"
-            placeholder="Ingresa tu correo"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-field">
-          <label>Contraseña</label>
-          <input
-            type="password"
-            placeholder="Ingresa tu contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <p className="error-text">{error}</p>}
-        <button type="submit" className="submit-button">Iniciar sesión</button>
-      </form>
     </div>
-
-    </div>
-
   );
 };
 
