@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
 import { Link } from 'react-router-dom';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -9,6 +10,11 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const isValidInput = Boolean(email.length && password.length && !error.length);
   const handleLogin = (e: React.FormEvent) => {
@@ -45,25 +51,36 @@ const Login: React.FC = () => {
             />
           </div>
 
-          <div >
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="w-full px-4 py-2 border rounded"
             />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
+            >
+              {showPassword ? (
+                <EyeIcon className=" h-5 text-gray-500" />
+              ) : (
+                <EyeSlashIcon className="h-5 w-5 text-gray-500" />
+              )}
+            </button>
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button
             type="submit"
             disabled={!isValidInput}
-            className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${
-              isValidInput
+            className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${isValidInput
                 ? "bg-[var(--Azul-activado,#146FB7)] cursor-not-allowed text-white"
                 : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
-            }`}          >
+              }`}          >
             Confirmar
           </button>
         </form>
