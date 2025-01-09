@@ -31,6 +31,12 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ onEdit, onDelete }) => 
     };
   }, [isOpen]);
 
+  const handleDeleteClick = () => {
+    if (window.confirm("¿Está seguro que desea eliminar el punto?")) {
+      onDelete();
+    }
+  };
+
   return (
     <div className="dropdown relative inline-block" style={{ position: "relative", display: "inline-block" }}>
       <button onClick={toggleMenu} style={{ cursor: "pointer" }}
@@ -62,7 +68,7 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ onEdit, onDelete }) => 
             Editar
           </div>
           <div
-            onClick={onDelete}
+            onClick={handleDeleteClick}
             style={{
               padding: "8px 12px",
               cursor: "pointer",
