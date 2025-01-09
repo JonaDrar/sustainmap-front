@@ -203,3 +203,32 @@ input {
 .rounded-xxl {
     border-radius: 30px;
 }
+/* Elimina bordes y márgenes del popup */
+.leaflet-popup-content-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+  }
+  
+  /* Contenedor del contenido del popup */
+  .leaflet-popup-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    display: block;
+  }
+  
+  /* Imagen ajustada */
+  .popup-image {
+    width: 100% !important;
+    height: 120px !important;
+    object-fit: cover;
+    display: block;
+  }
+  
+  /* Flecha del popup */
+  .leaflet-popup-tip-container {
+    display: none !important;
+  }

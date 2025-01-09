@@ -1,27 +1,45 @@
 import { Popup } from 'react-leaflet';
+import { Pointdata } from '../hooks/UseFetchPoints';
+import { MapPinIcon } from '@heroicons/react/24/solid';
 
 interface SitePopupProps {
-  site: { position: [number, number]; name: string };
+  site: Pointdata;
 }
 
 const SitePopup: React.FC<SitePopupProps> = ({ site }) => {
-  const googleMapsLink = `https://www.google.com/maps?q=${site.position[0]},${site.position[1]}`;
-  
+
   return (
     <Popup>
-      <div className="bg-white border-2 border-blue-400 rounded-xl p-4 shadow-lg font-sans text-gray-800">
-        <h3 className="text-blue-400 font-bold text-lg mb-2">{site.name}</h3>
-        <p className="text-sm mb-2">
-          Posición: {site.position[0].toFixed(5)}, {site.position[1].toFixed(5)}
-        </p>
-        <a
-          href={googleMapsLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 underline font-semibold hover:text-blue-700"
-        >
-          Ver en Google Maps
-        </a>
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden w-80">
+        {/* Imagen superior */}
+        <div className="relative">
+          <img
+            src={site.photo_url}
+            alt={site.name}
+            className="w-full h-32 object-cover"
+          />
+        </div>
+
+        {/* Contenido del cuerpo */}
+        <div className="p-4">
+          {/* Nombre del salón y galería (opcional) */}
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-blue-700 font-bold text-lg">{site.name}</h3>
+            {site.gallery && (
+              <p className="text-green-600 font-thin text-sm">
+                {site.gallery.galleryName}. {site.gallery.localNumber}
+              </p>
+            )}
+          </div>
+
+          {/* Dirección */}
+          <div className="flex items-center text-gray-700 text-sm font-sans mb-2">
+            <MapPinIcon className="h-6 w-6 text-black" />
+            <p>
+              {site.address}, {site.commune}. {site.region}.
+            </p>
+          </div>
+        </div>
       </div>
     </Popup>
   );
