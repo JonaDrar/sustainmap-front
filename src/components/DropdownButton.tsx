@@ -32,8 +32,10 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ onEdit, onDelete }) => 
   }, [isOpen]);
 
   return (
-    <div className="dropdown" style={{ position: "relative", display: "inline-block" }}>
-      <button onClick={toggleMenu} style={{ cursor: "pointer" }}>
+    <div className="dropdown relative inline-block" style={{ position: "relative", display: "inline-block" }}>
+      <button onClick={toggleMenu} style={{ cursor: "pointer" }}
+      className="text-gray-600 hover:text-gray-900 font-bold text-2xl rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
         ...
       </button>
       {isOpen && (
