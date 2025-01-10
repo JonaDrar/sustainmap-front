@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { backendUrlBase } from "../utils/environment";
 
 export interface Pointdata {
     id: string;
@@ -15,6 +16,7 @@ export interface Pointdata {
         galleryName: string;
         localNumber: string;
     };
+    deleted?: boolean;
 }
 
 const UseFetchPoints = () => {
@@ -25,11 +27,11 @@ const UseFetchPoints = () => {
     useEffect (()=> {
         const fetchPoints = async () => {
             try {
-                const response= await axios.get('http://localhost:3000/points');
+                const response= await axios.get(`${backendUrlBase}/points`);
                 setPoints(response.data);
             } catch (error) {
                 console.error('Error al obtener los marcadores:', error);
-                setError('Error al obtener los maracadores');
+                setError('Error al obtener los marcadores');
             } finally {
                 setLoading(false);
             }
@@ -37,7 +39,21 @@ const UseFetchPoints = () => {
         fetchPoints();
     }, []);
 
-    return {points, loading, error};
+    const deletePoint = async (id: string) => {
+        try {
+            await axios.delete(`${backendUrlBase}/points/${id}`);
+            setPoints((prev) => prev.map((point) =>
+                point.id === id ? { ...point, deleted: true } : point
+            ));
+        } catch (error) {
+            console.error("Error al eliminar el punto:", error);
+            throw new Error("Error al eliminar el punto.");
+        }
+    };
+
+    const activePoints = points.filter((point) => !point.deleted);
+
+    return {points: activePoints, loading, error, deletePoint};
 };
 
 export default UseFetchPoints; 

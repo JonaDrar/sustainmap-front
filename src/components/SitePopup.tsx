@@ -1,20 +1,21 @@
 import { Popup } from 'react-leaflet';
 import { Pointdata } from '../hooks/UseFetchPoints';
 import { MapPinIcon } from '@heroicons/react/24/solid';
-import DropdownButton from './DropDownButton';
+import DropdownButton from './DropdownButton';
 
 interface SitePopupProps {
   site: Pointdata;
+  onDeletePoint: (id: string) => void;
 }
 
-const SitePopup: React.FC<SitePopupProps> = ({ site }) => {
+const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
 
   const handleEdit = () => {
     console.log(`Editando: ${site.name}`);
   };
 
   const handleDelete = () => {
-    console.log(`Eliminando: ${site.name}`);
+    onDeletePoint(site.id);
   };
 
   return (
