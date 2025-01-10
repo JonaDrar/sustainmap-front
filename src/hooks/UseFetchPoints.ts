@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { backendUrlBase } from "../utils/environment";
 
 export interface Pointdata {
     id: string;
@@ -25,7 +26,7 @@ const UseFetchPoints = () => {
     useEffect (()=> {
         const fetchPoints = async () => {
             try {
-                const response= await axios.get('http://localhost:3000/points');
+                const response= await axios.get(`${backendUrlBase}/points`);
                 setPoints(response.data);
             } catch (error) {
                 console.error('Error al obtener los marcadores:', error);
