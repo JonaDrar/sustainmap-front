@@ -1,0 +1,1 @@
+export const backendUrlBase = import.meta.env.VITE_BACKEND_URL_BASE as string;
