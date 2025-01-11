@@ -41,4 +41,6 @@ const UseFetchPoints = () => {
     return {points, loading, error};
 };
 
+
+
 export default UseFetchPoints; 
