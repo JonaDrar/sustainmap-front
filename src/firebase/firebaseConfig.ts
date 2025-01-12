@@ -1,22 +1,19 @@
 
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBAbH0I0ylJcInHvzYKeXnRKuFSgO3m_EA",
-  authDomain: "prueba-9c7af.firebaseapp.com",
-  databaseURL: "https://prueba-9c7af-default-rtdb.firebaseio.com",
-  projectId: "prueba-9c7af",
-  storageBucket: "prueba-9c7af.firebasestorage.app",
-  messagingSenderId: "623639387020",
-  appId: "1:623639387020:web:8a035f026ab5da3261d4a9",
-  measurementId: "G-BEN8Z33YT9"
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
-
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
-export { app,auth };
+
+export { app};
 
 

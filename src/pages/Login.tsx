@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
 import { Link } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
+import { login} from '../authentication/auth';
+
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -11,21 +13,40 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const isValidInput = Boolean(email.length && password.length && !error.length);
-  const handleLogin = (e: React.FormEvent) => {
+  const isValidInput = Boolean(email.length && password.length);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === 'demo@gmail.com' && password === 'password1?') {
-      setLoggedInUser(email);
+    setError('');
+    setLoading(true);
+    try {
+      const user = await login(email, password);
+      setLoggedInUser(user.user.email);
+      console.log(`Usuario logeado con éxito: ${user.user.email}`);
+
       navigate('/map');
-    } else {
-      setError('Correo o contraseña inválidos.');
+    } catch (error: any) {
+      console.error('Error de inicio de sesión:', error);
+      const firebaseError = error as { code?: string };
+      if (firebaseError.code === 'auth/user-disabled') {
+        setError('Usuario desabilitado');
+      } else if (firebaseError.code === 'auth/invalid-credential') {
+        setError('Credenciales inválidas. Por favor, intenta de nuevo.');
+      } else {
+        setError('Error al iniciar sesión. Por favor, intenta de nuevo.');
+      }
+    }finally{
+      setLoading(false);
     }
   };
+
+  
 
   return (
     <div className="gradient-background min-h-screen flex items-center justify-center">
@@ -46,7 +67,7 @@ const Login: React.FC = () => {
               type="email"
               placeholder="Correo electrónico"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {setEmail(e.target.value);setError('')}}
               required
             />
           </div>
@@ -56,7 +77,7 @@ const Login: React.FC = () => {
               type={showPassword ? "text" : "password"}
               placeholder="Contraseña"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {setPassword(e.target.value);setError('')}}
               required
               className="w-full px-4 py-2 border rounded"
             />
@@ -76,12 +97,13 @@ const Login: React.FC = () => {
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button
             type="submit"
-            disabled={!isValidInput}
+            disabled={!isValidInput || loading}
             className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${isValidInput
                 ? "bg-[var(--Azul-activado,#146FB7)] cursor-not-allowed text-white"
                 : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
-              }`}          >
-            Confirmar
+              }`} 
+              >
+            {loading ? 'Cargando...' : 'Confirmar'}
           </button>
         </form>
 

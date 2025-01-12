@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { register } from '../authentication/auth';
+
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -24,36 +26,50 @@ const Signup: React.FC = () => {
 
   const showValidationRequirements = password.length;
 
-  const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validationErrors: { [key: string]: string } = {};
-
     if (!email) {
       validationErrors.email = 'El correo es obligatorio.';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       validationErrors.email = 'Por favor, ingresa un correo válido.';
     }
-
     if (!password) {
       validationErrors.password = 'La contraseña es obligatoria.';
     } else {
-      if (!passwordChecks.length) validationErrors.password = 'La contraseña debe tener al menos 8 caracteres.';
-      if (!passwordChecks.number) validationErrors.password = 'La contraseña debe incluir un número.';
-      if (!passwordChecks.special) validationErrors.password = 'La contraseña debe incluir un carácter especial.';
-    }
-
-    if (password !== confirmPassword) {
-      validationErrors.confirmPassword = 'Las contraseñas no coinciden.';
+      if (password.length < 8) validationErrors.password = 'La contraseña debe tener al menos 8 caracteres.';
+      if (password !== confirmPassword) validationErrors.confirmPassword = 'Las contraseñas no coinciden.';
     }
 
     setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
 
-    if (Object.keys(validationErrors).length === 0) {
+    try {
+      await register(email, password);
       alert('¡Registro exitoso!');
       navigate('/');
+    } catch (error: any) {
+      console.error('Error de registro:', error); 
+      if (error.code === 'auth/email-already-in-use') {
+        setErrors({ email: 'Este correo electrónico ya está en uso.' });
+      } else if (error.code === 'auth/invalid-email') {
+        setErrors({ email: 'El correo electrónico no es válido.' });
+      } else if (error.code === 'auth/weak-password') {
+        setErrors({ password: 'La contraseña debe tener al menos 8 caracteres.' });
+      } else {
+        setErrors({ general: 'Hubo un problema al registrar el usuario.' });
+      }
     }
-  };
-  const isValidInput = Boolean(email.length && password.length && confirmPassword.length);
+
+  }
+
+  const isValidInput =
+  email.length > 0 &&
+  password.length > 0 &&
+  confirmPassword.length > 0 
+
   return (
     <div className="gradient-background min-h-screen flex items-center justify-center">
       <div className="bg-white shadow-md rounded-xxl p-8 w-full max-w-md login-card">
@@ -89,6 +105,7 @@ const Signup: React.FC = () => {
               }}
             />
             {errors.password && <p className="error-text">{errors.password}</p>}
+            {errors.general && <p>{errors.general}</p>}
             {showValidationRequirements ? (<div className="password-tooltip">
               <ul>
                 <li style={{ color: passwordChecks.length ? 'green' : 'red' }}>
