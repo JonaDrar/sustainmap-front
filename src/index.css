@@ -47,13 +47,22 @@
 .welcome-message {
     color: white;
     font-size: 18px;
+    padding: 8px 16px;
 }
 
 .logout-button {
     color: white;
+    text-decoration: none;
     font-size: 18px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
 
+.logout-button:hover {
+    background-color: #1565c0;
+    color: white;
+}
 
 
 .card {
