@@ -50,13 +50,14 @@ const Signup: React.FC = () => {
       await register(email, password);
       alert('¡Registro exitoso!');
       navigate('/');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error de registro:', error); 
-      if (error.code === 'auth/email-already-in-use') {
+      const firebaseError = error as { code?: string };
+      if (firebaseError.code === 'auth/email-already-in-use') {
         setErrors({ email: 'Este correo electrónico ya está en uso.' });
-      } else if (error.code === 'auth/invalid-email') {
+      } else if (firebaseError.code === 'auth/invalid-email') {
         setErrors({ email: 'El correo electrónico no es válido.' });
-      } else if (error.code === 'auth/weak-password') {
+      } else if (firebaseError.code === 'auth/weak-password') {
         setErrors({ password: 'La contraseña debe tener al menos 8 caracteres.' });
       } else {
         setErrors({ general: 'Hubo un problema al registrar el usuario.' });

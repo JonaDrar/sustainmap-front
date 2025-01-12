@@ -31,7 +31,7 @@ const Login: React.FC = () => {
       console.log(`Usuario logeado con éxito: ${user.user.email}`);
 
       navigate('/map');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error de inicio de sesión:', error);
       const firebaseError = error as { code?: string };
       if (firebaseError.code === 'auth/user-disabled') {
