@@ -5,6 +5,7 @@ import LoginPage from './pages/Login';
 import SignupPage from './pages/Signup';
 import { UserContext } from './contexts/UserContext';
 import Map from './pages/Map';
+import EditPointPage from "./pages/EditPointPage";
 
 
 const App = () => {
@@ -23,6 +24,14 @@ const App = () => {
                 <Map />
               </ProtectedRoute>
             }
+          />
+          <Route 
+            path="/edit" 
+            element={
+              <ProtectedRoute loggedInUser={loggedInUser}>
+                <EditPointPage />
+              </ProtectedRoute>
+            } 
           />
         </Routes>
       </Router>

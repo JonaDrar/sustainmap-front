@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { backendUrlBase } from "../utils/environment";
 
 export interface Pointdata {
@@ -12,6 +12,9 @@ export interface Pointdata {
     address: string;
     commune: string;
     region: string;
+    services: string[];
+    type: number;
+    highlighted: boolean;
     gallery?: { 
         galleryName: string;
         localNumber: string;
@@ -39,6 +42,26 @@ const UseFetchPoints = () => {
         fetchPoints();
     }, []);
 
+    const createPoint = async (newPoint: Partial<Pointdata>) => {
+        try {
+            const formattedPoint = {
+                ...newPoint,
+                id: undefined,
+                type: Math.max(1, Math.min(4, Math.floor(newPoint.type || 1))),
+            };
+
+            const response = await axios.post(`${backendUrlBase}/points`, formattedPoint);
+            setPoints((prev) => [...prev, response.data]);
+        } catch (error) {
+            console.error("Error al crear el punto:", error);
+            const errorMessage = 
+              error instanceof AxiosError 
+                ? error.response?.data?.message || error.message 
+                : "Error al crear el punto.";
+            throw new Error(errorMessage);
+        }
+    };
+
     const deletePoint = async (id: string) => {
         try {
             await axios.delete(`${backendUrlBase}/points/${id}`);
@@ -53,7 +76,35 @@ const UseFetchPoints = () => {
 
     const activePoints = points.filter((point) => !point.deleted);
 
-    return {points: activePoints, loading, error, deletePoint};
+    const updatePoint = async (id: string, updatedData: Partial<Pointdata>) => {
+        try {
+            if (id) {
+                const galleryUpdates = updatedData.gallery
+                    ? {
+                        gallery: {
+                            ...updatedData.gallery,
+                            galleryName: updatedData.gallery?.galleryName || undefined,
+                            localNumber: updatedData.gallery?.localNumber || undefined,
+                        },
+                    }
+                    : {};
+    
+                const dataToUpdate = { ...updatedData, ...galleryUpdates };
+    
+                const response = await axios.put(`${backendUrlBase}/points/${id}`, dataToUpdate);
+                setPoints((prev) =>
+                    prev.map((point) => (point.id === id ? { ...point, ...response.data } : point))
+                );
+            } else {
+                await createPoint(updatedData);
+            }
+        } catch (error) {
+            console.error("Error al actualizar o crear el punto:", error);
+            throw new Error("Error al actualizar o crear el punto.");
+        }
+    };
+
+    return {points: activePoints, loading, error, deletePoint, updatePoint, createPoint};
 };
 
 export default UseFetchPoints; 

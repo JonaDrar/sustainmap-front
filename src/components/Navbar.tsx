@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
+import CreatePointButton from './CreatePointButton';
 
 const Navbar: React.FC = () => {
   const { loggedInUser } = useContext(UserContext);
@@ -13,7 +14,10 @@ const Navbar: React.FC = () => {
         </div>
         <div className="nav-links">
           {loggedInUser ? (
-            <span className="welcome-message">Bienvenido, {loggedInUser}</span>
+            <>
+              <CreatePointButton />
+              <span className="welcome-message">Bienvenido, {loggedInUser}</span>
+            </>
           ) : (
             <>
               <Link to="/">Iniciar sesión</Link>

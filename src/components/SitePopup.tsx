@@ -2,6 +2,7 @@ import { Popup } from 'react-leaflet';
 import { Pointdata } from '../hooks/UseFetchPoints';
 import { MapPinIcon } from '@heroicons/react/24/solid';
 import DropdownButton from './DropdownButton';
+import { useNavigate } from "react-router-dom";
 
 interface SitePopupProps {
   site: Pointdata;
@@ -9,9 +10,10 @@ interface SitePopupProps {
 }
 
 const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
+  const navigate = useNavigate();
 
   const handleEdit = () => {
-    console.log(`Editando: ${site.name}`);
+    navigate("/edit", { state: { point: site } });
   };
 
   const handleDelete = () => {
