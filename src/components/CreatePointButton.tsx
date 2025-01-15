@@ -5,7 +5,7 @@ const CreatePointButton: React.FC = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/edit");
+    navigate("/form");
   };
 
   return (
