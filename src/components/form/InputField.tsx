@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode } from "react";
 
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -14,12 +14,6 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   ...props
 }) => {
-  const [isFocused, setIsFocused] = useState(false);
-
-  const handleFocus = () => setIsFocused(true);
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (!e.target.value) setIsFocused(false);
-  };
 
   if (type === "file") {
     return (
@@ -61,8 +55,6 @@ const InputField: React.FC<InputFieldProps> = ({
           type={type}
           className={`h-[70px] w-full pt-10 ${suffixIcon ? "pl-10" : "pl-3"} pb-2 ${suffixIcon ? "pr-10" : "pr-3"} border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out sm:text-sm`}
           placeholder={placeholder || label}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
           {...props}
         />
         {suffixIcon && (
