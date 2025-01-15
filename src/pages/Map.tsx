@@ -9,7 +9,7 @@ import UseFetchPoints from '../hooks/UseFetchPoints';
 const Map = () => {
   const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
 
-  const { points } = UseFetchPoints();
+  const { points, deletePoint } = UseFetchPoints();
 
   return (
     <div>
@@ -32,7 +32,7 @@ const Map = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
-        <MarkerList sites={points} />
+        <MarkerList sites={points} onDeletePoint={deletePoint} />
         <CenterMap coords={selectedCoords} />
       </MapContainer>
     </div>
