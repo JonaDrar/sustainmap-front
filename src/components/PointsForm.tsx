@@ -295,7 +295,7 @@ const EditPointPage: React.FC = () => {
         step={step}
         totalSteps={totalSteps}
         onPrevious={step > 1 ? handlePreviousStep : undefined}
-        onNext={step === totalSteps ? handleSubmit : handleNextStep}
+        onNext={(e) => step === totalSteps ? handleSubmit(e) : handleNextStep()}
         onCancel={handleCancel}
         headerText="Puntos de interés"
       >

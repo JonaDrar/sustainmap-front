@@ -6,7 +6,7 @@ interface WizardProps {
   totalSteps: number;
   headerText: string;
   onPrevious?: () => void;
-  onNext?: () => void;
+  onNext?: (e: React.MouseEvent<HTMLButtonElement> ) => Promise<void> | void;
   onCancel?: () => void;
   children: ReactNode;
 }
