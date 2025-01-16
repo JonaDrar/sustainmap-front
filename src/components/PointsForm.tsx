@@ -123,8 +123,8 @@ const Step2Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEv
           />
           {formData.longitude !== '' && formData.longitude !== '' && (
             <>
-              <MarkerList sites={[{ ...formData }]} />
-              <CenterMap coords={[formData.latitud, formData.longitude]} />
+              <MarkerList sites={[{ ...formData } as unknown as Pointdata]} />
+              <CenterMap coords={[parseFloat(formData.latitud), parseFloat(formData.longitude)]} />
             </>
           )}
         </MapContainer>
