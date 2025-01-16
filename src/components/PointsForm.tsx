@@ -11,7 +11,7 @@ import MarkerList from "./MarkerList";
 import CenterMap from "./CenterMap";
 
 
-const Step1Form: React.FC<{ formData: any, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
+const Step1Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
   return (
     <div className="grid grid-cols-2 gap-4">
       <InputField
@@ -94,7 +94,7 @@ const Step1Form: React.FC<{ formData: any, handleChange: (e: React.ChangeEvent<H
   );
 };
 
-const Step2Form: React.FC<{ formData: any, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
+const Step2Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
