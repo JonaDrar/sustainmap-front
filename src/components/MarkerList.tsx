@@ -7,7 +7,7 @@ import { Pointdata } from '../hooks/UseFetchPoints';
 
 interface MarkerListProps {
   sites: Pointdata[];
-  onDeletePoint: (id: string) => void;
+  onDeletePoint?: (id: string) => void;
 }
 
 const IconMarker= new L.Icon({
@@ -22,7 +22,7 @@ const MarkerList: React.FC<MarkerListProps> = ({ sites, onDeletePoint }) => {
     <>
       {sites.map((site) => (
         <Marker key={site.id} position={[site.latitud, site.longitude]} icon={IconMarker} >
-          <SitePopup site={site} onDeletePoint={() => onDeletePoint(site.id)} />
+          <SitePopup site={site} onDeletePoint={() => onDeletePoint?.(site.id)} />
         </Marker>
       ))}
     </>

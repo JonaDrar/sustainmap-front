@@ -6,6 +6,7 @@ import SignupPage from './pages/Signup';
 import { UserContext } from './contexts/UserContext';
 import Map from './pages/Map';
 import EditPointPage from "./pages/EditPointPage";
+import FormComponent from './components/PointsForm'
 
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/form" element={<FormComponent />} />
           <Route
             path="/map"
             element={

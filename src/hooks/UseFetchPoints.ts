@@ -89,7 +89,7 @@ const UseFetchPoints = () => {
                     }
                     : {};
     
-                const dataToUpdate = { ...updatedData, ...galleryUpdates };
+                const dataToUpdate = { ...updatedData, ...galleryUpdates, id: undefined };
     
                 const response = await axios.put(`${backendUrlBase}/points/${id}`, dataToUpdate);
                 setPoints((prev) =>

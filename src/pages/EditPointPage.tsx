@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Pointdata } from "../hooks/UseFetchPoints";
 import UseFetchPoints from "../hooks/UseFetchPoints";
+import Swal from "sweetalert2";
+import {InputField, SelectField} from "../components/form";
 
 interface FormData {
   id: string;
@@ -67,25 +69,6 @@ const EditPointPage: React.FC = () => {
           localNumber: point.gallery?.localNumber || "",
         },
       });
-    } else {
-      setFormData({
-        id: "",
-        name: "",
-        address: "",
-        commune: "",
-        description: "",
-        highlighted: false,
-        latitud: "",
-        longitude: "",
-        photo_url: "",
-        region: "",
-        services: "",
-        type: "",
-        gallery: {
-          galleryName: "",
-          localNumber: "",
-        },
-      });
     }
   }, [point]);
 
@@ -142,23 +125,6 @@ const EditPointPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { latitud, longitude, type } = formData;
-
-      if (parseFloat(latitud) < -90 || parseFloat(latitud) > 90) {
-        alert("La latitud debe estar entre -90 y 90.");
-        return;
-      }
-
-      if (parseFloat(longitude) < -180 || parseFloat(longitude) > 180) {
-        alert("La longitud debe estar entre -180 y 180.");
-        return;
-      }
-
-      if (parseInt(type, 10) < 1 || parseInt(type, 10) > 4) {
-        alert("El tipo debe estar entre 1 y 4.");
-        return;
-      }
-
       const services = formData.services.split(",").map((service) => {return service.trim()});
 
       const dataToSend = {
@@ -179,162 +145,110 @@ const EditPointPage: React.FC = () => {
         await createPoint(dataToSend); 
       }
   
+      Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/map");
     } catch (error) {
       console.error("Error al guardar el punto:", error);
-      alert("No se pudo guardar el punto. Por favor, intenta nuevamente.");
+      Swal.fire("Error", "No se pudo guardar el punto. Por favor, intenta nuevamente.", "error");
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded">
-      <h1 className="text-2xl font-bold text-center text-blue-700 mb-4">Editar Punto</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nombre</label>
-            <input
-              type="text"
+    <div className="gradient-background min-h-screen flex items-center justify-center">
+      <div className="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg">
+        <h1 className="text-2xl font-bold text-center text-blue-700 mb-4">Editar Punto</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              label="Nombre"
               name="name"
-              value={formData.name || ""}
+              value={formData.name}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Dirección</label>
-            <input
-              type="text"
+            <InputField
+              label="Dirección"
               name="address"
-              value={formData.address || ""}
+              value={formData.address}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Descripción
-            </label>
-            <textarea
+            <InputField
+              label="Descripción"
               name="description"
-              value={formData.description || ""}
+              value={formData.description}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Latitud
-            </label>
-            <input
-              type="text"
+            <InputField
+              label="Latitud"
               name="latitud"
               value={formData.latitud}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Longitud
-            </label>
-            <input
-              type="text"
+            <InputField
+              label="Longitud"
               name="longitude"
               value={formData.longitude}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Comuna
-            </label>
-            <input
-              type="text"
+            <InputField
+              label="Comuna"
               name="commune"
-              value={formData.commune || ""}
+              value={formData.commune}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Region
-            </label>
-            <input
-              type="text"
+            <InputField
+              label="Región"
               name="region"
-              value={formData.region || ""}
+              value={formData.region}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Nombre Galeria
-            </label>
-            <input
-              type="text"
+            <InputField
+              label="Nombre Galería"
               name="galleryName"
-              value={formData.gallery.galleryName || ""}
+              value={formData.gallery.galleryName}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Número Local
-            </label>
-            <input
-              type="text"
+            <InputField
+              label="Número Local"
               name="localNumber"
-              value={formData.gallery.localNumber || ""}
+              value={formData.gallery.localNumber}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Foto
-            </label>
-            <input
-              type="text"
+            <InputField
+              label="Foto"
               name="photo_url"
-              value={formData.photo_url || ""}
+              value={formData.photo_url}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Servicios
-            </label>
-            <textarea
+            <InputField
+              label="Servicios"
               name="services"
               value={formData.services}
               onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Tipo
-            </label>
-            <input
-              type="text"
+            <SelectField
+              label="Tipo"
               name="type"
               value={formData.type}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+              options={[
+                { value: "1", label: "Peluqueria" },
+                { value: "2", label: "Peluqueria canina" },
+                { value: "3", label: "Centro de acopio" },
+                { value: "4", label: "Centro de estudio" },
+              ]}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  type: e.target.value,
+                })
+              }
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Destacado
-            </label>
-            <select
+            <SelectField
+              label="Destacado"
               name="highlighted"
+              options={[
+                { value: "true", label: "Sí" },
+                { value: "false", label: "No" },
+              ]}
               value={formData.highlighted ? "true" : "false"}
               onChange={(e) =>
                 setFormData({
@@ -342,29 +256,25 @@ const EditPointPage: React.FC = () => {
                   highlighted: e.target.value === "true",
                 })
               }
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            >
-              <option value="true">Sí</option>
-              <option value="false">No</option>
-            </select>
+            />
           </div>
-        </div>
-        <div className="flex justify-between mt-4">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Guardar
-          </button>
-        </div>
-      </form>
+          <div className="flex justify-between mt-4">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
