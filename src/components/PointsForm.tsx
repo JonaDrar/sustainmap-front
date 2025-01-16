@@ -11,7 +11,7 @@ import MarkerList from "./MarkerList";
 import CenterMap from "./CenterMap";
 
 
-const Step1Form: React.FC<{ formData: any, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
+const Step1Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
   return (
     <div className="grid grid-cols-2 gap-4">
       <InputField
@@ -73,10 +73,10 @@ const Step1Form: React.FC<{ formData: any, handleChange: (e: React.ChangeEvent<H
         name="type"
         value={formData.type}
         options={[
-          { value: "1", label: "Peluqueria" },
-          { value: "2", label: "Peluqueria canina" },
-          { value: "3", label: "Centro de acopio" },
-          { value: "4", label: "Centro de estudio" },
+          { value: "1", label: "1. Peluqueria" },
+          { value: "2", label: "2. Peluqueria canina" },
+          { value: "3", label: "3. Centro de acopio" },
+          { value: "4", label: "4. Centro de estudio" },
         ]}
         onChange={handleChange}
       />
@@ -94,7 +94,7 @@ const Step1Form: React.FC<{ formData: any, handleChange: (e: React.ChangeEvent<H
   );
 };
 
-const Step2Form: React.FC<{ formData: any, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
+const Step2Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
@@ -123,8 +123,8 @@ const Step2Form: React.FC<{ formData: any, handleChange: (e: React.ChangeEvent<H
           />
           {formData.longitude !== '' && formData.longitude !== '' && (
             <>
-              <MarkerList sites={[{ ...formData }]} />
-              <CenterMap coords={[formData.latitud, formData.longitude]} />
+              <MarkerList sites={[{ ...formData } as unknown as Pointdata]} />
+              <CenterMap coords={[parseFloat(formData.latitud), parseFloat(formData.longitude)]} />
             </>
           )}
         </MapContainer>

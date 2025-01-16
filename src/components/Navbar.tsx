@@ -22,14 +22,10 @@ const Navbar: React.FC = () => {
             <>
               <Link to="/">Iniciar sesión</Link>
               <Link to="/signup">Registrarse</Link>
-              <Link to="/form">Form</Link>
             </>
           )}
         </div>
       </nav>
-
-
-      
     </header>
   );
 };
