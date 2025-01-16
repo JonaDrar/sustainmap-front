@@ -73,10 +73,10 @@ const Step1Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEv
         name="type"
         value={formData.type}
         options={[
-          { value: "1", label: "Peluqueria" },
-          { value: "2", label: "Peluqueria canina" },
-          { value: "3", label: "Centro de acopio" },
-          { value: "4", label: "Centro de estudio" },
+          { value: "1", label: "1. Peluqueria" },
+          { value: "2", label: "2. Peluqueria canina" },
+          { value: "3", label: "3. Centro de acopio" },
+          { value: "4", label: "4. Centro de estudio" },
         ]}
         onChange={handleChange}
       />
