@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../contexts/UserContext';
-import { Link } from 'react-router-dom';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 import { login} from '../authentication/auth';
 
@@ -30,7 +29,7 @@ const Login: React.FC = () => {
       setLoggedInUser(user.user.email);
       console.log(`Usuario logeado con éxito: ${user.user.email}`);
 
-      navigate('/map');
+      navigate('/');
     } catch (error) {
       console.error('Error de inicio de sesión:', error);
       const firebaseError = error as { code?: string };
@@ -106,16 +105,6 @@ const Login: React.FC = () => {
             {loading ? 'Cargando...' : 'Confirmar'}
           </button>
         </form>
-
-        <p className="mt-4 text-center text-md text-gray-400">
-          ¿No tienes una cuenta?
-          <Link
-            to="/signup"
-            className="font-medium text-gray-700 hover:text-gray-500 ml-1"
-          >
-            Ingresa aquí!
-          </Link>
-        </p>
       </div>
     </div>
   );

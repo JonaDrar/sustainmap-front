@@ -251,7 +251,7 @@ const EditPointPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    navigate(-1);
+    navigate("/");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -278,7 +278,7 @@ const EditPointPage: React.FC = () => {
       }
 
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
-      navigate("/map");
+      navigate("/");
     } catch (error) {
       console.error("Error al guardar el punto:", error);
       Swal.fire("Error", "No se pudo guardar el punto. Por favor, intenta nuevamente.", "error");

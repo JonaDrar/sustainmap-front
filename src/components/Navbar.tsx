@@ -28,12 +28,12 @@ const Navbar: React.FC = () => {
              <>        
              <span className="welcome-message">Bienvenido, {loggedInUser}</span>
              <CreatePointButton />
+             <Link to="/signup">Registrar Usuario</Link>
              <button onClick={handleLogout} className="logout-button">Cerrar sesión</button>
            </>
           ) : (
             <>
-              <Link to="/">Iniciar sesión</Link>
-              <Link to="/signup">Registrarse</Link>
+              <Link to="/login">Iniciar sesión</Link>
             </>
           )}
         </div>

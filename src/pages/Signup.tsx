@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../authentication/auth';
 
@@ -144,15 +143,7 @@ const Signup: React.FC = () => {
             Registrarse
           </button>
         </form>
-        <p className="mt-4 text-center text-md text-gray-400">
-          ¿Ya tienes una cuenta?
-          {' '}
-          <Link to="/" 
-            className="font-medium text-gray-700 hover:text-gray-500 ml-1"
-            >
-            Inicia sesión
-          </Link>
-        </p>
+     
       </div>
 
     </div >

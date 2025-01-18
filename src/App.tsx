@@ -44,14 +44,21 @@ const App = () => {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/form" element={<FormComponent />} />
+          <Route path="/" element={<Map />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route
-            path="/map"
+            path="/signup"
             element={
               <ProtectedRoute loggedInUser={loggedInUser}>
-                <Map />
+                <SignupPage />
+              </ProtectedRoute>
+            }
+          />
+            <Route
+            path="/form"
+            element={
+              <ProtectedRoute loggedInUser={loggedInUser}>
+                <FormComponent />
               </ProtectedRoute>
             }
           />
