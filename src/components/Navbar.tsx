@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
-import CreatePointButton from "./CreatePointButton";
 
 const Navbar: React.FC = () => {
   const { loggedInUser } = useContext(UserContext);
