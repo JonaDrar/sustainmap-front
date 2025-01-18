@@ -121,11 +121,16 @@ const Step2Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEv
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
-          {formData.latitud !== '' && formData.longitude !== '' && (
-            <>
-              <MarkerList sites={[{ ...formData } as unknown as Pointdata]} />
-              <CenterMap coords={[parseFloat(formData.latitud), parseFloat(formData.longitude)]} />
-            </>
+          {formData.latitud && formData.longitude && 
+            parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
+              <>
+                <MarkerList
+                  sites={[{ ...formData } as unknown as Pointdata]}
+                />
+                <CenterMap
+                  coords={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
+                />
+              </>
           )}
         </MapContainer>
       </div>
@@ -226,6 +231,7 @@ const EditPointPage: React.FC = () => {
       }
       return;
     }
+
 
     if (name === "type") {
       if (/^[1-4]?$/.test(value)) {
