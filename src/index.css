@@ -73,17 +73,6 @@
     color: #888;
 }
 
-
-.form-container {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    text-align: left;
-}
-
 h1 {
     text-align: center;
     color: #333;
@@ -100,24 +89,7 @@ label {
     color: #555;
 }
 
-input {
-    width: -webkit-fill-available;
-    justify-content: center;
-    padding: 16px 16px 8px 32px;
-    height: 66.81px;
-    border-radius: 8px;
-    opacity: 0px;
-    box-shadow: 0px 4px 4px 0px #00000040;
-    background: #F5F5F5;
-    font-family: Bahnschrift;
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 18px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
-    margin-bottom: 21px;
-}
+
 
 .error-text {
     color: red;
@@ -179,19 +151,38 @@ input {
 
 .login-card {
     margin: 25px;
-    padding: 2rem 5rem 3rem 5rem;
+    padding: 2rem 5rem 2rem 5rem;
     max-width: 560px;
 }
 
 .login-form {
-    margin-bottom: 42px;
+    margin-bottom: 36px;
+
+    input {
+        width: -webkit-fill-available;
+        justify-content: center;
+        padding: 16px 16px 8px 32px;
+        height: 58.81px;
+        border-radius: 8px;
+        opacity: 0px;
+        box-shadow: 0px 4px 4px 0px #00000040;
+        background: #F5F5F5;
+        font-family: Bahnschrift;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 20px;
+        text-align: left;
+        text-underline-position: from-font;
+        text-decoration-skip-ink: none;
+        margin-bottom: 18px;
+    }
 }
 
 .login-header {
     font-family: Bahnschrift;
-    font-size: 34px;
+    font-size: 30px;
     font-weight: 700;
-    line-height: 37.5px;
+    line-height: 34.5px;
     letter-spacing: -0.5px;
     text-align: center;
     text-underline-position: from-font;
@@ -202,14 +193,14 @@ input {
 
 .login-sub-header {
     font-family: Bahnschrift;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
-    line-height: 30px;
+    line-height: 28px;
     text-align: center;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
-    padding-bottom: 22px;
-    margin-bottom: 50px;
+    padding-bottom: 18px;
+    margin-bottom: 40px;
     color: #494B4B;
     border-bottom: 1px solid #E0E0E0;
 }

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../authentication/auth";
-import CreatePointButton from './CreatePointButton';
 
 
 const Navbar: React.FC = () => {
@@ -19,23 +18,36 @@ const Navbar: React.FC = () => {
 
   return (
     <header>
-      <nav className="navbar">
-        <div className="logo">
-          <Link to="/">MyApp</Link>
+      <nav className="flex items-center justify-between p-4 bg-white border-b border-gray-200 text-[var(--Azul-activado,#146FB7)]">
+        {/* Logo */}
+        <div className="flex items-center">
+          <img
+            src="/images/logo-mot.png"
+            alt="Matter of Trust Logo"
+            className="h-8"
+          />
+          <span className="ml-2 text-lg font-semibold">
+            Matter of Trust
+          </span>
         </div>
-        <div className="nav-links">
+
+        <div className="flex items-center space-x-6">
           {loggedInUser ? (
              <>        
              <span className="welcome-message">Bienvenido, {loggedInUser}</span>
-             <CreatePointButton />
+            
              <Link to="/signup">Registrar Usuario</Link>
+             <Link to="/form">Crear puntos de interés</Link>
+             <Link to="/">Ver mapa</Link>
              <button onClick={handleLogout} className="logout-button">Cerrar sesión</button>
            </>
           ) : (
             <>
+            
               <Link to="/login">Iniciar sesión</Link>
             </>
           )}
+
         </div>
       </nav>
     </header>
