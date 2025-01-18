@@ -28,11 +28,11 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="gradient-background min-h-screen flex items-center justify-center">
+    <div className="gradient-background flex items-center justify-center" style={{ minHeight: 'calc(100vh - 60px)' }}>
       <div className="bg-white shadow-md rounded-xxl p-8 w-full max-w-md login-card">
         <div className="mb-6 text-center">
           <img
-            src="public\logo-mot.png"
+            src="/images/logo-mot.png"
             alt="Matter of Trust Logo"
             className="mx-auto login-logo"
           />
