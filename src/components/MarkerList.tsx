@@ -11,7 +11,7 @@ interface MarkerListProps {
 }
 
 const IconMarker= new L.Icon({
-  iconUrl:('public/circulo.png'),
+  iconUrl:('/images/circulo.png'),
   iconSize: [30,30], 
   iconAnchor: [10, 35], 
   popupAnchor: [0,-35] 
