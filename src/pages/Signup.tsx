@@ -76,7 +76,7 @@ const Signup: React.FC = () => {
       <div className="bg-white shadow-md rounded-xxl p-8 w-full max-w-md login-card">
         <div className="mb-6 text-center">
           <img
-            src="src\assets\logo-mot.png"
+            src="public\logo-mot.png"
             alt="Matter of Trust Logo"
             className="mx-auto login-logo"
           />

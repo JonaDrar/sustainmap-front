@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../authentication/auth";
+import CreatePointButton from './CreatePointButton';
+
 
 const Navbar: React.FC = () => {
   const { loggedInUser } = useContext(UserContext);
@@ -23,8 +25,9 @@ const Navbar: React.FC = () => {
         </div>
         <div className="nav-links">
           {loggedInUser ? (
-             <>
+             <>        
              <span className="welcome-message">Bienvenido, {loggedInUser}</span>
+             <CreatePointButton />
              <button onClick={handleLogout} className="logout-button">Cerrar sesión</button>
            </>
           ) : (

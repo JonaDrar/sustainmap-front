@@ -1,12 +1,24 @@
 import { Popup } from 'react-leaflet';
 import { Pointdata } from '../hooks/UseFetchPoints';
 import { MapPinIcon } from '@heroicons/react/24/solid';
+import DropdownButton from './DropdownButton';
+import { useNavigate } from "react-router-dom";
 
 interface SitePopupProps {
   site: Pointdata;
+  onDeletePoint: (id: string) => void;
 }
 
-const SitePopup: React.FC<SitePopupProps> = ({ site }) => {
+const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
+  const navigate = useNavigate();
+
+  const handleEdit = () => {
+    navigate("/edit", { state: { point: site } });
+  };
+
+  const handleDelete = () => {
+    onDeletePoint(site.id);
+  };
 
   return (
     <Popup>
@@ -19,6 +31,12 @@ const SitePopup: React.FC<SitePopupProps> = ({ site }) => {
             className="w-full h-32 object-cover"
           />
         </div>
+
+        {/* Botón desplegable */}
+        <div className="ml-2">
+        <DropdownButton onEdit={handleEdit} onDelete={handleDelete} />
+        </div>
+        
 
         {/* Contenido del cuerpo */}
         <div className="p-4">
