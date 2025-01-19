@@ -5,9 +5,10 @@ import { Pointdata } from '../hooks/UseFetchPoints';
 interface SidebarMenuProps {
   points: Pointdata[];
   onPointSelect: (coords: [number, number]) => void;
+  userCoords: { lat: number; lng: number; radius: number } | null; // Nueva propiedad
 }
 
-const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
+const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect, userCoords }) => {
 //   const map = useMap();
 
   const handlePointClick = (point: Pointdata) => {
@@ -22,8 +23,10 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
       style={{ width: '100%', height: '100%' }}
     >
       <h2 className="text-lg font-bold text-blue-600 mb-4">Lista de Puntos</h2>
-      {points.length === 0 ? (
-        <p className="text-gray-500">No hay puntos disponibles</p>
+      {!userCoords ? (
+        <p className="text-gray-500">Esperando ubicación del usuario...</p>
+      ) : points.length === 0 ? (
+        <p className="text-gray-500">No hay puntos disponibles dentro del radio.</p>
       ) : (
         <ul className="space-y-2">
           {points.map((point) => (
