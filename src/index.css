@@ -137,7 +137,7 @@ label {
 
 .login-card {
     margin: 25px;
-    padding: 2rem 5rem 2rem 5rem;
+    padding: 2rem 3rem 4rem 3rem;
     max-width: 560px;
 }
 
@@ -147,45 +147,45 @@ label {
     input {
         width: -webkit-fill-available;
         justify-content: center;
-        padding: 16px 16px 8px 32px;
-        height: 58.81px;
+        padding: 16px 16px 8px 16px;
+        height: 55.81px;
         border-radius: 8px;
         opacity: 0px;
         box-shadow: 0px 4px 4px 0px #00000040;
         background: #F5F5F5;
         font-family: Bahnschrift;
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 400;
         line-height: 20px;
         text-align: left;
         text-underline-position: from-font;
         text-decoration-skip-ink: none;
-        margin-bottom: 18px;
+        margin-bottom: 20px;
     }
 }
 
 .login-header {
     font-family: Bahnschrift;
-    font-size: 30px;
+    font-size: 25px;
     font-weight: 700;
-    line-height: 34.5px;
+    line-height: 35.5px;
     letter-spacing: -0.5px;
     text-align: center;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
     color: #146FB7;
-    margin-bottom: 5px;
+    margin-bottom: 14px;
 }
 
 .login-sub-header {
     font-family: Bahnschrift;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
-    line-height: 28px;
+    line-height: 17px;
     text-align: center;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
-    padding-bottom: 18px;
+    padding-bottom: 5px;
     margin-bottom: 40px;
     color: #494B4B;
     border-bottom: 1px solid #E0E0E0;
@@ -193,14 +193,14 @@ label {
 
 .login-sub-header-2 {
     font-family: Bahnschrift;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     line-height: 21px;
     text-align: center;
     text-underline-position: from-font;
     text-decoration-skip-ink: none;
-    padding-bottom: 10px;
-    margin-bottom: 35px;
+    padding-bottom: 11px;
+    margin-bottom: 36px;
     color: #494B4B;
     border-bottom: 1px solid #E0E0E0;
 }
