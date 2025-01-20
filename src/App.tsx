@@ -42,7 +42,7 @@ const App = () => {
   return (
     <UserContext.Provider value={{ loggedInUser, setLoggedInUser }}>
       <Router>
-        <Navbar />
+      <Navbar />
         <Routes>
           <Route path="/" element={<Map />} />
           <Route path="/login" element={<LoginPage />} />
