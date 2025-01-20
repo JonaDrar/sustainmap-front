@@ -24,7 +24,6 @@ const App = () => {
       if (user) {
         setLoggedInUser(user.email);
         console.log(`Usuario activo ${user.email}`);
-        console.log(user);
       } else {
         setLoggedInUser(null);
       }
@@ -42,7 +41,7 @@ const App = () => {
   return (
     <UserContext.Provider value={{ loggedInUser, setLoggedInUser }}>
       <Router>
-      <Navbar />
+        <Navbar />
         <Routes>
           <Route path="/" element={<Map />} />
           <Route path="/login" element={<LoginPage />} />
@@ -54,7 +53,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-            <Route
+          <Route
             path="/form"
             element={
               <ProtectedRoute loggedInUser={loggedInUser}>

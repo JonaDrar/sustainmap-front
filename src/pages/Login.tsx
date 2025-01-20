@@ -1,16 +1,15 @@
-import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../contexts/UserContext';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
-import { login} from '../authentication/auth';
-
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/UserContext";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
+import { login } from "../authentication/auth";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { setLoggedInUser } = useContext(UserContext);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -22,33 +21,33 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
       const user = await login(email, password);
       setLoggedInUser(user.user.email);
-      console.log(`Usuario logeado con éxito: ${user.user.email}`);
 
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Error de inicio de sesión:', error);
+      console.error("Error de inicio de sesión:", error);
       const firebaseError = error as { code?: string };
-      if (firebaseError.code === 'auth/user-disabled') {
-        setError('Usuario desabilitado');
-      } else if (firebaseError.code === 'auth/invalid-credential') {
-        setError('Credenciales inválidas. Por favor, intenta de nuevo.');
+      if (firebaseError.code === "auth/user-disabled") {
+        setError("Usuario desabilitado");
+      } else if (firebaseError.code === "auth/invalid-credential") {
+        setError("Credenciales inválidas. Por favor, intenta de nuevo.");
       } else {
-        setError('Error al iniciar sesión. Por favor, intenta de nuevo.');
+        setError("Error al iniciar sesión. Por favor, intenta de nuevo.");
       }
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
 
-  
-
   return (
-    <div className="gradient-background flex items-center justify-center" style={{ minHeight: 'calc(100vh - 60px)' }}>
+    <div
+      className="gradient-background flex items-center justify-center"
+      style={{ minHeight: "calc(100vh - 60px)" }}
+    >
       <div className="bg-white shadow-md rounded-xxl p-8 w-full max-w-md login-card">
         <div className="mb-6 text-center">
           <img
@@ -57,7 +56,10 @@ const Login: React.FC = () => {
             className="mx-auto login-logo"
           />
           <h2 className="login-header">Iniciar sesión</h2>
-          <p className="text-sm text-gray-700 login-sub-header">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
+          <p className="text-sm text-gray-700 login-sub-header">
+            Bienvenido/a
+            <br /> Ingresa tus datos para comenzar.
+          </p>
         </div>
 
         <form onSubmit={handleLogin} className="login-form">
@@ -66,7 +68,10 @@ const Login: React.FC = () => {
               type="email"
               placeholder="Correo electrónico"
               value={email}
-              onChange={(e) => {setEmail(e.target.value);setError('')}}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
               required
             />
           </div>
@@ -76,7 +81,10 @@ const Login: React.FC = () => {
               type={showPassword ? "text" : "password"}
               placeholder="Contraseña"
               value={password}
-              onChange={(e) => {setPassword(e.target.value);setError('')}}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
               required
               className="w-full px-4 py-2 border rounded"
             />
@@ -97,12 +105,13 @@ const Login: React.FC = () => {
           <button
             type="submit"
             disabled={!isValidInput || loading}
-            className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${isValidInput
+            className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${
+              isValidInput
                 ? "bg-[var(--Azul-activado,#146FB7)] cursor-not-allowed text-white"
                 : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
-              }`} 
-              >
-            {loading ? 'Cargando...' : 'Confirmar'}
+            }`}
+          >
+            {loading ? "Cargando..." : "Confirmar"}
           </button>
         </form>
       </div>
