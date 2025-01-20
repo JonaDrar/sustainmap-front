@@ -14,7 +14,9 @@ const App = () => {
   return (
     <UserContext.Provider value={{ loggedInUser, setLoggedInUser }}>
       <Router>
-        <Navbar />
+        <ErrorBoundary>
+          <Navbar />
+        </ErrorBoundary>
         <ErrorBoundary>
           <Routes>
             <Route path="/" element={<LoginPage />} />
