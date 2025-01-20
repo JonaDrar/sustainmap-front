@@ -28,19 +28,19 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="gradient-background flex items-center justify-center" style={{ minHeight: 'calc(100vh - 60px)' }}>
-      <div className="bg-white shadow-md rounded-xxl p-8 w-full max-w-md login-card">
+    <div className="gradient-background flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 60px)' }}>
+      <div className="bg-white shadow-md rounded-xxl px-6 py-8 w-full max-w-xs sm:max-w-sm md:max-w-md login-card">
         <div className="mb-6 text-center">
           <img
             src="/images/logo-mot.png"
             alt="Matter of Trust Logo"
-            className="mx-auto login-logo"
+            className="w-24 sm:w-28 lg:w-36 mx-auto mb-4 login-logo"
           />
-          <h2 className="login-header">Iniciar sesión</h2>
-          <p className="text-sm text-gray-700 login-sub-header">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
+          <h2 className="text-lg md:text-2xl font-bold text-blue-700 login-header">Iniciar sesión</h2>
+          <p className="text-sm md:text-base text-gray-700 login-sub-header">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
         </div>
 
-        <form onSubmit={handleLogin} className="login-form">
+        <form onSubmit={handleLogin} className=" space-y-2 login-form">
           <div>
             <input
               type="email"
@@ -48,6 +48,7 @@ const Login: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="w-full px-4 py-2 text-sm border rounded-md"
             />
           </div>
 
@@ -58,12 +59,12 @@ const Login: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border rounded"
+              className="w-full px-4 py-2 border rounded-lg text-gray-700"
             />
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
+              className="absolute inset-y-0 right-0 mb-4 flex items-center pr-3 focus:outline-none"
             >
               {showPassword ? (
                 <EyeIcon className=" h-5 text-gray-500" />
@@ -80,12 +81,12 @@ const Login: React.FC = () => {
             className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${isValidInput
                 ? "bg-[var(--Azul-activado,#146FB7)] cursor-not-allowed text-white"
                 : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
-              }`}          >
+              }`}         >
             Confirmar
           </button>
         </form>
 
-        <p className="mt-4 text-center text-md text-gray-400">
+        <p className="mt-6 text-center text-sm text-gray-400">
           ¿No tienes una cuenta?
           <Link
             to="/signup"
