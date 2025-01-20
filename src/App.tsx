@@ -7,7 +7,7 @@ import { UserContext } from './contexts/UserContext';
 import Map from './pages/Map';
 import EditPointPage from "./pages/EditPointPage";
 import FormComponent from './components/PointsForm'
-
+import ErrorBoundary from './components/ErrorBoundary';
 
 const App = () => {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
@@ -15,27 +15,29 @@ const App = () => {
     <UserContext.Provider value={{ loggedInUser, setLoggedInUser }}>
       <Router>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/form" element={<FormComponent />} />
-          <Route
-            path="/map"
-            element={
-              <ProtectedRoute loggedInUser={loggedInUser}>
-                <Map />
-              </ProtectedRoute>
-            }
-          />
-          <Route 
-            path="/edit" 
-            element={
-              <ProtectedRoute loggedInUser={loggedInUser}>
-                <EditPointPage />
-              </ProtectedRoute>
-            } 
-          />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/form" element={<FormComponent />} />
+            <Route
+              path="/map"
+              element={
+                <ProtectedRoute loggedInUser={loggedInUser}>
+                  <Map />
+                </ProtectedRoute>
+              }
+            />
+            <Route 
+              path="/edit" 
+              element={
+                <ProtectedRoute loggedInUser={loggedInUser}>
+                  <EditPointPage />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+        </ErrorBoundary>
       </Router>
     </UserContext.Provider>
   );
