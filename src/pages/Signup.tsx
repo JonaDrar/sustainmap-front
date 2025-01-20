@@ -67,7 +67,7 @@ const Signup: React.FC = () => {
           <p className="text-sm text-gray-700 login-sub-header-2">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
         </div>
 
-        <form className=" space-y-4 login-form" onSubmit={handleSignup}>
+        <form className=" space-y-2 login-form" onSubmit={handleSignup}>
 
           <div>
             <input
