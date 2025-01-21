@@ -23,7 +23,6 @@ export interface Pointdata {
     rrss?: {
         instagram: string;
         facebook: string;
-        twitter: string;
         other: string;
     };
     deleted?: boolean;
