@@ -1,9 +1,24 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
+import { signOut } from "firebase/auth";
+import { auth } from "../authentication/auth";
 
 const Navbar: React.FC = () => {
   const { loggedInUser } = useContext(UserContext);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      console.log("Logout exitoso");
+    } catch (error) {
+      console.error("Error al hacer logout", error);
+    }
+  };
+
+  if (!loggedInUser) {
+    return null; 
+  }
 
   return (
     <header>
@@ -15,27 +30,29 @@ const Navbar: React.FC = () => {
             alt="Matter of Trust Logo"
             className="h-8"
           />
-          <span className="ml-2 text-lg font-semibold">
-            Matter of Trust
-          </span>
+          <span className="ml-2 text-lg font-semibold">Matter of Trust</span>
         </div>
 
-        {/* Links */}
         <div className="flex items-center space-x-6">
-          <Link to="/map">Ver mapa</Link>
+          {loggedInUser ? (
+            <>
+              <span className="welcome-message">
+                Bienvenido, {loggedInUser}
+              </span>
 
-          {loggedInUser &&
-            location.pathname === "/map" && (
+              <Link to="/signup">Registrar Usuario</Link>
               <Link to="/form">Crear puntos de interés</Link>
-
-            )}
+              <Link to="/">Ver mapa</Link>
+              <button onClick={handleLogout} className="logout-button">
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Iniciar sesión</Link>
+            </>
+          )}
         </div>
-
-        {loggedInUser ? (
-          <Link to="/">Cerrar sesión</Link>
-        ) : (
-          <Link to="/">Iniciar sesión</Link>
-        )}
       </nav>
     </header>
   );
