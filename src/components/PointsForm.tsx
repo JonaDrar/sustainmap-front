@@ -6,12 +6,18 @@ import { Pointdata } from "../hooks/UseFetchPoints";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import Swal from "sweetalert2";
 import Wizard from "../components/Wizard";
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer } from "react-leaflet";
 import MarkerList from "./MarkerList";
-import CenterMap from "./CenterMap";
+import CenterMap from "./maps/CenterMap";
 
-
-const Step1Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
+const Step1Form: React.FC<{
+  formData: FormData;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
+}> = ({ formData, handleChange }) => {
   return (
     <div className="grid grid-cols-2 gap-4">
       <InputField
@@ -94,7 +100,14 @@ const Step1Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEv
   );
 };
 
-const Step2Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
+const Step2Form: React.FC<{
+  formData: FormData;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
+}> = ({ formData, handleChange }) => {
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
@@ -115,27 +128,29 @@ const Step2Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEv
         <MapContainer
           center={[-33.4489, -70.6693]}
           zoom={9}
-          style={{ height: '350px', width: '100%' }}
+          style={{ height: "350px", width: "100%" }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
-          {formData.latitud && formData.longitude && 
-            parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
+          {formData.latitud &&
+            formData.longitude &&
+            parseFloat(formData.latitud) &&
+            parseFloat(formData.longitude) && (
               <>
-                <MarkerList
-                  sites={[{ ...formData } as unknown as Pointdata]}
-                />
+                <MarkerList sites={[{ ...formData } as unknown as Pointdata]} />
                 <CenterMap
-                  coords={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
+                  coords={[
+                    parseFloat(formData.latitud),
+                    parseFloat(formData.longitude),
+                  ]}
                 />
               </>
-          )}
+            )}
         </MapContainer>
       </div>
     </>
-
   );
 };
 
@@ -209,7 +224,11 @@ const EditPointPage: React.FC = () => {
     }
   }, [point]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
 
     if (name === "latitud") {
@@ -232,7 +251,6 @@ const EditPointPage: React.FC = () => {
       return;
     }
 
-
     if (name === "type") {
       if (/^[1-4]?$/.test(value)) {
         setFormData({ ...formData, type: value });
@@ -241,7 +259,7 @@ const EditPointPage: React.FC = () => {
     }
 
     if (name === "highlighted") {
-        setFormData({ ...formData, highlighted: value === "true" });
+      setFormData({ ...formData, highlighted: value === "true" });
       return;
     }
 
@@ -268,7 +286,9 @@ const EditPointPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const services = formData.services.split(",").map((service) => { return service.trim() });
+      const services = formData.services.split(",").map((service) => {
+        return service.trim();
+      });
 
       const dataToSend = {
         ...formData,
@@ -279,7 +299,7 @@ const EditPointPage: React.FC = () => {
           galleryName: formData.gallery.galleryName,
           localNumber: formData.gallery.localNumber,
         },
-        services
+        services,
       };
 
       if (formData.id) {
@@ -292,26 +312,36 @@ const EditPointPage: React.FC = () => {
       navigate("/");
     } catch (error) {
       console.error("Error al guardar el punto:", error);
-      Swal.fire("Error", "No se pudo guardar el punto. Por favor, intenta nuevamente.", "error");
+      Swal.fire(
+        "Error",
+        "No se pudo guardar el punto. Por favor, intenta nuevamente.",
+        "error"
+      );
     }
   };
 
-  const handleNextStep = () => setStep((prev) => Math.min(prev + 1, totalSteps));
+  const handleNextStep = () =>
+    setStep((prev) => Math.min(prev + 1, totalSteps));
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
-
       <Wizard
         step={step}
         totalSteps={totalSteps}
         onPrevious={step > 1 ? handlePreviousStep : undefined}
-        onNext={(e) => step === totalSteps ? handleSubmit(e) : handleNextStep()}
+        onNext={(e) =>
+          step === totalSteps ? handleSubmit(e) : handleNextStep()
+        }
         onCancel={handleCancel}
         headerText="Puntos de interés"
       >
-        {step === 1 && <Step1Form formData={formData} handleChange={handleChange} />}
-        {step === 2 && <Step2Form formData={formData} handleChange={handleChange} />}
+        {step === 1 && (
+          <Step1Form formData={formData} handleChange={handleChange} />
+        )}
+        {step === 2 && (
+          <Step2Form formData={formData} handleChange={handleChange} />
+        )}
       </Wizard>
     </div>
   );

@@ -1,105 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MarkerList from "../components/MarkerList";
-import CenterMap from "../components/CenterMap";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import SidebarMenu from "../components/SidebarMenu";
-import L from "leaflet";
 import { Pointdata } from "../hooks/UseFetchPoints";
-
-const LocateUser = ({
-  onLocationFound,
-  userCoords,
-}: {
-  onLocationFound: (lat: number, lng: number) => void;
-  userCoords: { lat: number; lng: number } | null;
-}) => {
-  const map = useMap();
-  const [hasCentered, setHasCentered] = useState(false);
-  const [locationRequested, setLocationRequested] = useState(false);
-
-  useEffect(() => {
-    if (userCoords && map && !hasCentered) {
-      console.log("User location found:", userCoords);
-      map.setView([userCoords.lat, userCoords.lng], 15);
-      setHasCentered(true);
-    }
-  }, [userCoords, map, hasCentered]);
-
-  useEffect(() => {
-    if (!locationRequested && map) {
-      setLocationRequested(true);
-      map.locate({ setView: false, maxZoom: 15, watch: true });
-
-      const onLocationFoundEvent = (e: L.LocationEvent) => {
-        const { lat, lng } = e.latlng;
-        onLocationFound(lat, lng);
-      };
-
-      const onLocationError = () => {
-        console.log("Error al obtener ubicación");
-        alert(
-          "No se pudo obtener tu ubicación. Por favor, habilita la geolocalización."
-        );
-      };
-
-      map.on("locationfound", onLocationFoundEvent);
-      map.on("locationerror", onLocationError);
-
-      return () => {
-        map.off("locationfound", onLocationFoundEvent);
-        map.off("locationerror", onLocationError);
-      };
-    }
-  }, [map, locationRequested, onLocationFound]);
-
-  return null;
-};
-
-const MapBoundsUpdater = ({
-  points,
-  setFilteredPoints,
-  resetSelectedCoords, 
-}: {
-  points: Pointdata[];
-  setFilteredPoints: React.Dispatch<React.SetStateAction<Pointdata[]>>;
-  resetSelectedCoords: () => void;
-}) => {
-  const map = useMap();
-  const prevBoundsRef = useRef<L.LatLngBounds | null>(null);
-
-  useEffect(() => {
-    if (map) {
-      const updateFilteredPoints = () => {
-        const bounds = map.getBounds();
-
-        if (!prevBoundsRef.current || !bounds.equals(prevBoundsRef.current)) {
-          const filtered = points.filter((point) => {
-            if (point.latitud == null || point.longitude == null) return false;
-            const pointLocation = L.latLng(point.latitud, point.longitude);
-            return bounds.contains(pointLocation);
-          });
-          setFilteredPoints(filtered);
-          resetSelectedCoords(); 
-          prevBoundsRef.current = bounds;
-        }
-      };
-
-      updateFilteredPoints();
-
-      map.on('moveend', updateFilteredPoints);
-      map.on('zoomend', updateFilteredPoints);
-
-      return () => {
-        map.off('moveend', updateFilteredPoints);
-        map.off('zoomend', updateFilteredPoints);
-      };
-    }
-  }, [map, points, setFilteredPoints, resetSelectedCoords]);
-
-  return null;
-};
+import CenterMap from "../components/maps/CenterMap";
+import LocateUser from "../components/maps/FoundLocateUser";
+import MapBoundsUpdater from "../components/maps/FiltersPoints";
 
 const Map = () => {
   const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(
@@ -132,7 +40,6 @@ const Map = () => {
   const handleLocationFound = (lat: number, lng: number) => {
     setUserCoords({ lat, lng });
   };
-
 
   useEffect(() => {
     const savedUserCoords = localStorage.getItem("userCoords");
@@ -184,7 +91,7 @@ const Map = () => {
             <MapBoundsUpdater
               points={pointData}
               setFilteredPoints={setFilteredPoints}
-              resetSelectedCoords={() => setSelectedCoords(null)} 
+              resetSelectedCoords={() => setSelectedCoords(null)}
             />
             <LocateUser
               onLocationFound={handleLocationFound}
