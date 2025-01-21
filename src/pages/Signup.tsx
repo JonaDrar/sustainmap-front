@@ -71,19 +71,19 @@ const Signup: React.FC = () => {
   confirmPassword.length > 0 
 
   return (
-    <div className="gradient-background flex items-center justify-center" style={{ minHeight: 'calc(100vh - 60px)' }}>
-      <div className="bg-white shadow-md rounded-xxl p-8 w-full max-w-md login-card">
+    <div className="gradient-background flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 60px)' }}>
+      <div className="bg-white shadow-md rounded-xxl px-6 py-8 w-full max-w-xs sm:max-w-sm md:max-w-md login-card">
         <div className="mb-6 text-center">
           <img
             src="/images/logo-mot.png"
             alt="Matter of Trust Logo"
-            className="mx-auto login-logo"
+            className="w-24 sm:w-28 lg:w-36 mx-auto mb-4 login-logo"
           />
-          <h2 className="login-header">Iniciar sesión</h2>
-          <p className="text-sm text-gray-700 login-sub-header">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
+          <h2 className=" text-lg md:text-2xl font-bold text-blue-700 login-header">Crear Cuenta </h2>
+          <p className="text-sm text-gray-700 login-sub-header-2">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
         </div>
 
-        <form className="login-form" onSubmit={handleSignup}>
+        <form className=" space-y-2 login-form" onSubmit={handleSignup}>
 
           <div>
             <input
@@ -91,8 +91,9 @@ const Signup: React.FC = () => {
               placeholder="Ingresa tu correo"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 text-sm border rounded-md"
             />
-            {errors.email && <p className="error-text">{errors.email}</p>}
+            {errors.email && <p className="error-text text-sm">{errors.email}</p>}
           </div>
           <div>
             <input
@@ -103,6 +104,7 @@ const Signup: React.FC = () => {
                 setPassword(e.target.value);
                 validatePassword(e.target.value);
               }}
+              className="w-full px-4 py-2 text-sm border rounded-md"
             />
             {errors.password && <p className="error-text">{errors.password}</p>}
             {errors.general && <p>{errors.general}</p>}
@@ -128,8 +130,9 @@ const Signup: React.FC = () => {
               placeholder="Repite tu contraseña"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-2 text-sm border rounded-md"
             />
-            {errors.confirmPassword && <p className="error-text">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && <p className="error-text text-sm">{errors.confirmPassword}</p>}
           </div>
 
           <button

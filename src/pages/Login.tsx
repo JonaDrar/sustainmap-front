@@ -53,7 +53,7 @@ const Login: React.FC = () => {
           <img
             src="/images/logo-mot.png"
             alt="Matter of Trust Logo"
-            className="mx-auto login-logo"
+            className="w-24 sm:w-28 lg:w-36 mx-auto mb-4 login-logo"
           />
           <h2 className="login-header">Iniciar sesión</h2>
           <p className="text-sm text-gray-700 login-sub-header">
@@ -62,7 +62,7 @@ const Login: React.FC = () => {
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="login-form">
+        <form onSubmit={handleLogin} className=" space-y-2 login-form">
           <div>
             <input
               type="email"
@@ -73,6 +73,7 @@ const Login: React.FC = () => {
                 setError("");
               }}
               required
+              className="w-full px-4 py-2 text-sm border rounded-md"
             />
           </div>
 
@@ -86,12 +87,12 @@ const Login: React.FC = () => {
                 setError("");
               }}
               required
-              className="w-full px-4 py-2 border rounded"
+              className="w-full px-4 py-2 border rounded-lg text-gray-700"
             />
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
+              className="absolute inset-y-0 right-0 mb-4 flex items-center pr-3 focus:outline-none"
             >
               {showPassword ? (
                 <EyeIcon className=" h-5 text-gray-500" />

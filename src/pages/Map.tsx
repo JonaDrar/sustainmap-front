@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import SelectLocation from "../components/SelectLocation";
 import MarkerList from "../components/MarkerList";
 import CenterMap from "../components/CenterMap";
 import UseFetchPoints from "../hooks/UseFetchPoints";
@@ -161,18 +160,6 @@ const Map = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-center text-blue-700">
-        Mapa Interactivo con Leaflet
-      </h1>
-      <div className="flex justify-center my-4">
-        <SelectLocation
-          sites={pointData.map((point) => ({
-            position: [point.latitud, point.longitude],
-            name: point.name,
-          }))}
-          onSelect={(coords) => setSelectedCoords(coords)}
-        />
-      </div>
       <div className="flex" style={{ height: "100vh" }}>
         <div className="flex-none" style={{ width: "25%" }}>
           <SidebarMenu
