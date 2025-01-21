@@ -104,8 +104,9 @@ const Login: React.FC = () => {
               isValidInput
                 ? "bg-[var(--Azul-activado,#146FB7)] cursor-not-allowed text-white"
                 : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
-              }`}         >
-            Confirmar
+            }`}
+          >
+            {loading ? "Cargando..." : "Confirmar"}
           </button>
         </form>
       </div>

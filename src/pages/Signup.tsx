@@ -106,7 +106,8 @@ const Signup: React.FC = () => {
               }}
               className="w-full px-4 py-2 text-sm border rounded-md"
             />
-            {errors.password && <p className="error-text text-sm">{errors.password}</p>}
+            {errors.password && <p className="error-text">{errors.password}</p>}
+            {errors.general && <p>{errors.general}</p>}
             {showValidationRequirements ? (<div className="password-tooltip">
               <ul>
                 <li style={{ color: passwordChecks.length ? 'green' : 'red' }}>
@@ -145,6 +146,7 @@ const Signup: React.FC = () => {
             Registrarse
           </button>
         </form>
+     
       </div>
 
     </div >
