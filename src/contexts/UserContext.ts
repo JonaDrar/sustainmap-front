@@ -9,3 +9,4 @@ export const UserContext = createContext<UserContextType>({
   loggedInUser: null,
   setLoggedInUser: () => {},
 });
+

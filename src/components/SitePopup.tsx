@@ -1,8 +1,10 @@
-import { Popup } from 'react-leaflet';
-import { Pointdata } from '../hooks/UseFetchPoints';
-import { MapPinIcon } from '@heroicons/react/24/solid';
-import DropdownButton from './DropdownButton';
+import { Popup } from "react-leaflet";
+import { Pointdata } from "../hooks/UseFetchPoints";
+import { MapPinIcon } from "@heroicons/react/24/solid";
+import DropdownButton from "./DropdownButton";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/UserContext";
+import { useContext } from "react";
 
 interface SitePopupProps {
   site: Pointdata;
@@ -20,6 +22,7 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
     onDeletePoint(site.id);
   };
 
+  const { loggedInUser } = useContext(UserContext);
   return (
     <Popup>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden w-[280px] sm:w-[320px] md:w-[360px]">
@@ -31,12 +34,12 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
             className="w-full h-32 sm:h-40 object-cover"
           />
         </div>
-
-        {/* Botón desplegable */}
-        <div className="ml-2">
-        <DropdownButton onEdit={handleEdit} onDelete={handleDelete} />
-        </div>
-        
+        {loggedInUser ? (
+          // Botón desplegable
+          <div className="ml-2">
+            <DropdownButton onEdit={handleEdit} onDelete={handleDelete} />
+          </div>
+        ) : null}
 
         {/* Contenido del cuerpo */}
         <div className="p-4">
