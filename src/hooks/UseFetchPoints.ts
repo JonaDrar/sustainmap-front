@@ -113,4 +113,6 @@ const UseFetchPoints = () => {
     return {points: activePoints, loading, error, deletePoint, updatePoint, createPoint};
 };
 
+
+
 export default UseFetchPoints; 
