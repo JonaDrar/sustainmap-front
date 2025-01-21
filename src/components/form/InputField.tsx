@@ -17,7 +17,7 @@ const InputField: React.FC<InputFieldProps> = ({
 
   if (type === "file") {
     return (
-      <div className="flex items-center justify-between border border-gray-300 rounded-lg bg-white shadow-sm p-2 h-[70px]">
+      <div className="flex items-center justify-between border border-gray-300 rounded-lg bg-white shadow-sm p-2">
         <label className="text-sm font-medium text-gray-700">{label}</label>
         <label
           htmlFor="file-upload"
@@ -43,17 +43,17 @@ const InputField: React.FC<InputFieldProps> = ({
   }
 
   return (
-    <div className="relative h-[70px]">
+    <div className="relative">
       <label className="absolute left-3 top-2 text-sm text-gray-500 pointer-events-none">
         {label}
       </label>
-      <div className="flex items-center h-[70px]">
+      <div className="flex items-center">
         {prefixIcon && (
           <span className="absolute left-3 text-gray-500">{prefixIcon}</span>
         )}
         <input
           type={type}
-          className={`h-[70px] w-full pt-10 ${suffixIcon ? "pl-10" : "pl-3"} pb-2 ${suffixIcon ? "pr-10" : "pr-3"} border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out sm:text-sm`}
+          className={`h-[52px] w-full pt-7 ${suffixIcon ? "pl-10" : "pl-3"} pb-2 ${suffixIcon ? "pr-10" : "pr-3"} border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out sm:text-sm`}
           placeholder={placeholder || label}
           {...props}
         />
