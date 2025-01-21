@@ -12,12 +12,12 @@ const SelectField: React.FC<SelectFieldProps> = ({
   placeholder = "Seleccione una opción",
   ...props
 }) => (
-  <div className="relative h-[70px]">
+  <div className="relative h-[52px]">
     <label className="absolute left-3 top-2 text-sm text-gray-500 pointer-events-none">
       {label}
     </label>
     <select
-      className="w-full pt-10 px-3 pb-2 border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out sm:text-sm appearance-none"
+      className="w-full h-[52px] pt-7 px-3 pb-2 border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out sm:text-sm appearance-none"
       {...props}
     >
       <option value="" disabled hidden>

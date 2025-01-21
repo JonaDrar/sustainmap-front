@@ -6,99 +6,112 @@ import { Pointdata } from "../hooks/UseFetchPoints";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import Swal from "sweetalert2";
 import Wizard from "../components/Wizard";
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer } from "react-leaflet";
 import MarkerList from "./MarkerList";
 import CenterMap from "./CenterMap";
 
-
-const Step1Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
+const Step1Form: React.FC<{
+  formData: FormData;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
+}> = ({ formData, handleChange }) => {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <InputField
-        label="Nombre"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Dirección"
-        name="address"
-        value={formData.address}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Descripción"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Foto"
-        name="photo_url"
-        value={formData.photo_url}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Servicios"
-        name="services"
-        value={formData.services}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Comuna"
-        name="commune"
-        value={formData.commune}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Región"
-        name="region"
-        value={formData.region}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Nombre Galería"
-        name="galleryName"
-        value={formData.gallery.galleryName}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Número Local"
-        name="localNumber"
-        value={formData.gallery.localNumber}
-        onChange={handleChange}
-      />
-      <SelectField
-        label="Tipo"
-        name="type"
-        value={formData.type}
-        options={[
-          { value: "1", label: "1. Peluqueria" },
-          { value: "2", label: "2. Peluqueria canina" },
-          { value: "3", label: "3. Centro de acopio" },
-          { value: "4", label: "4. Centro de estudio" },
-        ]}
-        onChange={handleChange}
-      />
-      <SelectField
-        label="Destacado"
-        name="highlighted"
-        options={[
-          { value: "true", label: "Sí" },
-          { value: "false", label: "No" },
-        ]}
-        value={formData.highlighted ? "true" : "false"}
-        onChange={handleChange}
-      />
-    </div>
+    <>
+      <div className="grid grid-cols-2 gap-4 ">
+        <InputField
+          label="Nombre del centro"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+        <SelectField
+          label="Categoría"
+          name="type"
+          value={formData.type}
+          options={[
+            { value: "1", label: "1. Peluquería" },
+            { value: "2", label: "2. Peluquería canina" },
+            { value: "3", label: "3. Centro de acopio" },
+            { value: "4", label: "4. Centro de estudio" },
+          ]}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Referencias visuales"
+          name="photo_url"
+          placeholder="URL de la imagen"
+          value={formData.photo_url}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Servicios"
+          name="services"
+          value={formData.services}
+          onChange={handleChange}
+        />
+
+        <SelectField
+          label="Destacado"
+          name="highlighted"
+          options={[
+            { value: "true", label: "Sí" },
+            { value: "false", label: "No" },
+          ]}
+          value={formData.highlighted ? "true" : "false"}
+          onChange={handleChange}
+        />
+
+        <InputField
+          label="Número de teléfono"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="grid gap-4 mt-4">
+        
+
+        <InputField
+          label="Sitio Web"
+          name="other"
+          value={formData.rrss?.other}
+          onChange={handleChange}
+        />
+
+        <InputField
+          label="Facebook URL"
+          name="facebook"
+          value={formData.rrss?.facebook}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Instagram URL"
+          name="instagram"
+          value={formData.rrss?.instagram}
+          onChange={handleChange}
+        />
+
+    
+      </div>
+    </>
   );
 };
 
-const Step2Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }> = ({ formData, handleChange }) => {
+const Step2Form: React.FC<{
+  formData: FormData;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => void;
+}> = ({ formData, handleChange }) => {
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
-        <InputField
+      <div className="grid grid-cols-2 gap-4 pb-4">
+      <InputField
           label="Latitud"
           name="latitud"
           value={formData.latitud}
@@ -110,32 +123,76 @@ const Step2Form: React.FC<{ formData: FormData, handleChange: (e: React.ChangeEv
           value={formData.longitude}
           onChange={handleChange}
         />
+
+        <InputField
+          label="Comuna/Municipio"
+          name="commune"
+          value={formData.commune}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Región"
+          name="region"
+          value={formData.region}
+          onChange={handleChange}
+        />
+
+<InputField
+        label="Calle o Avenida y número"
+        name="address"
+        value={formData.address}
+        onChange={handleChange}
+      />
+
+<InputField
+        label="Nombre de Galería"
+        name="galleryName"
+        value={formData.gallery.galleryName}
+        onChange={handleChange}
+      />
+      <InputField
+        label="Número Local"
+        name="localNumber"
+        value={formData.gallery.localNumber}
+        onChange={handleChange}
+      />
+      <InputField
+        label="Descripción"
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+      />
+
+
+        
       </div>
       <div>
         <MapContainer
           center={[-33.4489, -70.6693]}
           zoom={9}
-          style={{ height: '350px', width: '100%' }}
+          style={{ height: "275px", width: "100%" }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
-          {formData.latitud && formData.longitude && 
-            parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
+          {formData.latitud &&
+            formData.longitude &&
+            parseFloat(formData.latitud) &&
+            parseFloat(formData.longitude) && (
               <>
-                <MarkerList
-                  sites={[{ ...formData } as unknown as Pointdata]}
-                />
+                <MarkerList sites={[{ ...formData } as unknown as Pointdata]} />
                 <CenterMap
-                  coords={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
+                  coords={[
+                    parseFloat(formData.latitud),
+                    parseFloat(formData.longitude),
+                  ]}
                 />
               </>
-          )}
+            )}
         </MapContainer>
       </div>
     </>
-
   );
 };
 
@@ -151,6 +208,12 @@ interface FormData {
   photo_url: string;
   region: string;
   services: string;
+  rrss?: {
+    facebook: string;
+    instagram: string;
+    other: string;
+  };
+  phone: string;
   type: string;
   gallery: {
     galleryName: string;
@@ -181,6 +244,7 @@ const EditPointPage: React.FC = () => {
       galleryName: "",
       localNumber: "",
     },
+    phone: "",
   });
 
   const [step, setStep] = useState(1);
@@ -205,11 +269,16 @@ const EditPointPage: React.FC = () => {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
         },
+        phone: point.phone || "",
       });
     }
   }, [point]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
 
     if (name === "latitud") {
@@ -232,7 +301,6 @@ const EditPointPage: React.FC = () => {
       return;
     }
 
-
     if (name === "type") {
       if (/^[1-4]?$/.test(value)) {
         setFormData({ ...formData, type: value });
@@ -241,7 +309,7 @@ const EditPointPage: React.FC = () => {
     }
 
     if (name === "highlighted") {
-        setFormData({ ...formData, highlighted: value === "true" });
+      setFormData({ ...formData, highlighted: value === "true" });
       return;
     }
 
@@ -268,7 +336,9 @@ const EditPointPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const services = formData.services.split(",").map((service) => { return service.trim() });
+      const services = formData.services.split(",").map((service) => {
+        return service.trim();
+      });
 
       const dataToSend = {
         ...formData,
@@ -279,7 +349,7 @@ const EditPointPage: React.FC = () => {
           galleryName: formData.gallery.galleryName,
           localNumber: formData.gallery.localNumber,
         },
-        services
+        services,
       };
 
       if (formData.id) {
@@ -292,26 +362,36 @@ const EditPointPage: React.FC = () => {
       navigate("/");
     } catch (error) {
       console.error("Error al guardar el punto:", error);
-      Swal.fire("Error", "No se pudo guardar el punto. Por favor, intenta nuevamente.", "error");
+      Swal.fire(
+        "Error",
+        "No se pudo guardar el punto. Por favor, intenta nuevamente.",
+        "error"
+      );
     }
   };
 
-  const handleNextStep = () => setStep((prev) => Math.min(prev + 1, totalSteps));
+  const handleNextStep = () =>
+    setStep((prev) => Math.min(prev + 1, totalSteps));
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
-
       <Wizard
         step={step}
         totalSteps={totalSteps}
         onPrevious={step > 1 ? handlePreviousStep : undefined}
-        onNext={(e) => step === totalSteps ? handleSubmit(e) : handleNextStep()}
+        onNext={(e) =>
+          step === totalSteps ? handleSubmit(e) : handleNextStep()
+        }
         onCancel={handleCancel}
         headerText="Puntos de interés"
       >
-        {step === 1 && <Step1Form formData={formData} handleChange={handleChange} />}
-        {step === 2 && <Step2Form formData={formData} handleChange={handleChange} />}
+        {step === 1 && (
+          <Step1Form formData={formData} handleChange={handleChange} />
+        )}
+        {step === 2 && (
+          <Step2Form formData={formData} handleChange={handleChange} />
+        )}
       </Wizard>
     </div>
   );

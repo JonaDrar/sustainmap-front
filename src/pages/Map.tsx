@@ -122,6 +122,7 @@ const Map = () => {
     address: point.address || "",
     commune: point.commune || "",
     region: point.region || "",
+    phone: point.phone || "",
     services: point.services || [],
     type: point.type,
     highlighted: point.highlighted || false,

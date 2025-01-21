@@ -12,12 +12,18 @@ export interface Pointdata {
     address: string;
     commune: string;
     region: string;
+    phone: string;
     services: string[];
     type: number;
     highlighted: boolean;
     gallery?: { 
         galleryName: string;
         localNumber: string;
+    };
+    rrss?: {
+        instagram: string;
+        facebook: string;
+        other: string;
     };
     deleted?: boolean;
 }
