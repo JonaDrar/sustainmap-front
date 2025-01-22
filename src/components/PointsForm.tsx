@@ -19,84 +19,84 @@ const Step1Form: React.FC<{
   ) => void;
 }> = ({ formData, handleChange }) => {
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <InputField
-        label="Nombre"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Dirección"
-        name="address"
-        value={formData.address}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Descripción"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Foto"
-        name="photo_url"
-        value={formData.photo_url}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Servicios"
-        name="services"
-        value={formData.services}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Comuna"
-        name="commune"
-        value={formData.commune}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Región"
-        name="region"
-        value={formData.region}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Nombre Galería"
-        name="galleryName"
-        value={formData.gallery.galleryName}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Número Local"
-        name="localNumber"
-        value={formData.gallery.localNumber}
-        onChange={handleChange}
-      />
-      <SelectField
-        label="Tipo"
-        name="type"
-        value={formData.type}
-        options={[
-          { value: "1", label: "1. Peluqueria" },
-          { value: "2", label: "2. Peluqueria canina" },
-          { value: "3", label: "3. Centro de acopio" },
-          { value: "4", label: "4. Centro de estudio" },
-        ]}
-        onChange={handleChange}
-      />
-      <SelectField
-        label="Destacado"
-        name="highlighted"
-        options={[
-          { value: "true", label: "Sí" },
-          { value: "false", label: "No" },
-        ]}
-        value={formData.highlighted ? "true" : "false"}
-        onChange={handleChange}
-      />
-    </div>
+    <>
+      <div className="grid grid-cols-2 gap-4 ">
+        <InputField
+          label="Nombre del centro"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+        <SelectField
+          label="Categoría"
+          name="type"
+          value={formData.type}
+          options={[
+            { value: "1", label: "1. Peluquería" },
+            { value: "2", label: "2. Peluquería canina" },
+            { value: "3", label: "3. Centro de acopio" },
+            { value: "4", label: "4. Centro de estudio" },
+          ]}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Referencias visuales"
+          name="photo_url"
+          placeholder="URL de la imagen"
+          value={formData.photo_url}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Servicios"
+          name="services"
+          value={formData.services}
+          onChange={handleChange}
+        />
+
+        <SelectField
+          label="Destacado"
+          name="highlighted"
+          options={[
+            { value: "true", label: "Sí" },
+            { value: "false", label: "No" },
+          ]}
+          value={formData.highlighted ? "true" : "false"}
+          onChange={handleChange}
+        />
+
+        <InputField
+          label="Número de teléfono"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="grid gap-4 mt-4">
+        
+
+        <InputField
+          label="Sitio Web"
+          name="other"
+          value={formData.rrss?.other}
+          onChange={handleChange}
+        />
+
+        <InputField
+          label="Facebook URL"
+          name="facebook"
+          value={formData.rrss?.facebook}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Instagram URL"
+          name="instagram"
+          value={formData.rrss?.instagram}
+          onChange={handleChange}
+        />
+
+    
+      </div>
+    </>
   );
 };
 
@@ -110,8 +110,8 @@ const Step2Form: React.FC<{
 }> = ({ formData, handleChange }) => {
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
-        <InputField
+      <div className="grid grid-cols-2 gap-4 pb-4">
+      <InputField
           label="Latitud"
           name="latitud"
           value={formData.latitud}
@@ -123,12 +123,54 @@ const Step2Form: React.FC<{
           value={formData.longitude}
           onChange={handleChange}
         />
+
+        <InputField
+          label="Comuna/Municipio"
+          name="commune"
+          value={formData.commune}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Región"
+          name="region"
+          value={formData.region}
+          onChange={handleChange}
+        />
+
+<InputField
+        label="Calle o Avenida y número"
+        name="address"
+        value={formData.address}
+        onChange={handleChange}
+      />
+
+<InputField
+        label="Nombre de Galería"
+        name="galleryName"
+        value={formData.gallery.galleryName}
+        onChange={handleChange}
+      />
+      <InputField
+        label="Número Local"
+        name="localNumber"
+        value={formData.gallery.localNumber}
+        onChange={handleChange}
+      />
+      <InputField
+        label="Descripción"
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+      />
+
+
+        
       </div>
       <div>
         <MapContainer
           center={[-33.4489, -70.6693]}
           zoom={9}
-          style={{ height: "350px", width: "100%" }}
+          style={{ height: "275px", width: "100%" }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
@@ -166,6 +208,12 @@ interface FormData {
   photo_url: string;
   region: string;
   services: string;
+  rrss?: {
+    facebook: string;
+    instagram: string;
+    other: string;
+  };
+  phone: string;
   type: string;
   gallery: {
     galleryName: string;
@@ -196,6 +244,7 @@ const EditPointPage: React.FC = () => {
       galleryName: "",
       localNumber: "",
     },
+    phone: "",
   });
 
   const [step, setStep] = useState(1);
@@ -220,6 +269,7 @@ const EditPointPage: React.FC = () => {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
         },
+        phone: point.phone || "",
       });
     }
   }, [point]);

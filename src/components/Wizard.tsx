@@ -12,15 +12,15 @@ interface WizardProps {
 }
 
 const Wizard: React.FC<WizardProps> = ({ step, totalSteps, onPrevious, onNext, onCancel, headerText, children }) => (
-  <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+  <div className="max-w-4xl mx-auto p-4 bg-white shadow-md rounded-lg">
     {/* Header */}
     <header>
-      <h2 className="text-xl font-semibold mb-4">{headerText}</h2>
+      <h2 className="text-xl font-semibold">{headerText}</h2>
       <ProgressBar step={step} totalSteps={totalSteps} />
     </header>
 
     {/* Body */}
-    <div className="mb-6">{children}</div>
+    <div className="mb-4">{children}</div>
 
     {/* Footer */}
     <footer className="flex justify-center">

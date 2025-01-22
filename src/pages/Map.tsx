@@ -30,6 +30,7 @@ const Map = () => {
     address: point.address || "",
     commune: point.commune || "",
     region: point.region || "",
+    phone: point.phone || "",
     services: point.services || [],
     type: point.type,
     highlighted: point.highlighted || false,
@@ -86,6 +87,7 @@ const Map = () => {
               attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
+            
             <MarkerList sites={pointData} onDeletePoint={deletePoint} />
             <CenterMap coords={selectedCoords} />
             <MapBoundsUpdater

@@ -14,7 +14,8 @@ import { onAuthStateChange } from "./authentication/auth";
 
 import EditPointPage from "./pages/EditPointPage";
 import FormComponent from "./components/PointsForm";
-
+import ErrorBoundary from "./components/ErrorBoundary";
+          
 const App = () => {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +42,10 @@ const App = () => {
   return (
     <UserContext.Provider value={{ loggedInUser, setLoggedInUser }}>
       <Router>
+        <ErrorBoundary>
         <Navbar />
+        </ErrorBoundary>
+        <ErrorBoundary>
         <Routes>
           <Route path="/" element={<Map />} />
           <Route path="/login" element={<LoginPage />} />
@@ -70,6 +74,7 @@ const App = () => {
             }
           />
         </Routes>
+        </ErrorBoundary>
       </Router>
     </UserContext.Provider>
   );
