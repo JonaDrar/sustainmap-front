@@ -77,20 +77,20 @@ const Step1Form: React.FC<{
         <InputField
           label="Sitio Web"
           name="other"
-          value={formData.rrss?.other}
+          value={formData.rrss?.other || ""}
           onChange={handleChange}
         />
 
         <InputField
           label="Facebook URL"
           name="facebook"
-          value={formData.rrss?.facebook}
+          value={formData.rrss?.facebook || ""}
           onChange={handleChange}
         />
         <InputField
           label="Instagram URL"
           name="instagram"
-          value={formData.rrss?.instagram}
+          value={formData.rrss?.instagram || ""}
           onChange={handleChange}
         />
 
@@ -208,7 +208,7 @@ interface FormData {
   photo_url: string;
   region: string;
   services: string;
-  rrss?: {
+  rrss: {
     facebook: string;
     instagram: string;
     other: string;
@@ -245,6 +245,11 @@ const EditPointPage: React.FC = () => {
       localNumber: "",
     },
     phone: "",
+    rrss: { // Asegúrate de incluir este objeto
+      facebook: "",
+      instagram: "",
+      other: "",
+    },
   });
 
   const [step, setStep] = useState(1);
@@ -270,6 +275,11 @@ const EditPointPage: React.FC = () => {
           localNumber: point.gallery?.localNumber || "",
         },
         phone: point.phone || "",
+        rrss: {
+          facebook: point.rrss?.facebook || "",
+          instagram: point.rrss?.instagram || "",
+          other: point.rrss?.other || "",
+        },
       });
     }
   }, [point]);
@@ -313,6 +323,17 @@ const EditPointPage: React.FC = () => {
       return;
     }
 
+    if (["facebook", "instagram", "other"].includes(name)) {
+      setFormData({
+        ...formData,
+        rrss: {
+          ...formData.rrss,
+          [name]: value,
+        },
+      });
+      return;
+    }
+
     if (name === "galleryName" || name === "localNumber") {
       setFormData({
         ...formData,
@@ -335,11 +356,34 @@ const EditPointPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Función para validar si una URL es válida
+    const isValidUrl = (url: string) => {
+      const pattern = /^(https?:\/\/)?([\w.-]+)(\.[a-z]{2,6})(\/[\w.-]*)*\/?$/i;
+      return pattern.test(url);
+    };
+  
+    // Inicializamos el objeto con valores vacíos
+    const socialMediaLinks: { instagram: string; facebook: string; other: string } = {
+      instagram: "",
+      facebook: "",
+      other: "",
+    };
+  
+    // Solo asignamos si la URL es válida
+    if (formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)) {
+      socialMediaLinks.facebook = formData.rrss.facebook;
+    }
+    if (formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)) {
+      socialMediaLinks.instagram = formData.rrss.instagram;
+    }
+    if (formData.rrss?.other && isValidUrl(formData.rrss.other)) {
+      socialMediaLinks.other = formData.rrss.other;
+    }
+  
     try {
-      const services = formData.services.split(",").map((service) => {
-        return service.trim();
-      });
-
+      const services = formData.services.split(",").map((service) => service.trim());
+  
       const dataToSend = {
         ...formData,
         latitud: parseFloat(formData.latitud || "0"),
@@ -350,14 +394,16 @@ const EditPointPage: React.FC = () => {
           localNumber: formData.gallery.localNumber,
         },
         services,
+        rrss: socialMediaLinks,
       };
 
+  
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
         await createPoint(dataToSend);
       }
-
+  
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
