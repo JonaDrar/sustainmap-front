@@ -52,6 +52,12 @@ const UseFetchPoints = () => {
         try {
             const formattedPoint = {
                 ...newPoint,
+                rrss: {
+                    // Si no existen los enlaces, no se incluyen en el objeto
+                    ...(newPoint.rrss?.facebook && { facebook: newPoint.rrss.facebook }),
+                    ...(newPoint.rrss?.instagram && { instagram: newPoint.rrss.instagram }),
+                    ...(newPoint.rrss?.other && { other: newPoint.rrss.other }),
+                },
                 id: undefined,
                 type: Math.max(1, Math.min(4, Math.floor(newPoint.type || 1))),
             };
