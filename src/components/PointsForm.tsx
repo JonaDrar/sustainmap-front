@@ -18,15 +18,30 @@ const Step1Form: React.FC<{
     >
   ) => void;
 }> = ({ formData, handleChange }) => {
+  // Función para manejar la limitación de caracteres
+  const handleLimitedChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    maxLength: number
+  ) => {
+    if (e.target.value.length <= maxLength) {
+      handleChange(e);
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 gap-4 ">
-        <InputField
-          label="Nombre del centro"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-        />
+        <div className="relative">
+          <InputField
+            label="Nombre del centro"
+            name="name"
+            value={formData.name}
+            onChange={(e) => handleLimitedChange(e, 20)} // Limitar a 20 caracteres
+          />
+          <div className="absolute bottom-0 right-4 text-sm text-gray-500">
+            {formData.name.length}/20
+          </div>
+        </div>
         <SelectField
           label="Categoría"
           name="type"
@@ -46,15 +61,21 @@ const Step1Form: React.FC<{
           value={formData.photo_url}
           onChange={handleChange}
         />
-        <InputField
+        <SelectField
           label="Servicios"
           name="services"
           value={formData.services}
+          options={[
+            { value: "peinados", label: "Peinados" },
+            { value: "masajes", label: "Masajes" },
+            { value: "manicure", label: "Manicure" },
+            { value: "depilación", label: "Depilación" },
+          ]}
           onChange={handleChange}
         />
 
         <SelectField
-          label="Destacado"
+          label="Peluquería destacada"
           name="highlighted"
           options={[
             { value: "true", label: "Sí" },
@@ -72,8 +93,6 @@ const Step1Form: React.FC<{
         />
       </div>
       <div className="grid gap-4 mt-4">
-        
-
         <InputField
           label="Sitio Web"
           name="other"
@@ -93,8 +112,6 @@ const Step1Form: React.FC<{
           value={formData.rrss?.instagram || ""}
           onChange={handleChange}
         />
-
-    
       </div>
     </>
   );
@@ -111,7 +128,7 @@ const Step2Form: React.FC<{
   return (
     <>
       <div className="grid grid-cols-2 gap-4 pb-4">
-      <InputField
+        <InputField
           label="Latitud"
           name="latitud"
           value={formData.latitud}
@@ -137,34 +154,31 @@ const Step2Form: React.FC<{
           onChange={handleChange}
         />
 
-<InputField
-        label="Calle o Avenida y número"
-        name="address"
-        value={formData.address}
-        onChange={handleChange}
-      />
+        <InputField
+          label="Calle o Avenida y número"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+        />
 
-<InputField
-        label="Nombre de Galería"
-        name="galleryName"
-        value={formData.gallery.galleryName}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Número Local"
-        name="localNumber"
-        value={formData.gallery.localNumber}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Descripción"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-      />
-
-
-        
+        <InputField
+          label="Nombre de Galería"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Número Local"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Descripción"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+        />
       </div>
       <div>
         <MapContainer
