@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
               </span>
 
               <Link to="/signup">Registrar Usuario</Link>
-              <Link to="/form">Crear puntos de interés</Link>
+              <Link to="/create-point">Crear puntos de interés</Link>
               { showMapLink ? <Link to="/">Ver mapa</Link> : null}
               <button onClick={handleLogout} className="logout-button">
                 Cerrar sesión
