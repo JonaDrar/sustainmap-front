@@ -1,11 +1,12 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom';
 import { UserContext } from "../contexts/UserContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../authentication/auth";
 
 const Navbar: React.FC = () => {
   const { loggedInUser } = useContext(UserContext);
+  const { pathname } = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -19,7 +20,8 @@ const Navbar: React.FC = () => {
   if (!loggedInUser) {
     return null; 
   }
-
+  
+  const showMapLink = pathname !== "/";
   return (
     <header>
       <nav className="flex items-center justify-between p-4 bg-white border-b border-gray-200 text-[var(--Azul-activado,#146FB7)]">
@@ -42,7 +44,7 @@ const Navbar: React.FC = () => {
 
               <Link to="/signup">Registrar Usuario</Link>
               <Link to="/form">Crear puntos de interés</Link>
-              <Link to="/">Ver mapa</Link>
+              { showMapLink ? <Link to="/">Ver mapa</Link> : null}
               <button onClick={handleLogout} className="logout-button">
                 Cerrar sesión
               </button>
