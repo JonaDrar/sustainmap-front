@@ -26,6 +26,8 @@ export interface Pointdata {
         other: string;
     };
     deleted?: boolean;
+    normalizedName?: string[];
+    normalizedAddress?: string[]; 
 }
 
 const UseFetchPoints = () => {
