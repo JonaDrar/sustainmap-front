@@ -30,7 +30,10 @@ const Step1Form: React.FC<{
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 ">
+      <h6 className="col-span-2 text-lg font-normal mb-4">
+        Información básica
+      </h6>
+      <div className="grid grid-cols-2 gap-6 ">
         <div className="relative">
           <InputField
             label="Nombre del centro"
@@ -92,6 +95,8 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
       </div>
+      <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
+
       <div className="grid gap-4 mt-4">
         <InputField
           label="Sitio Web"
@@ -127,6 +132,7 @@ const Step2Form: React.FC<{
 }> = ({ formData, handleChange }) => {
   return (
     <>
+      <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
         <InputField
           label="Latitud"
@@ -259,7 +265,8 @@ const EditPointPage: React.FC = () => {
       localNumber: "",
     },
     phone: "",
-    rrss: { // Asegúrate de incluir este objeto
+    rrss: {
+      // Asegúrate de incluir este objeto
       facebook: "",
       instagram: "",
       other: "",
@@ -370,20 +377,24 @@ const EditPointPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Función para validar si una URL es válida
     const isValidUrl = (url: string) => {
       const pattern = /^(https?:\/\/)?([\w.-]+)(\.[a-z]{2,6})(\/[\w.-]*)*\/?$/i;
       return pattern.test(url);
     };
-  
+
     // Inicializamos el objeto con valores vacíos
-    const socialMediaLinks: { instagram: string; facebook: string; other: string } = {
+    const socialMediaLinks: {
+      instagram: string;
+      facebook: string;
+      other: string;
+    } = {
       instagram: "",
       facebook: "",
       other: "",
     };
-  
+
     // Solo asignamos si la URL es válida
     if (formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)) {
       socialMediaLinks.facebook = formData.rrss.facebook;
@@ -394,10 +405,12 @@ const EditPointPage: React.FC = () => {
     if (formData.rrss?.other && isValidUrl(formData.rrss.other)) {
       socialMediaLinks.other = formData.rrss.other;
     }
-  
+
     try {
-      const services = formData.services.split(",").map((service) => service.trim());
-  
+      const services = formData.services
+        .split(",")
+        .map((service) => service.trim());
+
       const dataToSend = {
         ...formData,
         latitud: parseFloat(formData.latitud || "0"),
@@ -411,13 +424,12 @@ const EditPointPage: React.FC = () => {
         rrss: socialMediaLinks,
       };
 
-  
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
         await createPoint(dataToSend);
       }
-  
+
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
@@ -434,6 +446,7 @@ const EditPointPage: React.FC = () => {
     setStep((prev) => Math.min(prev + 1, totalSteps));
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
+  const isOnEditPage = location.pathname.includes("edit-point");
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
       <Wizard
@@ -445,6 +458,7 @@ const EditPointPage: React.FC = () => {
         }
         onCancel={handleCancel}
         headerText="Puntos de interés"
+        subHeaderText={`${isOnEditPage ? "Editar" : "Crear"} punto de interés`}
       >
         {step === 1 && (
           <Step1Form formData={formData} handleChange={handleChange} />

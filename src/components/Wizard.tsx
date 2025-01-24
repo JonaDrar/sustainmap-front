@@ -5,17 +5,19 @@ interface WizardProps {
   step: number;
   totalSteps: number;
   headerText: string;
+  subHeaderText: string;
   onPrevious?: () => void;
   onNext?: (e: React.MouseEvent<HTMLButtonElement> ) => Promise<void> | void;
   onCancel?: () => void;
   children: ReactNode;
 }
 
-const Wizard: React.FC<WizardProps> = ({ step, totalSteps, onPrevious, onNext, onCancel, headerText, children }) => (
-  <div className="max-w-4xl mx-auto p-4 bg-white shadow-md rounded-lg">
+const Wizard: React.FC<WizardProps> = ({ step, totalSteps, onPrevious, onNext, onCancel, headerText, subHeaderText, children }) => (
+  <div className="max-w-4xl mx-auto p-10 bg-white shadow-md rounded-lg">
     {/* Header */}
     <header>
       <h2 className="text-xl font-semibold">{headerText}</h2>
+      <p className="text-sm text-gray-500">{subHeaderText}</p>
       <ProgressBar step={step} totalSteps={totalSteps} />
     </header>
 

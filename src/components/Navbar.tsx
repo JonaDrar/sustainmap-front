@@ -1,11 +1,12 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom';
 import { UserContext } from "../contexts/UserContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../authentication/auth";
 
 const Navbar: React.FC = () => {
   const { loggedInUser } = useContext(UserContext);
+  const { pathname } = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -19,6 +20,9 @@ const Navbar: React.FC = () => {
   if (!loggedInUser) {
     return null; 
   }
+  
+  const showMapLink = pathname !== "/";
+  const getLinkClass = (path: string) => pathname === path ? 'font-bold' : '';
 
   return (
     <header>
@@ -36,20 +40,16 @@ const Navbar: React.FC = () => {
         <div className="flex items-center space-x-6">
           {loggedInUser ? (
             <>
-              <span className="welcome-message">
-                Bienvenido, {loggedInUser}
-              </span>
-
-              <Link to="/signup">Registrar Usuario</Link>
-              <Link to="/form">Crear puntos de interés</Link>
-              <Link to="/">Ver mapa</Link>
+              <Link to="/signup" className={getLinkClass('/signup')}>Registrar Usuario</Link>
+              <Link to="/create-point" className={getLinkClass('/create-point')}>Crear puntos de interés</Link>
+              { showMapLink ? <Link to="/" className={getLinkClass('/')}>Ver mapa</Link> : null}
               <button onClick={handleLogout} className="logout-button">
                 Cerrar sesión
               </button>
             </>
           ) : (
             <>
-              <Link to="/login">Iniciar sesión</Link>
+              <Link to="/login" className={getLinkClass('/login')}>Iniciar sesión</Link>
             </>
           )}
         </div>
