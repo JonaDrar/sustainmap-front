@@ -10,13 +10,13 @@ export const useCloudinaryUpload = () => {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "ml_default");
-    formData.append("cloud_name", "dfxlipbvl");
+    formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "default_preset");
+    formData.append("cloud_name", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "");
 
     try {
       setIsUploading(true);
       const response = await fetch(
-        "https://api.cloudinary.com/v1_1/dfxlipbvl/image/upload",
+        import.meta.env.VITE_CLOUDINARY_API_URL || "",
         {
           method: "POST",
           body: formData,
