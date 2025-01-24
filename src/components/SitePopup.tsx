@@ -15,7 +15,7 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
   const navigate = useNavigate();
 
   const handleEdit = () => {
-    navigate("/edit", { state: { point: site } });
+    navigate("/edit-point", { state: { point: site } });
   };
 
   const handleDelete = () => {

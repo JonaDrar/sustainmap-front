@@ -12,9 +12,9 @@ import { UserContext } from "./contexts/UserContext";
 import Map from "./pages/Map";
 import { onAuthStateChange } from "./authentication/auth";
 
-import EditPointPage from "./pages/EditPointPage";
-import FormComponent from "./components/PointsForm";
+import EditPointPage from "./pages/EditPoint";
 import ErrorBoundary from "./components/ErrorBoundary";
+import CreatePoint from "./pages/CreatePoint";
           
 const App = () => {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
@@ -58,15 +58,15 @@ const App = () => {
             }
           />
           <Route
-            path="/form"
+            path="/create-point"
             element={
               <ProtectedRoute loggedInUser={loggedInUser}>
-                <FormComponent />
+                <CreatePoint />
               </ProtectedRoute>
             }
           />
           <Route
-            path="/edit"
+            path="/edit-point"
             element={
               <ProtectedRoute loggedInUser={loggedInUser}>
                 <EditPointPage />

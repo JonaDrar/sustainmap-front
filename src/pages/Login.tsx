@@ -44,7 +44,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="gradient-background flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 60px)' }}>
+    <div className="gradient-background flex items-center justify-center p-4 h-screen">
       <div className="bg-white shadow-md rounded-xxl px-6 py-8 w-full max-w-xs sm:max-w-sm md:max-w-md login-card">
         <div className="mb-6 text-center">
           <img
@@ -106,7 +106,7 @@ const Login: React.FC = () => {
                 : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
             }`}
           >
-            {loading ? "Cargando..." : "Confirmar"}
+            {loading ? "Cargando..." : "Siguiente"}
           </button>
         </form>
       </div>
