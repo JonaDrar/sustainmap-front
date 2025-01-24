@@ -44,12 +44,21 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
         {/* Contenido del cuerpo */}
         <div className="p-4">
           {/* Nombre del salón y galería (opcional) */}
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
             <h3 className="text-blue-700 font-bold text-base sm:text-lg">{site.name}</h3>
             {site.gallery && (
-              <p className="text-green-600 font-thin text-xs sm:text-sm">
-                {site.gallery.galleryName}. {site.gallery.localNumber}
-              </p>
+              <div className="flex flex-col sm:flex-row sm:gap-2 text-green-600 font-thin text-xs sm:text-sm">
+                {site.gallery.galleryName && (
+                  <span>
+                    <strong>Galería:</strong> {site.gallery.galleryName}
+                  </span>
+                )}
+                {site.gallery.localNumber && (
+                  <span>
+                    <strong>Local:</strong> {site.gallery.localNumber}
+                  </span>
+                )}
+              </div>
             )}
           </div>
 
