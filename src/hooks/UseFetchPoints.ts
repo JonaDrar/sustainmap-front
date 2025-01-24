@@ -17,13 +17,13 @@ export interface Pointdata {
     type: number;
     highlighted: boolean;
     gallery?: { 
-        galleryName: string;
-        localNumber: string;
+        galleryName: string | null;
+        localNumber: string | null;
     };
     rrss?: {
-        instagram: string;
-        facebook: string;
-        other: string;
+        instagram: string | null;
+        facebook: string | null;
+        other: string | null;
     };
     deleted?: boolean;
     normalizedName?: string[];
@@ -97,13 +97,24 @@ const UseFetchPoints = () => {
                     ? {
                         gallery: {
                             ...updatedData.gallery,
-                            galleryName: updatedData.gallery?.galleryName || undefined,
-                            localNumber: updatedData.gallery?.localNumber || undefined,
+                            galleryName: updatedData.gallery?.galleryName || null,
+                            localNumber: updatedData.gallery?.localNumber || null,
+                        },
+                    }
+                    : {};
+
+                const rrssUpdates = updatedData.rrss
+                    ? {
+                        rrss: {
+                            ...updatedData.rrss,
+                            facebook: updatedData.rrss?.facebook || null, 
+                            instagram: updatedData.rrss?.instagram || null,
+                            other: updatedData.rrss?.other || null,
                         },
                     }
                     : {};
     
-                const dataToUpdate = { ...updatedData, ...galleryUpdates, id: undefined };
+                const dataToUpdate = { ...updatedData, ...galleryUpdates, ...rrssUpdates, id: undefined };
     
                 const response = await axios.put(`${backendUrlBase}/points/${id}`, dataToUpdate);
                 setPoints((prev) =>

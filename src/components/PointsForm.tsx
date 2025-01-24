@@ -18,15 +18,33 @@ const Step1Form: React.FC<{
     >
   ) => void;
 }> = ({ formData, handleChange }) => {
+  // Función para manejar la limitación de caracteres
+  const handleLimitedChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    maxLength: number
+  ) => {
+    if (e.target.value.length <= maxLength) {
+      handleChange(e);
+    }
+  };
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 ">
-        <InputField
-          label="Nombre del centro"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-        />
+      <h6 className="col-span-2 text-lg font-normal mb-4">
+        Información básica
+      </h6>
+      <div className="grid grid-cols-2 gap-6 ">
+        <div className="relative">
+          <InputField
+            label="Nombre del centro"
+            name="name"
+            value={formData.name}
+            onChange={(e) => handleLimitedChange(e, 20)} // Limitar a 20 caracteres
+          />
+          <div className="absolute bottom-0 right-4 text-sm text-gray-500">
+            {formData.name.length}/20
+          </div>
+        </div>
         <SelectField
           label="Categoría"
           name="type"
@@ -46,15 +64,21 @@ const Step1Form: React.FC<{
           value={formData.photo_url}
           onChange={handleChange}
         />
-        <InputField
+        <SelectField
           label="Servicios"
           name="services"
           value={formData.services}
+          options={[
+            { value: "peinados", label: "Peinados" },
+            { value: "masajes", label: "Masajes" },
+            { value: "manicure", label: "Manicure" },
+            { value: "depilación", label: "Depilación" },
+          ]}
           onChange={handleChange}
         />
 
         <SelectField
-          label="Destacado"
+          label="Peluquería destacada"
           name="highlighted"
           options={[
             { value: "true", label: "Sí" },
@@ -71,9 +95,9 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
       </div>
-      <div className="grid gap-4 mt-4">
-        
+      <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
+      <div className="grid gap-4 mt-4">
         <InputField
           label="Sitio Web"
           name="other"
@@ -93,8 +117,6 @@ const Step1Form: React.FC<{
           value={formData.rrss?.instagram || ""}
           onChange={handleChange}
         />
-
-    
       </div>
     </>
   );
@@ -110,8 +132,9 @@ const Step2Form: React.FC<{
 }> = ({ formData, handleChange }) => {
   return (
     <>
+      <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
-      <InputField
+        <InputField
           label="Latitud"
           name="latitud"
           value={formData.latitud}
@@ -137,34 +160,31 @@ const Step2Form: React.FC<{
           onChange={handleChange}
         />
 
-<InputField
-        label="Calle o Avenida y número"
-        name="address"
-        value={formData.address}
-        onChange={handleChange}
-      />
+        <InputField
+          label="Calle o Avenida y número"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+        />
 
-<InputField
-        label="Nombre de Galería"
-        name="galleryName"
-        value={formData.gallery.galleryName}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Número Local"
-        name="localNumber"
-        value={formData.gallery.localNumber}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Descripción"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-      />
-
-
-        
+        <InputField
+          label="Nombre de Galería"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Número Local"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Descripción"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+        />
       </div>
       <div>
         <MapContainer
@@ -245,7 +265,8 @@ const EditPointPage: React.FC = () => {
       localNumber: "",
     },
     phone: "",
-    rrss: { // Asegúrate de incluir este objeto
+    rrss: {
+      // Asegúrate de incluir este objeto
       facebook: "",
       instagram: "",
       other: "",
@@ -356,54 +377,78 @@ const EditPointPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Función para validar si una URL es válida
     const isValidUrl = (url: string) => {
       const pattern = /^(https?:\/\/)?([\w.-]+)(\.[a-z]{2,6})(\/[\w.-]*)*\/?$/i;
       return pattern.test(url);
     };
-  
+
     // Inicializamos el objeto con valores vacíos
-    const socialMediaLinks: { instagram: string; facebook: string; other: string } = {
-      instagram: "",
-      facebook: "",
-      other: "",
+    const socialMediaLinks: {
+      instagram: string | null;
+      facebook: string | null;
+      other: string | null;
+    } = {
+      instagram: formData.rrss?.instagram && isValidUrl(formData.rrss.instagram) ? formData.rrss.instagram : null,
+      facebook: formData.rrss?.facebook && isValidUrl(formData.rrss.facebook) ? formData.rrss.facebook : null,
+      other: formData.rrss?.other && isValidUrl(formData.rrss.other) ? formData.rrss.other : null,
     };
-  
+
     // Solo asignamos si la URL es válida
     if (formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)) {
       socialMediaLinks.facebook = formData.rrss.facebook;
+    } else if (!formData.rrss?.facebook || formData.rrss?.facebook === "") {
+      socialMediaLinks.other = null;
     }
+
     if (formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)) {
       socialMediaLinks.instagram = formData.rrss.instagram;
+    } else if (!formData.rrss?.instagram || formData.rrss?.instagram === "") {
+      socialMediaLinks.other = null;
     }
+
     if (formData.rrss?.other && isValidUrl(formData.rrss.other)) {
       socialMediaLinks.other = formData.rrss.other;
+    } else if (!formData.rrss?.other || formData.rrss?.other === "") {
+      socialMediaLinks.other = null;
     }
-  
-    try {
-      const services = formData.services.split(",").map((service) => service.trim());
-  
+
+    // Si no hay valores en rrss, lo dejamos como null
+    if (!socialMediaLinks.facebook && !socialMediaLinks.instagram && !socialMediaLinks.other) {
+      socialMediaLinks.facebook = null;
+      socialMediaLinks.instagram = null;
+      socialMediaLinks.other = null;
+    }
+
+    // Para el campo gallery, lo mandamos como null si está vacío
+    const galleryData = {
+      galleryName: formData.gallery?.galleryName || null,
+      localNumber: formData.gallery?.localNumber || null,
+    };
+
+    
+      const services = formData.services
+        .split(",")
+        .map((service) => service.trim());
+
       const dataToSend = {
         ...formData,
         latitud: parseFloat(formData.latitud || "0"),
         longitude: parseFloat(formData.longitude || "0"),
         type: parseInt(formData.type || "0", 10),
-        gallery: {
-          galleryName: formData.gallery.galleryName,
-          localNumber: formData.gallery.localNumber,
-        },
+        gallery: galleryData,
         services,
         rrss: socialMediaLinks,
       };
 
-  
+      try {
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
         await createPoint(dataToSend);
       }
-  
+
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
@@ -420,6 +465,7 @@ const EditPointPage: React.FC = () => {
     setStep((prev) => Math.min(prev + 1, totalSteps));
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
+  const isOnEditPage = location.pathname.includes("edit-point");
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
       <Wizard
@@ -431,6 +477,7 @@ const EditPointPage: React.FC = () => {
         }
         onCancel={handleCancel}
         headerText="Puntos de interés"
+        subHeaderText={`${isOnEditPage ? "Editar" : "Crear"} punto de interés`}
       >
         {step === 1 && (
           <Step1Form formData={formData} handleChange={handleChange} />
