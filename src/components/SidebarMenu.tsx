@@ -8,14 +8,14 @@ interface SidebarMenuProps {
   userCoords: { lat: number; lng: number } | null;
 }
 
-const typeMapping: { [key: number]: string } ={
-  1:"Peluquería",
-  2:"Peluquería Canina",
-  3:"Centro de Acopio",
-  4:"Centro de Estudio",
+const typeMapping: { [key: number]: string } = {
+  1: "Peluquería",
+  2: "Peluquería Canina",
+  3: "Centro de Acopio",
+  4: "Centro de Estudio",
 };
 
-const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect, userCoords }) => {
+const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
   const handlePointClick = (point: Pointdata) => {
     if (point.latitud != null && point.longitude != null) {
       const coords: [number, number] = [point.latitud, point.longitude];
@@ -24,8 +24,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect, userCo
       console.error(`El punto con id ${point.id} no tiene coordenadas válidas.`);
     }
   };
-  
-  const handleShare= (point: Pointdata) => {
+
+  const handleShare = (point: Pointdata) => {
     const shareData = {
       title: point.name,
       text: `Revisa este lugar: ${point.name}, ubicado en ${point.address}`,
@@ -34,90 +34,140 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect, userCo
     if (navigator.share) {
       navigator.share(shareData).catch((err) => console.error("Error al compartir", err));
     } else {
-      alert("La funcionalidad de compartir no esta soportada en este navegador.");
+      alert("La funcionalidad de compartir no está soportada en este navegador.");
     }
   };
 
   return (
     <div className="bg-gray-100 p-4 h-full w-full overflow-y-auto">
-    <h2 className="text-lg font-bold text-blue-600 mb-4">Lista de Puntos</h2>
-    {points.length === 0 ? (
-      <p className="text-gray-500">No hay puntos disponibles cerca de tu ubicación.</p>
-    ) : (
-      <ul className="space-y-4">
-        {points.map((point) => (
-          <li
-            key={point.id}
-            className="p-4 bg-white shadow-md rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200"
-            onClick={() => handlePointClick(point)}
-          >
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-blue-700 text-lg">{point.name}</h3>
-              <div className="flex space-x-2">
-                {/* Icono de Instagram (sin funcionalidad por ahora) */}
-                <button className="text-blue-600 hover:text-blue-800">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
+      <h2 className="text-lg font-bold text-blue-600 mb-4">Peluquerías Sustentables</h2>
+      {points.length === 0 ? (
+        <p className="text-gray-500">No hay puntos disponibles cerca de tu ubicación.</p>
+      ) : (
+        <ul className="space-y-6">
+          {points.map((point) => (
+            <li
+              key={point.id}
+              className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200"
+              onClick={() => handlePointClick(point)}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-blue-700 text-lg">{point.name}</h3>
+                <div className="flex space-x-3">
+                  {/* Icono de Instagram  */}
+                  <a
+                    href={point.rrss?.instagram || "#"}
+                    target={point.rrss?.instagram ? "_blank" : "_self"}
+                    rel="noopener noreferrer"
+                    className={`text-blue-600 hover:text-blue-800 ${
+                      point.rrss?.instagram ? "" : "cursor-not-allowed opacity-50"
+                    }`}
+                    title={
+                      point.rrss?.instagram
+                        ? "Visitar perfil de Instagram"
+                        : "Instagram no disponible"
+                    }
                   >
-                    <path d="..." /> {/* Ícono de Instagram */}
-                  </svg>
-                </button>
+            
+                    <img
+                      src="/images/instagram.png"
+                      alt="Instagram"
+                      className="h-6 w-6 object-contain"
+                    />
+                  </a>
 
-                {/* Teléfono (sin funcionalidad por ahora) */}
-                <button className="text-blue-600 hover:text-blue-800">
-                  <PhoneIcon className="h-5 w-5" />
-                </button>
+                  {/* Teléfono */}
+                  <a
+                    href={point.phone ? `tel:${point.phone}` : "#"}
+                    className={`text-blue-600 hover:text-blue-800 ${
+                      point.phone ? "" : "cursor-not-allowed opacity-50"
+                    }`}
+                    title={point.phone ? "Llamar" : "Teléfono no disponible"}
+                  >
+                    <PhoneIcon className="h-6 w-6" />
+                  </a>
 
-                {/* Google Maps */}
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${point.latitud},${point.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <MapPinIcon className="h-5 w-5" />
-                </a>
+                  {/* Google Maps */}
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${point.latitud},${point.longitude}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <MapPinIcon className="h-6 w-6" />
+                  </a>
 
-                {/* Compartir */}
-                <button
-                  onClick={() => handleShare(point)}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <ShareIcon className="h-5 w-5" />
-                </button>
+                  {/* Compartir */}
+                  <button
+                    onClick={() => handleShare(point)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <ShareIcon className="h-6 w-6" />
+                  </button>
+                </div>
               </div>
-              </div>
+
               <div className="mb-2 text-sm font-medium text-gray-700">
                 {typeMapping[point.type] || "Tipo desconocido"}
               </div>
-              <div className="flex items-center mb-2">
+
+              <div className="flex items-center mb-6">
                 <img
                   src={point.photo_url}
                   alt={point.name}
-                  className="h-16 w-16 rounded-md object-cover mr-4"
+                  className="h-20 w-20 rounded-md object-cover mr-4"
                 />
                 <div>
-                  <p className="text-sm text-gray-600">{point.address}</p>
+                  <p className="text-sm text-gray-600">{point.address}, {point.region}</p>
                   <p className="text-sm text-blue-700 font-semibold">Servicios:</p>
                   <p className="text-sm text-gray-600">
                     {point.services.join(", ") || "No especificados"}
                   </p>
+                  {/* Galería (opcional) */}
+                  {point.gallery?.galleryName && point.gallery?.localNumber && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-semibold text-blue-700">Galería:</span>{" "}
+                      {point.gallery.galleryName},{" "}
+                      <span className="font-semibold text-blue-700">Local:</span>{" "}
+                      {point.gallery.localNumber}
+                    </p>
+                  )}
+                  {/* Descripción (opcional) */}
+                  {point.description && (
+                    <p className="text-sm text-gray-600 mt-2">
+                      <span className="font-semibold text-blue-700">Descripción:</span>{" "}
+                      {point.description}
+                    </p>
+                  )}
                 </div>
               </div>
-            <a
-              href="#" // Reemplazar con enlace válido si se requiere
-              className="text-sm text-blue-600 hover:underline"
-            >
-              {point.name}
-            </a>
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
+
+              {/* Redes sociales */}
+              <div className="mt-4">
+                {point.rrss?.facebook && (
+                  <a
+                    href={point.rrss.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:underline block"
+                  >
+                    Facebook
+                  </a>
+                )}
+                <a
+                  href={point.rrss?.other || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:underline block"
+                >
+                  Sitio Web: {point.rrss?.other || "No especificado"}
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 };
 
