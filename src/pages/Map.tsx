@@ -7,6 +7,7 @@ import UseFetchPoints from "../hooks/UseFetchPoints";
 import SidebarMenu from "../components/SidebarMenu";
 import L from "leaflet";
 import { Pointdata } from "../hooks/UseFetchPoints";
+import SearchBar from "../components/SearchBar";  // Importa el SearchBar
 
 const LocateUser = ({
   onLocationFound,
@@ -102,9 +103,7 @@ const MapBoundsUpdater = ({
 };
 
 const Map = () => {
-  const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(
-    null
-  );
+  const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
   const [userCoords, setUserCoords] = useState<{
     lat: number;
     lng: number;
@@ -134,6 +133,13 @@ const Map = () => {
     setUserCoords({ lat, lng });
   };
 
+  const handleSearch = (searchTerm: string) => {
+    const filtered = points.filter((point) =>
+      point.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      point.address.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPoints(filtered);
+  };
 
   useEffect(() => {
     const savedUserCoords = localStorage.getItem("userCoords");
@@ -171,6 +177,8 @@ const Map = () => {
         </div>
 
         <div className="flex-grow" style={{ height: "100%" }}>
+          {/* Agrega SearchBar aquí */}
+          <SearchBar onSearch={handleSearch} />
           <MapContainer
             center={[-33.4489, -70.6693]}
             zoom={9}
