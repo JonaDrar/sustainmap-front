@@ -147,15 +147,30 @@ const Map = () => {
     setUserCoords({ lat, lng });
   };
 
-  const handleCategoryChange = (category: number, add: boolean) => {
-    setActiveCategories((prevCategories) => {
-      if (add) {
-        return [...prevCategories, category];
-      } else {
-        return prevCategories.filter((cat) => cat !== category);
-      }
-    });
-  };
+
+  useEffect(() => {
+    const savedUserCoords = localStorage.getItem("userCoords");
+    if (savedUserCoords) {
+      setUserCoords(JSON.parse(savedUserCoords));
+    }
+
+    const savedPoints = localStorage.getItem("filteredPoints");
+    if (savedPoints) {
+      setFilteredPoints(JSON.parse(savedPoints));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userCoords) {
+      localStorage.setItem("userCoords", JSON.stringify(userCoords));
+    }
+  }, [userCoords]);
+
+  useEffect(() => {
+    if (filteredPoints.length > 0) {
+      localStorage.setItem("filteredPoints", JSON.stringify(filteredPoints));
+    }
+  }, [filteredPoints]);
 
   return (
     <div>
