@@ -5,6 +5,7 @@ import MarkerList from "../components/MarkerList";
 import CenterMap from "../components/CenterMap";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import SidebarMenu from "../components/SidebarMenu";
+import CategoryFilter from "../components/CategoryFilter"; // Importar el filtro
 import L from "leaflet";
 import { Pointdata } from "../hooks/UseFetchPoints";
 
@@ -60,7 +61,7 @@ const LocateUser = ({
 const MapBoundsUpdater = ({
   points,
   setFilteredPoints,
-  resetSelectedCoords, 
+  resetSelectedCoords,
 }: {
   points: Pointdata[];
   setFilteredPoints: React.Dispatch<React.SetStateAction<Pointdata[]>>;
@@ -81,19 +82,19 @@ const MapBoundsUpdater = ({
             return bounds.contains(pointLocation);
           });
           setFilteredPoints(filtered);
-          resetSelectedCoords(); 
+          resetSelectedCoords();
           prevBoundsRef.current = bounds;
         }
       };
 
       updateFilteredPoints();
 
-      map.on('moveend', updateFilteredPoints);
-      map.on('zoomend', updateFilteredPoints);
+      map.on("moveend", updateFilteredPoints);
+      map.on("zoomend", updateFilteredPoints);
 
       return () => {
-        map.off('moveend', updateFilteredPoints);
-        map.off('zoomend', updateFilteredPoints);
+        map.off("moveend", updateFilteredPoints);
+        map.off("zoomend", updateFilteredPoints);
       };
     }
   }, [map, points, setFilteredPoints, resetSelectedCoords]);
@@ -110,6 +111,7 @@ const Map = () => {
     lng: number;
   } | null>(null);
   const [filteredPoints, setFilteredPoints] = useState<Pointdata[]>([]);
+  const [activeCategories, setActiveCategories] = useState<number[]>([]); // Nuevo estado para las categorías activas
   const { points, deletePoint } = UseFetchPoints();
 
   const pointData: Pointdata[] = points.map((point) => ({
@@ -131,39 +133,39 @@ const Map = () => {
     rrss: point.rrss || undefined,
   }));
 
+  useEffect(() => {
+  // Filtrar los puntos según las categorías activas
+  const filteredByCategories = pointData.filter((point) =>
+    activeCategories.includes(point.type)
+  );
+
+  // Actualizar los puntos filtrados según las categorías activas
+  setFilteredPoints(filteredByCategories);
+}, [activeCategories, pointData]);  // Dependencias: activeCategories y pointData
+
   const handleLocationFound = (lat: number, lng: number) => {
     setUserCoords({ lat, lng });
   };
 
-
-  useEffect(() => {
-    const savedUserCoords = localStorage.getItem("userCoords");
-    if (savedUserCoords) {
-      setUserCoords(JSON.parse(savedUserCoords));
-    }
-
-    const savedPoints = localStorage.getItem("filteredPoints");
-    if (savedPoints) {
-      setFilteredPoints(JSON.parse(savedPoints));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (userCoords) {
-      localStorage.setItem("userCoords", JSON.stringify(userCoords));
-    }
-  }, [userCoords]);
-
-  useEffect(() => {
-    if (filteredPoints.length > 0) {
-      localStorage.setItem("filteredPoints", JSON.stringify(filteredPoints));
-    }
-  }, [filteredPoints]);
+  const handleCategoryChange = (category: number, add: boolean) => {
+    setActiveCategories((prevCategories) => {
+      if (add) {
+        return [...prevCategories, category];
+      } else {
+        return prevCategories.filter((cat) => cat !== category);
+      }
+    });
+  };
 
   return (
     <div>
       <div className="flex" style={{ height: "100vh" }}>
         <div className="flex-none" style={{ width: "25%" }}>
+          <CategoryFilter
+              activeCategories={activeCategories}
+              onCategoryChange={handleCategoryChange}
+              availableCategories={[1, 2, 3, 4]} // Ejemplo de categorías disponibles
+            />
           <SidebarMenu
             points={filteredPoints}
             onPointSelect={(coords) => setSelectedCoords(coords)}
@@ -181,12 +183,12 @@ const Map = () => {
               attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
-            <MarkerList sites={pointData} onDeletePoint={deletePoint} />
+            <MarkerList sites={filteredPoints} onDeletePoint={deletePoint} />
             <CenterMap coords={selectedCoords} />
             <MapBoundsUpdater
               points={pointData}
               setFilteredPoints={setFilteredPoints}
-              resetSelectedCoords={() => setSelectedCoords(null)} 
+              resetSelectedCoords={() => setSelectedCoords(null)}
             />
             <LocateUser
               onLocationFound={handleLocationFound}
