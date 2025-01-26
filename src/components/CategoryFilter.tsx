@@ -1,38 +1,58 @@
 import React from "react";
 
 interface CategoryFilterProps {
-  activeCategories: number[];
-  onCategoryChange: (category: number, add: boolean) => void;
-  availableCategories: number[];
+  selectedTypes: number[];
+  onCategoryChange: (selectedTypes: number[]) => void;  // Asegúrate de que esto esté definido correctamente
 }
 
-const CategoryFilter: React.FC<CategoryFilterProps> = ({
-  activeCategories,
-  onCategoryChange,
-  availableCategories,
-}) => {
-  const handleCategoryToggle = (category: number) => {
-    if (activeCategories.includes(category)) {
-      onCategoryChange(category, false); // Eliminar categoría
-    } else {
-      onCategoryChange(category, true); // Agregar categoría
-    }
+const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedTypes, onCategoryChange }) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>, value: number) => {
+    // Actualizamos el filtro de tipos
+    const newSelectedTypes = e.target.checked
+      ? [...selectedTypes, value]  // Agregamos el tipo seleccionado
+      : selectedTypes.filter((type) => type !== value);  // Eliminamos el tipo deseleccionado
+    onCategoryChange(newSelectedTypes);  // Llamamos a onCategoryChange con el nuevo arreglo
   };
 
   return (
-    <div className="p-4 bg-white rounded shadow-lg mb-4">
-      <h3 className="text-lg font-semibold">Filtrar por categoría</h3>
-      {availableCategories.map((category) => (
-        <div key={category} className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            checked={activeCategories.includes(category)}
-            onChange={() => handleCategoryToggle(category)}
-            className="h-4 w-4"
-          />
-          <label className="text-sm">{`Categoría ${category}`}</label>
-        </div>
-      ))}
+    <div>
+      {/* Renderiza los checkboxes de tipos de categorías */}
+      <label>
+        <input
+          type="checkbox"
+          value={1}
+          checked={selectedTypes.includes(1)}
+          onChange={(e) => handleFilterChange(e, 1)}
+        />
+        Peluquerías
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          value={2}
+          checked={selectedTypes.includes(2)}
+          onChange={(e) => handleFilterChange(e, 2)}
+        />
+        Peluquerías Caninas
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          value={3}
+          checked={selectedTypes.includes(3)}
+          onChange={(e) => handleFilterChange(e, 3)}
+        />
+        Centros de Acopio
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          value={4}
+          checked={selectedTypes.includes(4)}
+          onChange={(e) => handleFilterChange(e, 4)}
+        />
+        Centros de Estudio
+      </label>
     </div>
   );
 };

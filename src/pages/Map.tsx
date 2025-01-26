@@ -5,9 +5,10 @@ import MarkerList from "../components/MarkerList";
 import CenterMap from "../components/CenterMap";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import SidebarMenu from "../components/SidebarMenu";
-import CategoryFilter from "../components/CategoryFilter"; // Importar el filtro
 import L from "leaflet";
 import { Pointdata } from "../hooks/UseFetchPoints";
+import SearchBar from "../components/SearchBar";  // Importa el SearchBar
+import CategoryFilter from "../components/CategoryFilter";  // Importa CategoryFilter
 
 const LocateUser = ({
   onLocationFound,
@@ -103,15 +104,13 @@ const MapBoundsUpdater = ({
 };
 
 const Map = () => {
-  const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(
-    null
-  );
+  const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
   const [userCoords, setUserCoords] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
   const [filteredPoints, setFilteredPoints] = useState<Pointdata[]>([]);
-  const [activeCategories, setActiveCategories] = useState<number[]>([]); // Nuevo estado para las categorías activas
+  const [selectedTypes, setSelectedTypes] = useState<number[]>([]);  // Para manejar el filtro de tipos
   const { points, deletePoint } = UseFetchPoints();
 
   const pointData: Pointdata[] = points.map((point) => ({
@@ -130,23 +129,31 @@ const Map = () => {
     highlighted: point.highlighted || false,
     gallery: point.gallery || undefined,
     deleted: point.deleted || false,
-    rrss: point.rrss || undefined,
   }));
-
-  useEffect(() => {
-  // Filtrar los puntos según las categorías activas
-  const filteredByCategories = pointData.filter((point) =>
-    activeCategories.includes(point.type)
-  );
-
-  // Actualizar los puntos filtrados según las categorías activas
-  setFilteredPoints(filteredByCategories);
-}, [activeCategories, pointData]);  // Dependencias: activeCategories y pointData
 
   const handleLocationFound = (lat: number, lng: number) => {
     setUserCoords({ lat, lng });
   };
 
+  const handleSearch = (searchTerm: string) => {
+    const filtered = points.filter((point) =>
+      point.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      point.address.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPoints(filtered);
+  };
+
+  const handleCategoryChange = (selectedTypes: number[]) => {
+    setSelectedTypes(selectedTypes);
+    if (selectedTypes.length === 0) {
+      setFilteredPoints(pointData);
+    } else {
+      const filtered = pointData.filter((point) =>
+        selectedTypes.includes(point.type)
+      );
+      setFilteredPoints(filtered);
+    }
+  };
 
   useEffect(() => {
     const savedUserCoords = localStorage.getItem("userCoords");
@@ -176,11 +183,6 @@ const Map = () => {
     <div>
       <div className="flex" style={{ height: "100vh" }}>
         <div className="flex-none" style={{ width: "25%" }}>
-          <CategoryFilter
-              activeCategories={activeCategories}
-              onCategoryChange={handleCategoryChange}
-              availableCategories={[1, 2, 3, 4]} // Ejemplo de categorías disponibles
-            />
           <SidebarMenu
             points={filteredPoints}
             onPointSelect={(coords) => setSelectedCoords(coords)}
@@ -189,6 +191,13 @@ const Map = () => {
         </div>
 
         <div className="flex-grow" style={{ height: "100%" }}>
+          {/* Agrega SearchBar aquí */}
+          <SearchBar onSearch={handleSearch} />
+          {/* Agregar CategoryFilter aquí */}
+          <CategoryFilter
+            selectedTypes={selectedTypes}
+            onCategoryChange={handleCategoryChange}  // Pasa el handler correctamente
+          />
           <MapContainer
             center={[-33.4489, -70.6693]}
             zoom={9}
