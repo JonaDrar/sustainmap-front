@@ -1,6 +1,5 @@
 import React from "react";
 import { Pointdata } from "../hooks/UseFetchPoints";
-import { ShareIcon, PhoneIcon, MapPinIcon } from "@heroicons/react/24/solid";
 
 interface SidebarMenuProps {
   points: Pointdata[];
