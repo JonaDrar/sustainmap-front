@@ -60,7 +60,7 @@ const LocateUser = ({
 const MapBoundsUpdater = ({
   points,
   setFilteredPoints,
-  resetSelectedCoords, 
+  resetSelectedCoords,
 }: {
   points: Pointdata[];
   setFilteredPoints: React.Dispatch<React.SetStateAction<Pointdata[]>>;
@@ -81,7 +81,7 @@ const MapBoundsUpdater = ({
             return bounds.contains(pointLocation);
           });
           setFilteredPoints(filtered);
-          resetSelectedCoords(); 
+          resetSelectedCoords();
           prevBoundsRef.current = bounds;
         }
       };
@@ -160,39 +160,39 @@ const Map = () => {
   }, [filteredPoints]);
 
   return (
-    <div>
-      <div className="flex" style={{ height: "100vh" }}>
-        <div className="flex-none" style={{ width: "25%" }}>
-          <SidebarMenu
-            points={filteredPoints}
-            onPointSelect={(coords) => setSelectedCoords(coords)}
+    <div className="flex flex-col md:flex-row h-screen">
+      {/* Barra Lateral */}
+      <div className="order-2 md:order-1 md:w-2/5 lg:w-2/5 w-full h-1/3 md:h-full bg-gray-100 overflow-y-auto p-4">
+        <SidebarMenu
+          points={filteredPoints}
+          onPointSelect={(coords) => setSelectedCoords(coords)}
+          userCoords={userCoords}
+        />
+      </div>
+
+      {/* Mapa */}
+      <div className="order-1 md:order-2 flex-grow w-full h-2/3 md:h-full">
+        <MapContainer
+          center={[-33.4489, -70.6693]}
+          zoom={9}
+          className="h-full w-full"
+        >
+          <TileLayer
+            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          />
+          <MarkerList sites={pointData} onDeletePoint={deletePoint} />
+          <CenterMap coords={selectedCoords} />
+          <MapBoundsUpdater
+            points={pointData}
+            setFilteredPoints={setFilteredPoints}
+            resetSelectedCoords={() => setSelectedCoords(null)}
+          />
+          <LocateUser
+            onLocationFound={handleLocationFound}
             userCoords={userCoords}
           />
-        </div>
-
-        <div className="flex-grow" style={{ height: "100%" }}>
-          <MapContainer
-            center={[-33.4489, -70.6693]}
-            zoom={9}
-            style={{ height: "100%", width: "100%" }}
-          >
-            <TileLayer
-              attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
-              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-            />
-            <MarkerList sites={pointData} onDeletePoint={deletePoint} />
-            <CenterMap coords={selectedCoords} />
-            <MapBoundsUpdater
-              points={pointData}
-              setFilteredPoints={setFilteredPoints}
-              resetSelectedCoords={() => setSelectedCoords(null)} 
-            />
-            <LocateUser
-              onLocationFound={handleLocationFound}
-              userCoords={userCoords}
-            />
-          </MapContainer>
-        </div>
+        </MapContainer>
       </div>
     </div>
   );

@@ -70,9 +70,9 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                   >
             
                     <img
-                      src="/images/instagram.png"
+                      src="/images/Frame 427319535.png"
                       alt="Instagram"
-                      className="h-6 w-6 object-contain"
+                      className="h-8 w-8 object-contain"
                     />
                   </a>
 
@@ -84,7 +84,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                     }`}
                     title={point.phone ? "Llamar" : "Teléfono no disponible"}
                   >
-                    <PhoneIcon className="h-6 w-6" />
+                     <img
+                      src="/images/telefono.png.png"
+                      alt="Instagram"
+                      className="h-8 w-8 object-contain"
+                    />
                   </a>
 
                   {/* Google Maps */}
@@ -94,7 +98,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800"
                   >
-                    <MapPinIcon className="h-6 w-6" />
+                    <img
+                      src="/images/google.png.png"
+                      alt="Instagram"
+                      className="h-8 w-8 object-contain"
+                    />
                   </a>
 
                   {/* Compartir */}
@@ -102,7 +110,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                     onClick={() => handleShare(point)}
                     className="text-blue-600 hover:text-blue-800"
                   >
-                    <ShareIcon className="h-6 w-6" />
+                    <img
+                      src="/images/compartir-2.png"
+                      alt="Instagram"
+                      className="h-8 w-9 object-contain"
+                    />
                   </button>
                 </div>
               </div>
