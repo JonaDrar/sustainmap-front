@@ -9,6 +9,7 @@ import Wizard from "../components/Wizard";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MarkerList from "./MarkerList";
 import CenterMap from "./CenterMap";
+import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload';
 
 const Step1Form: React.FC<{
   formData: FormData;
@@ -17,7 +18,9 @@ const Step1Form: React.FC<{
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => void;
-}> = ({ formData, handleChange }) => {
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isUploading: boolean;
+}> = ({ formData, handleChange, handleFileChange, isUploading }) => {
   // Función para manejar la limitación de caracteres
   const handleLimitedChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -58,12 +61,12 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
         <InputField
-          label="Referencias visuales"
-          name="photo_url"
-          placeholder="URL de la imagen"
-          value={formData.photo_url}
-          onChange={handleChange}
+          label="Subir foto"
+          name="photo"
+          type="file"
+          onChange={handleFileChange}
         />
+        {isUploading && <p>Subiendo imagen...</p>}
         <SelectField
           label="Servicios"
           name="services"
@@ -246,6 +249,7 @@ const EditPointPage: React.FC = () => {
   const location = useLocation();
   const { updatePoint, createPoint } = UseFetchPoints();
   const point: Pointdata | undefined = location.state?.point;
+  const { uploadImageToCloudinary, isUploading } = useCloudinaryUpload();
 
   const [formData, setFormData] = useState<FormData>({
     id: "",
@@ -304,6 +308,24 @@ const EditPointPage: React.FC = () => {
       });
     }
   }, [point]);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const uploadedUrl = await uploadImageToCloudinary(file);
+        setFormData({ ...formData, photo_url: uploadedUrl });
+        Swal.fire("Éxito", "La imagen se subió correctamente.", "success");
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        Swal.fire(
+          "Error",
+          "No se pudo subir la imagen. Por favor, intenta nuevamente.",
+          "error"
+        );
+      }
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -480,7 +502,7 @@ const EditPointPage: React.FC = () => {
         subHeaderText={`${isOnEditPage ? "Editar" : "Crear"} punto de interés`}
       >
         {step === 1 && (
-          <Step1Form formData={formData} handleChange={handleChange} />
+          <Step1Form formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} isUploading={isUploading} />
         )}
         {step === 2 && (
           <Step2Form formData={formData} handleChange={handleChange} />
@@ -489,5 +511,7 @@ const EditPointPage: React.FC = () => {
     </div>
   );
 };
+
+
 
 export default EditPointPage;
