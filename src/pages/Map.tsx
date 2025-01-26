@@ -128,6 +128,7 @@ const Map = () => {
     highlighted: point.highlighted || false,
     gallery: point.gallery || undefined,
     deleted: point.deleted || false,
+    rrss: point.rrss || undefined,
   }));
 
   const handleLocationFound = (lat: number, lng: number) => {

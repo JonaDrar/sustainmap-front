@@ -386,27 +386,48 @@ const EditPointPage: React.FC = () => {
 
     // Inicializamos el objeto con valores vacíos
     const socialMediaLinks: {
-      instagram: string;
-      facebook: string;
-      other: string;
+      instagram: string | null;
+      facebook: string | null;
+      other: string | null;
     } = {
-      instagram: "",
-      facebook: "",
-      other: "",
+      instagram: formData.rrss?.instagram && isValidUrl(formData.rrss.instagram) ? formData.rrss.instagram : null,
+      facebook: formData.rrss?.facebook && isValidUrl(formData.rrss.facebook) ? formData.rrss.facebook : null,
+      other: formData.rrss?.other && isValidUrl(formData.rrss.other) ? formData.rrss.other : null,
     };
 
     // Solo asignamos si la URL es válida
     if (formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)) {
       socialMediaLinks.facebook = formData.rrss.facebook;
-    }
-    if (formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)) {
-      socialMediaLinks.instagram = formData.rrss.instagram;
-    }
-    if (formData.rrss?.other && isValidUrl(formData.rrss.other)) {
-      socialMediaLinks.other = formData.rrss.other;
+    } else if (!formData.rrss?.facebook || formData.rrss?.facebook === "") {
+      socialMediaLinks.other = null;
     }
 
-    try {
+    if (formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)) {
+      socialMediaLinks.instagram = formData.rrss.instagram;
+    } else if (!formData.rrss?.instagram || formData.rrss?.instagram === "") {
+      socialMediaLinks.other = null;
+    }
+
+    if (formData.rrss?.other && isValidUrl(formData.rrss.other)) {
+      socialMediaLinks.other = formData.rrss.other;
+    } else if (!formData.rrss?.other || formData.rrss?.other === "") {
+      socialMediaLinks.other = null;
+    }
+
+    // Si no hay valores en rrss, lo dejamos como null
+    if (!socialMediaLinks.facebook && !socialMediaLinks.instagram && !socialMediaLinks.other) {
+      socialMediaLinks.facebook = null;
+      socialMediaLinks.instagram = null;
+      socialMediaLinks.other = null;
+    }
+
+    // Para el campo gallery, lo mandamos como null si está vacío
+    const galleryData = {
+      galleryName: formData.gallery?.galleryName || null,
+      localNumber: formData.gallery?.localNumber || null,
+    };
+
+    
       const services = formData.services
         .split(",")
         .map((service) => service.trim());
@@ -416,14 +437,12 @@ const EditPointPage: React.FC = () => {
         latitud: parseFloat(formData.latitud || "0"),
         longitude: parseFloat(formData.longitude || "0"),
         type: parseInt(formData.type || "0", 10),
-        gallery: {
-          galleryName: formData.gallery.galleryName,
-          localNumber: formData.gallery.localNumber,
-        },
+        gallery: galleryData,
         services,
         rrss: socialMediaLinks,
       };
 
+      try {
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
