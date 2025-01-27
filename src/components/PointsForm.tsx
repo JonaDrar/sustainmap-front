@@ -9,6 +9,7 @@ import Wizard from "../components/Wizard";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MarkerList from "./MarkerList";
 import CenterMap from "./CenterMap";
+import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload';
 
 const Step1Form: React.FC<{
   formData: FormData;
@@ -17,7 +18,9 @@ const Step1Form: React.FC<{
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => void;
-}> = ({ formData, handleChange }) => {
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isUploading: boolean;
+}> = ({ formData, handleChange, handleFileChange, isUploading }) => {
   // Función para manejar la limitación de caracteres
   const handleLimitedChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -58,12 +61,12 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
         <InputField
-          label="Referencias visuales"
-          name="photo_url"
-          placeholder="URL de la imagen"
-          value={formData.photo_url}
-          onChange={handleChange}
+          label="Subir foto"
+          name="photo"
+          type="file"
+          onChange={handleFileChange}
         />
+        {isUploading && <p>Subiendo imagen...</p>}
         <SelectField
           label="Servicios"
           name="services"
@@ -246,6 +249,7 @@ const EditPointPage: React.FC = () => {
   const location = useLocation();
   const { updatePoint, createPoint } = UseFetchPoints();
   const point: Pointdata | undefined = location.state?.point;
+  const { uploadImageToCloudinary, isUploading } = useCloudinaryUpload();
 
   const [formData, setFormData] = useState<FormData>({
     id: "",
@@ -304,6 +308,24 @@ const EditPointPage: React.FC = () => {
       });
     }
   }, [point]);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const uploadedUrl = await uploadImageToCloudinary(file);
+        setFormData({ ...formData, photo_url: uploadedUrl });
+        Swal.fire("Éxito", "La imagen se subió correctamente.", "success");
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        Swal.fire(
+          "Error",
+          "No se pudo subir la imagen. Por favor, intenta nuevamente.",
+          "error"
+        );
+      }
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -386,27 +408,48 @@ const EditPointPage: React.FC = () => {
 
     // Inicializamos el objeto con valores vacíos
     const socialMediaLinks: {
-      instagram: string;
-      facebook: string;
-      other: string;
+      instagram: string | null;
+      facebook: string | null;
+      other: string | null;
     } = {
-      instagram: "",
-      facebook: "",
-      other: "",
+      instagram: formData.rrss?.instagram && isValidUrl(formData.rrss.instagram) ? formData.rrss.instagram : null,
+      facebook: formData.rrss?.facebook && isValidUrl(formData.rrss.facebook) ? formData.rrss.facebook : null,
+      other: formData.rrss?.other && isValidUrl(formData.rrss.other) ? formData.rrss.other : null,
     };
 
     // Solo asignamos si la URL es válida
     if (formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)) {
       socialMediaLinks.facebook = formData.rrss.facebook;
-    }
-    if (formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)) {
-      socialMediaLinks.instagram = formData.rrss.instagram;
-    }
-    if (formData.rrss?.other && isValidUrl(formData.rrss.other)) {
-      socialMediaLinks.other = formData.rrss.other;
+    } else if (!formData.rrss?.facebook || formData.rrss?.facebook === "") {
+      socialMediaLinks.other = null;
     }
 
-    try {
+    if (formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)) {
+      socialMediaLinks.instagram = formData.rrss.instagram;
+    } else if (!formData.rrss?.instagram || formData.rrss?.instagram === "") {
+      socialMediaLinks.other = null;
+    }
+
+    if (formData.rrss?.other && isValidUrl(formData.rrss.other)) {
+      socialMediaLinks.other = formData.rrss.other;
+    } else if (!formData.rrss?.other || formData.rrss?.other === "") {
+      socialMediaLinks.other = null;
+    }
+
+    // Si no hay valores en rrss, lo dejamos como null
+    if (!socialMediaLinks.facebook && !socialMediaLinks.instagram && !socialMediaLinks.other) {
+      socialMediaLinks.facebook = null;
+      socialMediaLinks.instagram = null;
+      socialMediaLinks.other = null;
+    }
+
+    // Para el campo gallery, lo mandamos como null si está vacío
+    const galleryData = {
+      galleryName: formData.gallery?.galleryName || null,
+      localNumber: formData.gallery?.localNumber || null,
+    };
+
+    
       const services = formData.services
         .split(",")
         .map((service) => service.trim());
@@ -416,14 +459,12 @@ const EditPointPage: React.FC = () => {
         latitud: parseFloat(formData.latitud || "0"),
         longitude: parseFloat(formData.longitude || "0"),
         type: parseInt(formData.type || "0", 10),
-        gallery: {
-          galleryName: formData.gallery.galleryName,
-          localNumber: formData.gallery.localNumber,
-        },
+        gallery: galleryData,
         services,
         rrss: socialMediaLinks,
       };
 
+      try {
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
@@ -461,7 +502,7 @@ const EditPointPage: React.FC = () => {
         subHeaderText={`${isOnEditPage ? "Editar" : "Crear"} punto de interés`}
       >
         {step === 1 && (
-          <Step1Form formData={formData} handleChange={handleChange} />
+          <Step1Form formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} isUploading={isUploading} />
         )}
         {step === 2 && (
           <Step2Form formData={formData} handleChange={handleChange} />
@@ -470,5 +511,7 @@ const EditPointPage: React.FC = () => {
     </div>
   );
 };
+
+
 
 export default EditPointPage;

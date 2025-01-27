@@ -7,6 +7,7 @@ import UseFetchPoints from "../hooks/UseFetchPoints";
 import SidebarMenu from "../components/SidebarMenu";
 import L from "leaflet";
 import { Pointdata } from "../hooks/UseFetchPoints";
+import SearchBar from "../components/SearchBar";  // Importa el SearchBar
 
 const LocateUser = ({
   onLocationFound,
@@ -102,9 +103,7 @@ const MapBoundsUpdater = ({
 };
 
 const Map = () => {
-  const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(
-    null
-  );
+  const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
   const [userCoords, setUserCoords] = useState<{
     lat: number;
     lng: number;
@@ -128,12 +127,20 @@ const Map = () => {
     highlighted: point.highlighted || false,
     gallery: point.gallery || undefined,
     deleted: point.deleted || false,
+    rrss: point.rrss || undefined,
   }));
 
   const handleLocationFound = (lat: number, lng: number) => {
     setUserCoords({ lat, lng });
   };
 
+  const handleSearch = (searchTerm: string) => {
+    const filtered = points.filter((point) =>
+      point.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      point.address.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPoints(filtered);
+  };
 
   useEffect(() => {
     const savedUserCoords = localStorage.getItem("userCoords");
@@ -192,7 +199,33 @@ const Map = () => {
             onLocationFound={handleLocationFound}
             userCoords={userCoords}
           />
-        </MapContainer>
+        </div>
+
+        <div className="flex-grow" style={{ height: "100%" }}>
+          {/* Agrega SearchBar aquí */}
+          <SearchBar onSearch={handleSearch} />
+          <MapContainer
+            center={[-33.4489, -70.6693]}
+            zoom={9}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            />
+            <MarkerList sites={pointData} onDeletePoint={deletePoint} />
+            <CenterMap coords={selectedCoords} />
+            <MapBoundsUpdater
+              points={pointData}
+              setFilteredPoints={setFilteredPoints}
+              resetSelectedCoords={() => setSelectedCoords(null)} 
+            />
+            <LocateUser
+              onLocationFound={handleLocationFound}
+              userCoords={userCoords}
+            />
+          </MapContainer>
+        </div>
       </div>
     </div>
   );
