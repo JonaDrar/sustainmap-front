@@ -121,6 +121,33 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
       </div>
+      <h6 className="text-lg font-normal my-4">Configuración de activación</h6>
+      <div className="grid grid-cols-2 gap-4">
+        <InputField
+          label="Fecha de inicio"
+          name="activationStartDate"
+          type="date"
+          value={formData.activationStartDate}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Fecha de término"
+          name="activationEndDate"
+          type="date"
+          value={formData.activationEndDate}
+          onChange={handleChange}
+        />
+        <SelectField
+          label="Estado de activación"
+          name="isActive"
+          options={[
+            { value: "true", label: "Activo" },
+            { value: "false", label: "Inactivo" },
+          ]}
+          value={formData.isActive ? "true" : "false"}
+          onChange={handleChange}
+        />
+      </div>
     </>
   );
 };
@@ -242,6 +269,9 @@ interface FormData {
     galleryName: string;
     localNumber: string;
   };
+  activationStartDate: string;
+  activationEndDate: string;
+  isActive: boolean;
 }
 
 const EditPointPage: React.FC = () => {
@@ -275,6 +305,9 @@ const EditPointPage: React.FC = () => {
       instagram: "",
       other: "",
     },
+    activationStartDate: "",
+    activationEndDate: "",
+    isActive: false,
   });
 
   const [step, setStep] = useState(1);
@@ -305,6 +338,9 @@ const EditPointPage: React.FC = () => {
           instagram: point.rrss?.instagram || "",
           other: point.rrss?.other || "",
         },
+        activationStartDate: point.activationStartDate || "",
+        activationEndDate: point.activationEndDate || "",
+        isActive: point.isActive || false,
       });
     }
   }, [point]);
