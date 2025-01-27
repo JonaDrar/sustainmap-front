@@ -8,8 +8,8 @@ import Swal from "sweetalert2";
 import Wizard from "../components/Wizard";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MarkerList from "./MarkerList";
-import CenterMap from "./CenterMap";
 import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload';
+import CenterMap from "./maps/CenterPointMap";
 
 const Step1Form: React.FC<{
   formData: FormData;
