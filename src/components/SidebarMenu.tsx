@@ -38,7 +38,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
   };
 
   return (
-    <div className="bg-gray-100 p-4 h-full w-full overflow-y-auto">
+    <div className="bg-white p-4 h-full w-full overflow-y-auto">
       <h2 className="text-lg font-bold text-blue-600 mb-4">Peluquerías Sustentables</h2>
       {points.length === 0 ? (
         <p className="text-gray-500">No hay puntos disponibles cerca de tu ubicación.</p>
@@ -47,7 +47,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
           {points.map((point) => (
             <li
               key={point.id}
-              className="p-6 bg-white shadow-lg rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200"
+              className="p-6 bg-white border border-gray-300 shadow-lg rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200"
               onClick={() => handlePointClick(point)}
             >
               <div className="flex justify-between items-center mb-4">

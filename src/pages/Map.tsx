@@ -167,9 +167,9 @@ const Map = () => {
   }, [filteredPoints]);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen">
+    <div className="flex flex-col md:flex-row h-screen bg-white">
     {/* Barra Lateral */}
-    <div className="order-2 md:order-1 md:w-2/5 lg:w-2/5 w-full h-1/3 md:h-full bg-gray-100 overflow-y-auto p-4">
+    <div className="order-2 md:order-1 md:w-2/5 lg:w-2/5 w-full h-1/3 md:h-full bg-white overflow-y-auto p-4">
       <SidebarMenu
         points={filteredPoints}
         onPointSelect={(coords) => setSelectedCoords(coords)}
