@@ -6,9 +6,11 @@ import { Pointdata } from "../hooks/UseFetchPoints";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import Swal from "sweetalert2";
 import Wizard from "../components/Wizard";
-import { MapContainer, TileLayer } from "react-leaflet";
-import MarkerList from "./MarkerList";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+// import MarkerList from "./MarkerList";
 import CenterMap from "./maps/CenterMap";
+import * as L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 const Step1Form: React.FC<{
   formData: FormData;
@@ -18,15 +20,30 @@ const Step1Form: React.FC<{
     >
   ) => void;
 }> = ({ formData, handleChange }) => {
+  // Función para manejar la limitación de caracteres
+  const handleLimitedChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    maxLength: number
+  ) => {
+    if (e.target.value.length <= maxLength) {
+      handleChange(e);
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 gap-4 ">
-        <InputField
-          label="Nombre del centro"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-        />
+        <div className="relative">
+          <InputField
+            label="Nombre del centro"
+            name="name"
+            value={formData.name}
+            onChange={(e) => handleLimitedChange(e, 20)} // Limitar a 20 caracteres
+          />
+          <div className="absolute bottom-0 right-4 text-sm text-gray-500">
+            {formData.name.length}/20
+          </div>
+        </div>
         <SelectField
           label="Categoría"
           name="type"
@@ -46,15 +63,21 @@ const Step1Form: React.FC<{
           value={formData.photo_url}
           onChange={handleChange}
         />
-        <InputField
+        <SelectField
           label="Servicios"
           name="services"
           value={formData.services}
+          options={[
+            { value: "peinados", label: "Peinados" },
+            { value: "masajes", label: "Masajes" },
+            { value: "manicure", label: "Manicure" },
+            { value: "depilación", label: "Depilación" },
+          ]}
           onChange={handleChange}
         />
 
         <SelectField
-          label="Destacado"
+          label="Peluquería destacada"
           name="highlighted"
           options={[
             { value: "true", label: "Sí" },
@@ -72,8 +95,6 @@ const Step1Form: React.FC<{
         />
       </div>
       <div className="grid gap-4 mt-4">
-        
-
         <InputField
           label="Sitio Web"
           name="other"
@@ -93,25 +114,102 @@ const Step1Form: React.FC<{
           value={formData.rrss?.instagram || ""}
           onChange={handleChange}
         />
-
-    
       </div>
     </>
   );
 };
 
+
+
 const Step2Form: React.FC<{
   formData: FormData;
   handleChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
 }> = ({ formData, handleChange }) => {
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>([
+    parseFloat(formData.latitud) || -33.4489,
+    parseFloat(formData.longitude) || -70.6693,
+  ]);
+
+  const searchLocation = async (
+    query: string,
+    commune: string,
+    region: string
+  ) => {
+    if (query.trim() === "" || commune.trim() === "" || region.trim() === "") return;
+
+    try {
+      const fullQuery = `${query}, ${commune}, ${region}`;
+      console.log("Buscando dirección:", fullQuery);
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&addressdetails=1&limit=1`
+      );
+
+      const data = await response.json();
+      console.log("Respuesta de la API:", data);
+
+      if (data.length > 0) {
+        const { lat, lon } = data[0];
+        
+        formData.latitud = lat;
+      formData.longitude = lon;
+
+        formData.latitud = lat.toString();
+        formData.longitude = lon.toString();
+
+        console.log("Coordenadas encontradas:", lat, lon);
+
+        // Actualizar latitud y longitud de forma conjunta
+        handleChange({
+          target: { name: "latitud", value: lat.toString() },
+        } as React.ChangeEvent<HTMLInputElement>);
+
+        handleChange({
+          target: { name: "longitude", value: lon.toString() },
+        } as React.ChangeEvent<HTMLInputElement>);
+
+        // Actualizar el centro del mapa
+        setMapCenter([lat, lon]);
+      } else {
+        alert("No se encontraron resultados para la dirección ingresada.");
+      }
+    } catch (error) {
+      console.error("Error al realizar la búsqueda:", error);
+    }
+  };
+
+  const handleMarkerDrag = (event: L.DragEndEvent) => {
+    const marker = event.target as L.Marker;
+    const { lat, lng } = marker.getLatLng();
+    formData.latitud = lat.toString();
+    formData.longitude = lng.toString();
+
+    console.log("Marcador arrastrado a:", lat, lng);
+
+    // Actualizar latitud y longitud de forma conjunta
+    handleChange({
+      target: { name: "latitud", value: lat.toString() },
+    } as React.ChangeEvent<HTMLInputElement>);
+
+    handleChange({
+      target: { name: "longitude", value: lng.toString() },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
+
+  const handleSearch = () => {
+    if (formData.address.trim() !== "") {
+      searchLocation(formData.address, formData.commune, formData.region);
+    } else {
+      alert("Por favor, ingresa una dirección válida.");
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 gap-4 pb-4">
-      <InputField
+        <InputField
           label="Latitud"
           name="latitud"
           value={formData.latitud}
@@ -123,9 +221,14 @@ const Step2Form: React.FC<{
           value={formData.longitude}
           onChange={handleChange}
         />
-
         <InputField
-          label="Comuna/Municipio"
+          label="Dirección"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Comuna"
           name="commune"
           value={formData.commune}
           onChange={handleChange}
@@ -136,39 +239,37 @@ const Step2Form: React.FC<{
           value={formData.region}
           onChange={handleChange}
         />
-
-<InputField
-        label="Calle o Avenida y número"
-        name="address"
-        value={formData.address}
-        onChange={handleChange}
-      />
-
-<InputField
-        label="Nombre de Galería"
-        name="galleryName"
-        value={formData.gallery.galleryName}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Número Local"
-        name="localNumber"
-        value={formData.gallery.localNumber}
-        onChange={handleChange}
-      />
-      <InputField
-        label="Descripción"
-        name="description"
-        value={formData.description}
-        onChange={handleChange}
-      />
-
-
-        
+        <div className="col-span-2">
+          <button
+            onClick={handleSearch}
+            className="bg-blue-500 text-white py-2 px-4 rounded w-full"
+          >
+            Buscar ubicación
+          </button>
+        </div>
+        <InputField
+          label="Nombre de Galería"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Número Local"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Descripción"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+        />
       </div>
+
       <div>
         <MapContainer
-          center={[-33.4489, -70.6693]}
+          center={mapCenter || [-33.4489, -70.6693]} // default center if null
           zoom={9}
           style={{ height: "275px", width: "100%" }}
         >
@@ -176,25 +277,23 @@ const Step2Form: React.FC<{
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
-          {formData.latitud &&
-            formData.longitude &&
-            parseFloat(formData.latitud) &&
-            parseFloat(formData.longitude) && (
-              <>
-                <MarkerList sites={[{ ...formData } as unknown as Pointdata]} />
-                <CenterMap
-                  coords={[
-                    parseFloat(formData.latitud),
-                    parseFloat(formData.longitude),
-                  ]}
-                />
-              </>
-            )}
+          <CenterMap coords={mapCenter} />
+          {formData.latitud && formData.longitude && parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
+            <Marker
+              position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
+              draggable={true}
+              eventHandlers={{
+                dragend: handleMarkerDrag,
+              }}
+            />
+          )}
         </MapContainer>
       </div>
     </>
   );
 };
+
+
 
 interface FormData {
   id: string;
@@ -245,7 +344,8 @@ const EditPointPage: React.FC = () => {
       localNumber: "",
     },
     phone: "",
-    rrss: { // Asegúrate de incluir este objeto
+    rrss: {
+      // Asegúrate de incluir este objeto
       facebook: "",
       instagram: "",
       other: "",
@@ -356,20 +456,24 @@ const EditPointPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Función para validar si una URL es válida
     const isValidUrl = (url: string) => {
       const pattern = /^(https?:\/\/)?([\w.-]+)(\.[a-z]{2,6})(\/[\w.-]*)*\/?$/i;
       return pattern.test(url);
     };
-  
+
     // Inicializamos el objeto con valores vacíos
-    const socialMediaLinks: { instagram: string; facebook: string; other: string } = {
+    const socialMediaLinks: {
+      instagram: string;
+      facebook: string;
+      other: string;
+    } = {
       instagram: "",
       facebook: "",
       other: "",
     };
-  
+
     // Solo asignamos si la URL es válida
     if (formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)) {
       socialMediaLinks.facebook = formData.rrss.facebook;
@@ -380,10 +484,12 @@ const EditPointPage: React.FC = () => {
     if (formData.rrss?.other && isValidUrl(formData.rrss.other)) {
       socialMediaLinks.other = formData.rrss.other;
     }
-  
+
     try {
-      const services = formData.services.split(",").map((service) => service.trim());
-  
+      const services = formData.services
+        .split(",")
+        .map((service) => service.trim());
+
       const dataToSend = {
         ...formData,
         latitud: parseFloat(formData.latitud || "0"),
@@ -397,13 +503,12 @@ const EditPointPage: React.FC = () => {
         rrss: socialMediaLinks,
       };
 
-  
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
         await createPoint(dataToSend);
       }
-  
+
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
