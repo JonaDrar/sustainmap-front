@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Pointdata } from "../hooks/UseFetchPoints";
+import DropdownButton from "./DropdownButton";
+import { UserContext } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarMenuProps {
   points: Pointdata[];
   onPointSelect: (coords: [number, number]) => void;
   userCoords: { lat: number; lng: number } | null;
+  onDeletePoint: (id: string, name: string) => void;
 }
 
 const typeMapping: { [key: number]: string } = {
@@ -14,7 +18,14 @@ const typeMapping: { [key: number]: string } = {
   4: "Centro de Estudio",
 };
 
-const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
+const SidebarMenu: React.FC<SidebarMenuProps> = ({
+  points,
+  onPointSelect,
+  onDeletePoint,
+}) => {
+  const { loggedInUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
   const handlePointClick = (point: Pointdata) => {
     if (point.latitud != null && point.longitude != null) {
       const coords: [number, number] = [point.latitud, point.longitude];
@@ -37,8 +48,12 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
     }
   };
 
+  const handleEdit = (point: Pointdata) => {
+    navigate("/edit-point", { state: { point } });
+  };
+
   return (
-    <div className="bg-white p-4 h-full w-full overflow-y-auto">
+    <div className="bg-white p-4 h-full w-full overflow-y-auto z-20">
       <h2 className="text-lg font-bold text-blue-600 mb-4">Peluquerías Sustentables</h2>
       {points.length === 0 ? (
         <p className="text-gray-500">No hay puntos disponibles cerca de tu ubicación.</p>
@@ -47,13 +62,14 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
           {points.map((point) => (
             <li
               key={point.id}
-              className="p-6 bg-white border border-gray-300 shadow-lg rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200"
+              className="p-6 bg-white border border-gray-500 shadow-lg rounded-lg cursor-pointer hover:bg-blue-50 transition duration-200"
               onClick={() => handlePointClick(point)}
+              style={{zIndex: 1000}}
             >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-blue-700 text-lg">{point.name}</h3>
                 <div className="flex space-x-3">
-                  {/* Icono de Instagram  */}
+                  {/* Icono de Instagram */}
                   <a
                     href={point.rrss?.instagram || "#"}
                     target={point.rrss?.instagram ? "_blank" : "_self"}
@@ -67,9 +83,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                         : "Instagram no disponible"
                     }
                   >
-            
                     <img
-                      src="/images/Frame 427319535.png"
+                      src="/images/instagram.png"
                       alt="Instagram"
                       className="h-8 w-8 object-contain"
                     />
@@ -83,9 +98,9 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                     }`}
                     title={point.phone ? "Llamar" : "Teléfono no disponible"}
                   >
-                     <img
-                      src="/images/telefono.png.png"
-                      alt="Instagram"
+                    <img
+                      src="/images/telefono.png"
+                      alt="Teléfono"
                       className="h-8 w-8 object-contain"
                     />
                   </a>
@@ -98,8 +113,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                     className="text-blue-600 hover:text-blue-800"
                   >
                     <img
-                      src="/images/google.png.png"
-                      alt="Instagram"
+                      src="/images/google.png"
+                      alt="Google Maps"
                       className="h-8 w-8 object-contain"
                     />
                   </a>
@@ -110,11 +125,20 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                     className="text-blue-600 hover:text-blue-800"
                   >
                     <img
-                      src="/images/compartir-2.png"
-                      alt="Instagram"
-                      className="h-8 w-9 object-contain"
+                      src="/images/compartir-info.png"
+                      alt="Compartir"
+                      className="h-8 w-8 object-contain"
                     />
                   </button>
+
+                  {loggedInUser && (
+                    <DropdownButton
+                      onEdit={() => handleEdit(point)}
+                      onDelete={() => onDeletePoint(point.id, point.name)}
+                      pointName={point.name}
+                    />
+
+                  )}
                 </div>
               </div>
 
@@ -129,27 +153,13 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                   className="h-20 w-20 rounded-md object-cover mr-4"
                 />
                 <div>
-                  <p className="text-sm text-gray-600">{point.address}, {point.region}</p>
+                  <p className="text-sm text-gray-600">
+                    {point.address}, {point.region}
+                  </p>
                   <p className="text-sm text-blue-700 font-semibold">Servicios:</p>
                   <p className="text-sm text-gray-600">
                     {point.services.join(", ") || "No especificados"}
                   </p>
-                  {/* Galería (opcional) */}
-                  {point.gallery?.galleryName && point.gallery?.localNumber && (
-                    <p className="text-sm text-gray-600">
-                      <span className="font-semibold text-blue-700">Galería:</span>{" "}
-                      {point.gallery.galleryName},{" "}
-                      <span className="font-semibold text-blue-700">Local:</span>{" "}
-                      {point.gallery.localNumber}
-                    </p>
-                  )}
-                  {/* Descripción (opcional) */}
-                  {point.description && (
-                    <p className="text-sm text-gray-600 mt-2">
-                      <span className="font-semibold text-blue-700">Descripción:</span>{" "}
-                      {point.description}
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -162,6 +172,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                     rel="noopener noreferrer"
                     className="text-sm text-blue-600 hover:underline block"
                   >
+                    <img
+                      src="/images/facebook.png"
+                      alt="Facebook"
+                      className="h-8 w-8 object-contain"
+                    />
                     Facebook
                   </a>
                 )}
@@ -171,6 +186,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ points, onPointSelect }) => {
                   rel="noopener noreferrer"
                   className="text-sm text-blue-600 hover:underline block"
                 >
+                  <img
+                    src="/images/sitio-web-pin.png"
+                    alt="Sitio web"
+                    className="h-8 w-8 object-contain"
+                  />
                   Sitio Web: {point.rrss?.other || "No especificado"}
                 </a>
               </div>
