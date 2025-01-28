@@ -8,7 +8,8 @@ interface Option {
 export const customStyles: StylesConfig<Option, false, GroupBase<Option>> = {
   control: (base, state) => ({
     ...base,
-    minheight: 52,
+    minHeight: 52,
+    // height: 52,
     borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
     boxShadow: state.isFocused ? "0 0 0 2px #93c5fd" : undefined,
     "&:hover": {

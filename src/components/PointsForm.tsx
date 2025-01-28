@@ -518,7 +518,6 @@ const EditPointPage: React.FC = () => {
   const isOnEditPage = location.pathname.includes("edit-point");
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
-      {JSON.stringify(formData, null, 2)}
       <Wizard
         step={step}
         totalSteps={totalSteps}
