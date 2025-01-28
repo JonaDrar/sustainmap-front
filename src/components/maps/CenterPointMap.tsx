@@ -14,4 +14,4 @@ const CenterMap: React.FC<CenterMapProps> = ({ coords }) => {
   return null;
 };
 
-export default CenterMap;
+export default CenterMap
