@@ -12,6 +12,36 @@ import CenterMap from "./CenterMap";
 import { useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
 import CreatableSelectField from "./form/CreatableSelectField";
 
+interface OptionType {
+  label: string;
+  value: string;
+}
+
+interface FormData {
+  id: string;
+  name: string;
+  address: string;
+  commune: string;
+  description: string;
+  highlighted: boolean;
+  latitud: string;
+  longitude: string;
+  photo_url: string;
+  region: string;
+  services: OptionType[];
+  rrss: {
+    facebook: string;
+    instagram: string;
+    other: string;
+  };
+  phone: string;
+  type: OptionType | null;
+  gallery: {
+    galleryName: string;
+    localNumber: string;
+  };
+}
+
 const Step1Form: React.FC<{
   formData: FormData;
   handleChange: (
@@ -19,7 +49,7 @@ const Step1Form: React.FC<{
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => void;
-  handleSelectChange: (value: string | string[], field: string) => void;
+  handleSelectChange: (value: OptionType | null, field: string) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isUploading: boolean;
 }> = ({
@@ -101,7 +131,7 @@ const Step1Form: React.FC<{
             { value: "true", label: "Sí" },
             { value: "false", label: "No" },
           ]}
-          value={formData.highlighted ? "true" : "false"}
+          value={formData.highlighted ? { value: "true", label: "Sí" } : { value: "false", label: "No" }}
           onChange={(value) => handleSelectChange(value, "highlighted")}
         />
 
@@ -233,31 +263,6 @@ const Step2Form: React.FC<{
   );
 };
 
-interface FormData {
-  id: string;
-  name: string;
-  address: string;
-  commune: string;
-  description: string;
-  highlighted: boolean;
-  latitud: string;
-  longitude: string;
-  photo_url: string;
-  region: string;
-  services: string[];
-  rrss: {
-    facebook: string;
-    instagram: string;
-    other: string;
-  };
-  phone: string;
-  type: string;
-  gallery: {
-    galleryName: string;
-    localNumber: string;
-  };
-}
-
 const EditPointPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -277,14 +282,13 @@ const EditPointPage: React.FC = () => {
     photo_url: "",
     region: "",
     services: [],
-    type: "",
+    type: null,
     gallery: {
       galleryName: "",
       localNumber: "",
     },
     phone: "",
     rrss: {
-      // Asegúrate de incluir este objeto
       facebook: "",
       instagram: "",
       other: "",
@@ -307,8 +311,8 @@ const EditPointPage: React.FC = () => {
         longitude: point.longitude?.toString() || "",
         photo_url: point.photo_url || "",
         region: point.region || "",
-        services: point.services || [],
-        type: point.type?.toString() || "",
+        services: point.services.map(service => ({ value: service, label: service })) || [],
+        type: point.type ? { value: point.type.toString(), label: `Categoría ${point.type}` } : null,
         gallery: {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
@@ -341,7 +345,7 @@ const EditPointPage: React.FC = () => {
     }
   };
 
-  const handleSelectChange = (value: string | string[], field: string) => {
+  const handleSelectChange = (value: OptionType | null, field: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
@@ -374,7 +378,7 @@ const EditPointPage: React.FC = () => {
 
     if (name === "type") {
       if (/^[1-4]?$/.test(value)) {
-        setFormData({ ...formData, type: value });
+        setFormData({ ...formData, type: { value, label: `Categoría ${value}` } });
       }
       return;
     }
@@ -486,9 +490,9 @@ const EditPointPage: React.FC = () => {
       ...formData,
       latitud: parseFloat(formData.latitud || "0"),
       longitude: parseFloat(formData.longitude || "0"),
-      type: parseInt(formData.type || "0", 10),
+      type: parseInt(formData.type?.value || "0", 10),
       gallery: galleryData,
-      services,
+      services: services.map(service => service.value),
       rrss: socialMediaLinks,
     };
 
