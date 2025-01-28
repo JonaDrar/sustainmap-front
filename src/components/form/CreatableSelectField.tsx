@@ -1,19 +1,34 @@
 import React, { useState } from "react";
-import CreatableSelect, { Props as ReactSelectProps } from "react-select/creatable";
-import { components } from "react-select";
+import CreatableSelect, { CreatableProps } from "react-select/creatable";
+import {
+  components,
+  OptionProps,
+  StylesConfig,
+  MultiValue,
+  CSSObjectWithLabel,
+  SingleValue,
+  ActionMeta,
+  GroupBase,
+} from "react-select";
 import { customStyles } from "./utils";
 
-interface CreatableSelectFieldProps extends ReactSelectProps {
+interface OptionType {
   label: string;
-  value: string | string[];
-  options: any[];
-  onChange: (selected: string | string[]) => void;
+  value: string;
 }
 
-const CustomOption = (props: any) => {
+interface CreatableSelectFieldProps
+  extends CreatableProps<OptionType, true, GroupBase<OptionType>> {
+  label: string;
+  value: OptionType[];
+  options: OptionType[];
+  onChange: (
+    newValue: MultiValue<OptionType> | SingleValue<OptionType>,
+    actionMeta: ActionMeta<OptionType>
+  ) => void;
+}
 
-
-
+const CustomOption: React.FC<OptionProps<OptionType>> = (props) => {
   return (
     <components.Option {...props}>
       <div className="flex items-center">
@@ -29,29 +44,41 @@ const CustomOption = (props: any) => {
   );
 };
 
-const CreatableSelectField: React.FC<CreatableSelectFieldProps> = ({ label, options, value, onChange }) => {
+const CreatableSelectField: React.FC<CreatableSelectFieldProps> = ({
+  label,
+  options,
+  value,
+  onChange,
+}) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<any>(value);
+  const [selectedOption, setSelectedOption] = useState<OptionType[]>(value);
 
-  const handleChange = (selected: any) => {
+  const handleChange = (
+    newValue: MultiValue<OptionType> | SingleValue<OptionType>,
+    actionMeta: ActionMeta<OptionType>
+  ) => {
+    const selected = newValue ? (newValue as OptionType[]) : [];
     setSelectedOption(selected);
-    onChange(selected.map(({ value }) => value));
+    onChange(newValue, actionMeta);
   };
 
   const styles = {
     ...customStyles,
-    option: (provided: any, state: any) => ({
+    option: (
+      provided: CSSObjectWithLabel,
+      state: OptionProps<OptionType, true, GroupBase<OptionType>>
+    ) => ({
       ...provided,
-      backgroundColor: state.isSelected ? 'white' : provided.backgroundColor,
-      color: state.isSelected ? 'black' : provided.color,
+      backgroundColor: state.isSelected ? "white" : provided.backgroundColor,
+      color: state.isSelected ? "black" : provided.color,
     }),
-  };
+  } as StylesConfig<OptionType, true>;
 
   return (
     <div className="relative">
       <label
         className={`absolute left-3 transition-all duration-150 ease-in-out ${
-          isFocused || selectedOption
+          isFocused || selectedOption.length
             ? "top-2 text-sm text-gray-500"
             : "top-1/2 transform -translate-y-1/2 text-base text-gray-400"
         } pointer-events-none`}
