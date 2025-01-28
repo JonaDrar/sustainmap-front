@@ -1,17 +1,21 @@
 import React, { useState } from "react";
-import Select, { Props as ReactSelectProps } from "react-select";
+import Select, { Props as ReactSelectProps, ActionMeta, SingleValue, MultiValue, GroupBase } from "react-select";
 import { customStyles } from "./utils";
 import iconoTijeras from '/images/icon-scissors.png';
 import iconoCanino from '/images/icono-canino.png';
 import iconoCentroAcopio from '/images/icono-centro-acopio.png';
 import iconoCentroEstudio from '/images/icono-centro-estudio.png';
 
-interface SelectFieldProps extends ReactSelectProps {
+interface OptionType {
   label: string;
-  value: string | string[]; // Añadido para aceptar el valor seleccionado
-  onChange: (selected: string | string[]) => void;
+  value: string;
 }
 
+interface SelectFieldProps extends ReactSelectProps<OptionType, false, GroupBase<OptionType>> {
+  label: string;
+  value: OptionType | null; // Ajustado para aceptar el valor seleccionado
+  onChange: (newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => void;
+}
 
 const iconMap: { [key: string]: string } = {
   "1": iconoTijeras,
@@ -20,8 +24,7 @@ const iconMap: { [key: string]: string } = {
   "4": iconoCentroEstudio,
 };
 
-
-const formatOptionLabel = ({ value, label }: { value: string, label: string }) => (
+const formatOptionLabel = ({ value, label }: OptionType) => (
   <div className="flex justify-between items-center">
     <span className="text-gray-900">{label}</span>
     <img src={iconMap[value]} alt="Selected" className="w-9 h-9 p-1" />
@@ -30,11 +33,11 @@ const formatOptionLabel = ({ value, label }: { value: string, label: string }) =
 
 const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChange }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | string []>(value);
+  const [selectedOption, setSelectedOption] = useState<OptionType | null>(value);
 
-  const handleChange = (selected: string | string[]) => {
-    setSelectedOption(selected);
-    onChange(selected.value);
+  const handleChange = (newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => {
+    setSelectedOption(newValue);
+    onChange(newValue, actionMeta);
   };
 
   return (
@@ -57,7 +60,7 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
         isClearable
         placeholder={label}
         value={selectedOption} // Añadido para pasar el valor seleccionado
-        formatOptionLabel={label === 'Categoría' ? formatOptionLabel : null} // Usar formatOptionLabel para personalizar la etiqueta de la opción
+        formatOptionLabel={label === 'Categoría' ? formatOptionLabel : undefined} // Usar formatOptionLabel para personalizar la etiqueta de la opción
       />
     </div>
   );
