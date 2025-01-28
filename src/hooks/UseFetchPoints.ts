@@ -126,7 +126,7 @@ const UseFetchPoints = () => {
         ? new Date(data.activationEndDate).toISOString()
         : null,
     };
-    const response = await fetch(`/api/points/${id}`, {
+    const response = await fetch(`${backendUrlBase}/points/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formattedData),
