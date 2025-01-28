@@ -169,17 +169,15 @@ const Step1Form: React.FC<{
           type="date"
           value={formatDateForInput(formData.activationEndDate)}
           onChange={(e) => handleDateChange(e, "activationEndDate")} // Usamos handleDateChange
-  />
-        <SelectField
-          label="Estado de activación"
-          name="isActive"
-          options={[
-            { value: "true", label: "Activo" },
-            { value: "false", label: "Inactivo" },
-          ]}
-          value={formData.isActive ? "true" : "false"}
-          onChange={handleChange}
         />
+        <div className="col-span-2">
+          <p className="text-sm font-medium">
+            Estado de activación:{" "}
+            <span className={formData.isActive ? "text-green-600" : "text-red-600"}>
+              {formData.isActive ? "Activo" : "Inactivo"}
+            </span>
+          </p>
+        </div>
       </div>
     </>
   );
