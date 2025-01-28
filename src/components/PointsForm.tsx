@@ -6,10 +6,9 @@ import { Pointdata } from "../hooks/UseFetchPoints";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import Swal from "sweetalert2";
 import Wizard from "../components/Wizard";
-import { MapContainer, TileLayer } from "react-leaflet";
-import MarkerList from "./MarkerList";
-import CenterMap from "./CenterMap";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload';
+import CenterMap from "./maps/CenterPointMap";
 
 const Step1Form: React.FC<{
   formData: FormData;
@@ -41,11 +40,12 @@ const Step1Form: React.FC<{
           <InputField
             label="Nombre del centro"
             name="name"
+            placeholder="E.g: Siempre Linda"
             value={formData.name}
-            onChange={(e) => handleLimitedChange(e, 20)} // Limitar a 20 caracteres
+            onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
           />
           <div className="absolute bottom-0 right-4 text-sm text-gray-500">
-            {formData.name.length}/20
+            {formData.name.length}/30
           </div>
         </div>
         <SelectField
@@ -61,7 +61,7 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
         <InputField
-          label="Subir foto"
+          label="Adjunta imagen"
           name="photo"
           type="file"
           onChange={handleFileChange}
@@ -93,16 +93,38 @@ const Step1Form: React.FC<{
 
         <InputField
           label="Número de teléfono"
+          placeholder="E.g: +56912345678"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
         />
+          <InputField
+          label="Nombre de Galería(opcional)"
+          placeholder="E.g: Galería Caracoles"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Nombre de depto/local(opcional)"
+          placeholder="Local 304 E"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
+        {/* <InputField
+          label="Descripción"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+        /> */}
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
       <div className="grid gap-4 mt-4">
         <InputField
           label="Sitio Web"
+          placeholder="E.g: https://www.siemprelinda.com"
           name="other"
           value={formData.rrss?.other || ""}
           onChange={handleChange}
@@ -110,12 +132,14 @@ const Step1Form: React.FC<{
 
         <InputField
           label="Facebook URL"
+          placeholder="E.g: https://www.facebook.com/siemprelinda"
           name="facebook"
           value={formData.rrss?.facebook || ""}
           onChange={handleChange}
         />
         <InputField
           label="Instagram URL"
+          placeholder="E.g: @siempre.linda.providencia"
           name="instagram"
           value={formData.rrss?.instagram || ""}
           onChange={handleChange}
@@ -152,99 +176,169 @@ const Step1Form: React.FC<{
   );
 };
 
+
 const Step2Form: React.FC<{
   formData: FormData;
   handleChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
 }> = ({ formData, handleChange }) => {
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>([
+    parseFloat(formData.latitud) || -33.4489,
+    parseFloat(formData.longitude) || -70.6693,
+  ]);
+
+  const searchLocation = async (
+    query: string,
+    commune: string,
+    region: string
+  ) => {
+    if (query.trim() === "" || commune.trim() === "" || region.trim() === "") return;
+
+    try {
+      const fullQuery = `${query}, ${commune}, ${region}`;
+      console.log("Buscando dirección:", fullQuery);
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&addressdetails=1&limit=1`
+      );
+
+      const data = await response.json();
+      console.log("Respuesta de la API:", data);
+
+      if (data.length > 0) {
+        const { lat, lon } = data[0];
+        
+        formData.latitud = lat;
+      formData.longitude = lon;
+
+        formData.latitud = lat.toString();
+        formData.longitude = lon.toString();
+
+        console.log("Coordenadas encontradas:", lat, lon);
+
+        // Actualizar latitud y longitud de forma conjunta
+        handleChange({
+          target: { name: "latitud", value: lat.toString() },
+        } as React.ChangeEvent<HTMLInputElement>);
+
+        handleChange({
+          target: { name: "longitude", value: lon.toString() },
+        } as React.ChangeEvent<HTMLInputElement>);
+
+        // Actualizar el centro del mapa
+        setMapCenter([lat, lon]);
+      } else {
+        alert("No se encontraron resultados para la dirección ingresada.");
+      }
+    } catch (error) {
+      console.error("Error al realizar la búsqueda:", error);
+    }
+  };
+
+  const handleMarkerDrag = (event: L.DragEndEvent) => {
+    const marker = event.target as L.Marker;
+    const { lat, lng } = marker.getLatLng();
+    formData.latitud = lat.toString();
+    formData.longitude = lng.toString();
+
+    console.log("Marcador arrastrado a:", lat, lng);
+
+    // Actualizar latitud y longitud de forma conjunta
+    handleChange({
+      target: { name: "latitud", value: lat.toString() },
+    } as React.ChangeEvent<HTMLInputElement>);
+
+    handleChange({
+      target: { name: "longitude", value: lng.toString() },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
+
+  const handleSearch = () => {
+    if (formData.address.trim() !== "") {
+      searchLocation(formData.address, formData.commune, formData.region);
+    } else {
+      alert("Por favor, ingresa una dirección válida.");
+    }
+  };
+
   return (
     <>
       <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
         <InputField
-          label="Latitud"
+          label="Coordenadas -Latitud (opcional)"
+          placeholder="Ej: -33.4489"
           name="latitud"
           value={formData.latitud}
           onChange={handleChange}
         />
         <InputField
-          label="Longitud"
+          label="Coordenadas-Longitud (opcional)"
+          placeholder="Ej: -70.6693"
           name="longitude"
           value={formData.longitude}
           onChange={handleChange}
         />
-
+        <InputField
+          label="Dirección"
+          placeholder="Av. Providencia 675"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+        />
         <InputField
           label="Comuna/Municipio"
+          placeholder="Ej: Providencia"
           name="commune"
           value={formData.commune}
           onChange={handleChange}
         />
         <InputField
           label="Región"
+          placeholder="Ej: Región Metropolitana"
           name="region"
           value={formData.region}
           onChange={handleChange}
         />
-
-        <InputField
-          label="Calle o Avenida y número"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-        />
-
-        <InputField
-          label="Nombre de Galería"
-          name="galleryName"
-          value={formData.gallery.galleryName}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Número Local"
-          name="localNumber"
-          value={formData.gallery.localNumber}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Descripción"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-        />
+        <div className="col-span-2">
+          <button
+            onClick={handleSearch}
+            className="bg-blue-500 text-white py-2 px-4 rounded w-full"
+          >
+            Buscar ubicación
+          </button>
+        </div>
+      
       </div>
+
       <div>
         <MapContainer
-          center={[-33.4489, -70.6693]}
-          zoom={9}
+          center={mapCenter || [-33.4489, -70.6693]} // default center if null
+          zoom={15}
           style={{ height: "275px", width: "100%" }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
-          {formData.latitud &&
-            formData.longitude &&
-            parseFloat(formData.latitud) &&
-            parseFloat(formData.longitude) && (
-              <>
-                <MarkerList sites={[{ ...formData } as unknown as Pointdata]} />
-                <CenterMap
-                  coords={[
-                    parseFloat(formData.latitud),
-                    parseFloat(formData.longitude),
-                  ]}
-                />
-              </>
-            )}
+          <CenterMap coords={mapCenter} />
+          {formData.latitud && formData.longitude && parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
+            <Marker
+              position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
+              draggable={true}
+              eventHandlers={{
+                dragend: handleMarkerDrag,
+              }}
+            />
+          )}
         </MapContainer>
       </div>
     </>
   );
 };
+
+
 
 interface FormData {
   id: string;
