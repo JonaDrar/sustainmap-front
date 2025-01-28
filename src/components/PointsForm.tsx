@@ -9,7 +9,8 @@ import Wizard from "../components/Wizard";
 import { MapContainer, TileLayer } from "react-leaflet";
 import MarkerList from "./MarkerList";
 import CenterMap from "./CenterMap";
-import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload';
+import { useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
+import CreatableSelectField from "./form/CreatableSelectField";
 
 const Step1Form: React.FC<{
   formData: FormData;
@@ -18,9 +19,16 @@ const Step1Form: React.FC<{
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => void;
+  handleSelectChange: (value: string | string[], field: string) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isUploading: boolean;
-}> = ({ formData, handleChange, handleFileChange, isUploading }) => {
+}> = ({
+  formData,
+  handleChange,
+  handleFileChange,
+  handleSelectChange,
+  isUploading,
+}) => {
   // Función para manejar la limitación de caracteres
   const handleLimitedChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -40,12 +48,13 @@ const Step1Form: React.FC<{
         <div className="relative">
           <InputField
             label="Nombre del centro"
+            placeholder="E.g: Siempre Linda "
             name="name"
             value={formData.name}
-            onChange={(e) => handleLimitedChange(e, 20)} // Limitar a 20 caracteres
+            onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
           />
           <div className="absolute bottom-0 right-4 text-sm text-gray-500">
-            {formData.name.length}/20
+            {formData.name.length}/30
           </div>
         </div>
         <SelectField
@@ -58,7 +67,7 @@ const Step1Form: React.FC<{
             { value: "3", label: "3. Centro de acopio" },
             { value: "4", label: "4. Centro de estudio" },
           ]}
-          onChange={handleChange}
+          onChange={(value) => handleSelectChange(value, "type")}
         />
         <InputField
           label="Subir foto"
@@ -67,17 +76,22 @@ const Step1Form: React.FC<{
           onChange={handleFileChange}
         />
         {isUploading && <p>Subiendo imagen...</p>}
-        <SelectField
+
+        <CreatableSelectField
           label="Servicios"
           name="services"
           value={formData.services}
           options={[
+            { value: "cabello", label: "Cabello" },
             { value: "peinados", label: "Peinados" },
-            { value: "masajes", label: "Masajes" },
-            { value: "manicure", label: "Manicure" },
+            { value: "especialista", label: "Especialista en rulos" },
             { value: "depilación", label: "Depilación" },
+            { value: "manicure", label: "Manicure" },
+            { value: "pedicure", label: "Pedicure" },
+            { value: "masajes", label: "Masajes" },
+            { value: "decoloración", label: "Decoloración" },
           ]}
-          onChange={handleChange}
+          onChange={(value) => handleSelectChange(value, "services")}
         />
 
         <SelectField
@@ -88,7 +102,7 @@ const Step1Form: React.FC<{
             { value: "false", label: "No" },
           ]}
           value={formData.highlighted ? "true" : "false"}
-          onChange={handleChange}
+          onChange={(value) => handleSelectChange(value, "highlighted")}
         />
 
         <InputField
@@ -230,7 +244,7 @@ interface FormData {
   longitude: string;
   photo_url: string;
   region: string;
-  services: string;
+  services: string[];
   rrss: {
     facebook: string;
     instagram: string;
@@ -262,7 +276,7 @@ const EditPointPage: React.FC = () => {
     longitude: "",
     photo_url: "",
     region: "",
-    services: "",
+    services: [],
     type: "",
     gallery: {
       galleryName: "",
@@ -293,7 +307,7 @@ const EditPointPage: React.FC = () => {
         longitude: point.longitude?.toString() || "",
         photo_url: point.photo_url || "",
         region: point.region || "",
-        services: point.services.join(", ") || "",
+        services: point.services || [],
         type: point.type?.toString() || "",
         gallery: {
           galleryName: point.gallery?.galleryName || "",
@@ -325,6 +339,10 @@ const EditPointPage: React.FC = () => {
         );
       }
     }
+  };
+
+  const handleSelectChange = (value: string | string[], field: string) => {
+    setFormData({ ...formData, [field]: value });
   };
 
   const handleChange = (
@@ -412,9 +430,18 @@ const EditPointPage: React.FC = () => {
       facebook: string | null;
       other: string | null;
     } = {
-      instagram: formData.rrss?.instagram && isValidUrl(formData.rrss.instagram) ? formData.rrss.instagram : null,
-      facebook: formData.rrss?.facebook && isValidUrl(formData.rrss.facebook) ? formData.rrss.facebook : null,
-      other: formData.rrss?.other && isValidUrl(formData.rrss.other) ? formData.rrss.other : null,
+      instagram:
+        formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)
+          ? formData.rrss.instagram
+          : null,
+      facebook:
+        formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)
+          ? formData.rrss.facebook
+          : null,
+      other:
+        formData.rrss?.other && isValidUrl(formData.rrss.other)
+          ? formData.rrss.other
+          : null,
     };
 
     // Solo asignamos si la URL es válida
@@ -437,7 +464,11 @@ const EditPointPage: React.FC = () => {
     }
 
     // Si no hay valores en rrss, lo dejamos como null
-    if (!socialMediaLinks.facebook && !socialMediaLinks.instagram && !socialMediaLinks.other) {
+    if (
+      !socialMediaLinks.facebook &&
+      !socialMediaLinks.instagram &&
+      !socialMediaLinks.other
+    ) {
       socialMediaLinks.facebook = null;
       socialMediaLinks.instagram = null;
       socialMediaLinks.other = null;
@@ -449,22 +480,19 @@ const EditPointPage: React.FC = () => {
       localNumber: formData.gallery?.localNumber || null,
     };
 
-    
-      const services = formData.services
-        .split(",")
-        .map((service) => service.trim());
+    const { services } = formData;
 
-      const dataToSend = {
-        ...formData,
-        latitud: parseFloat(formData.latitud || "0"),
-        longitude: parseFloat(formData.longitude || "0"),
-        type: parseInt(formData.type || "0", 10),
-        gallery: galleryData,
-        services,
-        rrss: socialMediaLinks,
-      };
+    const dataToSend = {
+      ...formData,
+      latitud: parseFloat(formData.latitud || "0"),
+      longitude: parseFloat(formData.longitude || "0"),
+      type: parseInt(formData.type || "0", 10),
+      gallery: galleryData,
+      services,
+      rrss: socialMediaLinks,
+    };
 
-      try {
+    try {
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
@@ -490,6 +518,7 @@ const EditPointPage: React.FC = () => {
   const isOnEditPage = location.pathname.includes("edit-point");
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
+      {JSON.stringify(formData, null, 2)}
       <Wizard
         step={step}
         totalSteps={totalSteps}
@@ -502,7 +531,13 @@ const EditPointPage: React.FC = () => {
         subHeaderText={`${isOnEditPage ? "Editar" : "Crear"} punto de interés`}
       >
         {step === 1 && (
-          <Step1Form formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} isUploading={isUploading} />
+          <Step1Form
+            formData={formData}
+            handleSelectChange={handleSelectChange}
+            handleChange={handleChange}
+            handleFileChange={handleFileChange}
+            isUploading={isUploading}
+          />
         )}
         {step === 2 && (
           <Step2Form formData={formData} handleChange={handleChange} />
@@ -511,7 +546,5 @@ const EditPointPage: React.FC = () => {
     </div>
   );
 };
-
-
 
 export default EditPointPage;

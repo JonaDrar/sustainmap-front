@@ -1,20 +1,22 @@
 import React, { useState } from "react";
-import Select, { Props as ReactSelectProps } from "react-select";
+import CreatableSelect, { Props as ReactSelectProps } from "react-select/creatable";
 import { customStyles } from "./utils";
 
-interface SelectFieldProps extends ReactSelectProps {
+interface CreatableSelectFieldProps extends ReactSelectProps {
   label: string;
-  value: string | string[]; // Añadido para aceptar el valor seleccionado
+  value: string | string[];
+  options: any[];
   onChange: (selected: string | string[]) => void;
 }
 
-const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChange }) => {
+const CreatableSelectField: React.FC<CreatableSelectFieldProps> = ({ label, options, value, onChange }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | string []>(value);
+  const [selectedOption, setSelectedOption] = useState<any>(value);
 
-  const handleChange = (selected: string | string[]) => {
+  const handleChange = (selected: any) => {
+    console.log(selected);
     setSelectedOption(selected);
-    onChange(selected.value);
+    onChange(selected.map(({ value }) => value));
   };
 
   return (
@@ -28,7 +30,8 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
       >
         {label}
       </label>
-      <Select
+      <CreatableSelect
+        isMulti={true}
         options={options}
         styles={customStyles}
         onFocus={() => setIsFocused(true)}
@@ -36,10 +39,10 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
         onChange={handleChange}
         isClearable
         placeholder={label}
-        value={selectedOption} // Añadido para pasar el valor seleccionado
+        value={selectedOption}
       />
     </div>
   );
 };
 
-export default SelectField;
+export default CreatableSelectField;
