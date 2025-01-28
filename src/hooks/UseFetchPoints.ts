@@ -123,7 +123,7 @@ const UseFetchPoints = () => {
         // Verifica los datos que estás recibiendo
         console.log("Datos recibidos para actualizar:", data);
             // Eliminar 'id' de los datos antes de enviar
-        const { id: _, ...formattedData } = data; // Eliminar 'id' de los datos antes de enviar
+        const { id, ...formattedData } = data; // Eliminar 'id' de los datos antes de enviar
 
         // Convertir las fechas a ISO 8601 si existen
         formattedData.activationStartDate = formattedData.activationStartDate
