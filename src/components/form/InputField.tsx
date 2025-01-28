@@ -17,7 +17,7 @@ const InputField: React.FC<InputFieldProps> = ({
 
   if (type === "file") {
     return (
-      <div className="flex items-center justify-between border border-gray-300 rounded-lg bg-white shadow-sm p-2">
+      <div className="flex items-center justify-between border border-gray-300 rounded-lg bg-white shadow-sm p-2 h-[52px]">
         <label className="text-sm font-medium text-gray-700">{label}</label>
         <label
           htmlFor="file-upload"
