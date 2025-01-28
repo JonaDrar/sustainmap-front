@@ -40,11 +40,12 @@ const Step1Form: React.FC<{
           <InputField
             label="Nombre del centro"
             name="name"
+            placeholder="E.g: Siempre Linda"
             value={formData.name}
-            onChange={(e) => handleLimitedChange(e, 20)} // Limitar a 20 caracteres
+            onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
           />
           <div className="absolute bottom-0 right-4 text-sm text-gray-500">
-            {formData.name.length}/20
+            {formData.name.length}/30
           </div>
         </div>
         <SelectField
@@ -60,7 +61,7 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
         <InputField
-          label="Subir foto"
+          label="Adjunta imagen"
           name="photo"
           type="file"
           onChange={handleFileChange}
@@ -92,16 +93,38 @@ const Step1Form: React.FC<{
 
         <InputField
           label="Número de teléfono"
+          placeholder="E.g: +56912345678"
           name="phone"
           value={formData.phone}
           onChange={handleChange}
         />
+          <InputField
+          label="Nombre de Galería(opcional)"
+          placeholder="E.g: Galería Caracoles"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Nombre de depto/local(opcional)"
+          placeholder="Local 304 E"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
+        {/* <InputField
+          label="Descripción"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+        /> */}
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
       <div className="grid gap-4 mt-4">
         <InputField
           label="Sitio Web"
+          placeholder="E.g: https://www.siemprelinda.com"
           name="other"
           value={formData.rrss?.other || ""}
           onChange={handleChange}
@@ -109,12 +132,14 @@ const Step1Form: React.FC<{
 
         <InputField
           label="Facebook URL"
+          placeholder="E.g: https://www.facebook.com/siemprelinda"
           name="facebook"
           value={formData.rrss?.facebook || ""}
           onChange={handleChange}
         />
         <InputField
           label="Instagram URL"
+          placeholder="E.g: @siempre.linda.providencia"
           name="instagram"
           value={formData.rrss?.instagram || ""}
           onChange={handleChange}
@@ -215,31 +240,36 @@ const Step2Form: React.FC<{
       <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
         <InputField
-          label="Latitud"
+          label="Coordenadas -Latitud (opcional)"
+          placeholder="Ej: -33.4489"
           name="latitud"
           value={formData.latitud}
           onChange={handleChange}
         />
         <InputField
-          label="Longitud"
+          label="Coordenadas-Longitud (opcional)"
+          placeholder="Ej: -70.6693"
           name="longitude"
           value={formData.longitude}
           onChange={handleChange}
         />
         <InputField
           label="Dirección"
+          placeholder="Av. Providencia 675"
           name="address"
           value={formData.address}
           onChange={handleChange}
         />
         <InputField
-          label="Comuna"
+          label="Comuna/Municipio"
+          placeholder="Ej: Providencia"
           name="commune"
           value={formData.commune}
           onChange={handleChange}
         />
         <InputField
           label="Región"
+          placeholder="Ej: Región Metropolitana"
           name="region"
           value={formData.region}
           onChange={handleChange}
@@ -252,30 +282,13 @@ const Step2Form: React.FC<{
             Buscar ubicación
           </button>
         </div>
-        <InputField
-          label="Nombre de Galería"
-          name="galleryName"
-          value={formData.gallery.galleryName}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Número Local"
-          name="localNumber"
-          value={formData.gallery.localNumber}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Descripción"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-        />
+      
       </div>
 
       <div>
         <MapContainer
           center={mapCenter || [-33.4489, -70.6693]} // default center if null
-          zoom={9}
+          zoom={15}
           style={{ height: "275px", width: "100%" }}
         >
           <TileLayer
