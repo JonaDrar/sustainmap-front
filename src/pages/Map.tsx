@@ -36,6 +36,9 @@ const Map = () => {
     gallery: point.gallery || undefined,
     deleted: point.deleted || false,
     rrss: point.rrss || undefined,
+    activationStartDate: point.activationStartDate ? new Date(point.activationStartDate).toISOString() : "",
+    activationEndDate: point.activationEndDate ? new Date(point.activationEndDate).toISOString() : "",
+    isActive: point.isActive || false,
   }));
 
   const handleLocationFound = (lat: number, lng: number) => {

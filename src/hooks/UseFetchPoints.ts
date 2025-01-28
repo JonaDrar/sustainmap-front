@@ -53,6 +53,12 @@ const UseFetchPoints = () => {
         fetchPoints();
     }, []);
 
+    // const formatISODate = (date?: string): string | null => {
+    //     if (!date) return null;
+    //     const parsedDate = new Date(date);
+    //     return isNaN(parsedDate.getTime()) ? null : parsedDate.toISOString();
+    // };
+
     const createPoint = async (newPoint: Partial<Pointdata>) => {
         try {
             // Calcular si el punto estará activo según las fechas al momento de crearlo
@@ -68,12 +74,8 @@ const UseFetchPoints = () => {
                     ...(newPoint.rrss?.instagram && { instagram: newPoint.rrss.instagram }),
                     ...(newPoint.rrss?.other && { other: newPoint.rrss.other }),
                 },
-                activationStartDate: newPoint.activationStartDate
-                    ? new Date(newPoint.activationStartDate).toISOString()
-                    : null,
-                activationEndDate: newPoint.activationEndDate
-                    ? new Date(newPoint.activationEndDate).toISOString()
-                    : null,
+                activationStartDate: newPoint.activationStartDate ? new Date(newPoint.activationStartDate) : undefined,
+                activationEndDate: newPoint.activationEndDate ? new Date(newPoint.activationEndDate) : undefined,
                 id: undefined,
                 type: Math.max(1, Math.min(4, Math.floor(newPoint.type || 1))),
             };
@@ -117,26 +119,40 @@ const UseFetchPoints = () => {
     });
 
     const updatePoint = async (id: string, data: Pointdata) => {
-    const formattedData = {
-      ...data,
-      activationStartDate: data.activationStartDate
-        ? new Date(data.activationStartDate).toISOString()
-        : null,
-      activationEndDate: data.activationEndDate
-        ? new Date(data.activationEndDate).toISOString()
-        : null,
-    };
-    const response = await fetch(`${backendUrlBase}/points/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formattedData),
-    });
+        try {
+        // Verifica los datos que estás recibiendo
+        console.log("Datos recibidos para actualizar:", data);
+            // Eliminar 'id' de los datos antes de enviar
+        const { id: _, ...formattedData } = data; // Eliminar 'id' de los datos antes de enviar
 
-    if (!response.ok) {
-      throw new Error("Error al actualizar el punto.");
-    }
-    return response.json();
-  };
+        // Convertir las fechas a ISO 8601 si existen
+        formattedData.activationStartDate = formattedData.activationStartDate
+            ? new Date(formattedData.activationStartDate).toISOString()
+            : undefined;
+        formattedData.activationEndDate = formattedData.activationEndDate
+            ? new Date(formattedData.activationEndDate).toISOString()
+            : undefined;
+
+            console.log("Datos enviados al backend:", formattedData);
+
+            const response = await axios.put(`${backendUrlBase}/points/${id}`, formattedData);
+
+            if (response.status === 200) {
+                setPoints((prev) =>
+                    prev.map((point) => (point.id === id ? { ...point, ...response.data } : point))
+                );
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error("Error al actualizar el punto:", error.response?.data || error.message);
+              } else {
+                console.error("Error al actualizar el punto:", error);
+              }
+              console.error("Detalles del error:", error); // Agregado para depurar
+              throw new Error("Error al actualizar el punto.");
+        }
+    };
+
 
     return {points: activePoints, loading, error, deletePoint, updatePoint, createPoint};
 };

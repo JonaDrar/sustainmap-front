@@ -10,6 +10,14 @@ import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload';
 import CenterMap from "./maps/CenterPointMap";
 
+const formatDateForInput = (date: string | undefined): string | undefined => {
+  if (date) {
+    const dateObj = new Date(date);
+    return dateObj.toISOString().split('T')[0]; // Extracts the date part (YYYY-MM-DD)
+  }
+  return undefined;
+};
+
 const Step1Form: React.FC<{
   formData: FormData;
   handleChange: (
@@ -17,9 +25,10 @@ const Step1Form: React.FC<{
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => void;
+  handleDateChange: (e: React.ChangeEvent<HTMLInputElement>, field: string) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isUploading: boolean;
-}> = ({ formData, handleChange, handleFileChange, isUploading }) => {
+}> = ({ formData, handleChange, handleDateChange, handleFileChange, isUploading }) => {
   // Función para manejar la limitación de caracteres
   const handleLimitedChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -151,16 +160,16 @@ const Step1Form: React.FC<{
           label="Fecha de inicio"
           name="activationStartDate"
           type="date"
-          value={formData.activationStartDate}
-          onChange={handleChange}
+          value={formatDateForInput(formData.activationStartDate)}
+          onChange={(e) => handleDateChange(e, "activationStartDate")} // Usamos handleDateChange
         />
         <InputField
           label="Fecha de término"
           name="activationEndDate"
           type="date"
-          value={formData.activationEndDate}
-          onChange={handleChange}
-        />
+          value={formatDateForInput(formData.activationEndDate)}
+          onChange={(e) => handleDateChange(e, "activationEndDate")} // Usamos handleDateChange
+  />
         <SelectField
           label="Estado de activación"
           name="isActive"
@@ -457,71 +466,126 @@ const EditPointPage: React.FC = () => {
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
+  const validateDates = () => {
+    const startDate = new Date(formData.activationStartDate);
+    const endDate = new Date(formData.activationEndDate);
 
-    if (name === "latitud") {
-      if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
-        const num = parseFloat(value);
-        if (value === "-" || value === "" || (num >= -90 && num <= 90)) {
-          setFormData({ ...formData, latitud: value });
-        }
-      }
-      return;
+    const newErrors = { activationStartDate: "", activationEndDate: "" };
+    let isValid = true;
+
+    if (!formData.activationStartDate) {
+      newErrors.activationStartDate = "La fecha de inicio es requerida.";
+      isValid = false;
+    } else if (isNaN(startDate.getTime())) {
+      newErrors.activationStartDate = "La fecha de inicio no es válida.";
+      isValid = false;
     }
 
-    if (name === "longitude") {
-      if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
-        const num = parseFloat(value);
-        if (value === "-" || value === "" || (num >= -180 && num <= 180)) {
-          setFormData({ ...formData, longitude: value });
-        }
-      }
-      return;
+    if (!formData.activationEndDate) {
+      newErrors.activationEndDate = "La fecha de fin es requerida.";
+      isValid = false;
+    } else if (isNaN(endDate.getTime())) {
+      newErrors.activationEndDate = "La fecha de fin no es válida.";
+      isValid = false;
     }
 
-    if (name === "type") {
-      if (/^[1-4]?$/.test(value)) {
-        setFormData({ ...formData, type: value });
-      }
-      return;
+    if (isValid && startDate > endDate) {
+      newErrors.activationEndDate = "La fecha de fin debe ser posterior a la fecha de inicio.";
+      isValid = false;
     }
 
-    if (name === "highlighted") {
-      setFormData({ ...formData, highlighted: value === "true" });
-      return;
+    if (!isValid) {
+      Swal.fire(
+        "Error",
+        `${newErrors.activationStartDate || ""} ${newErrors.activationEndDate || ""}`,
+        "error"
+      );
     }
-
-    if (["facebook", "instagram", "other"].includes(name)) {
-      setFormData({
-        ...formData,
-        rrss: {
-          ...formData.rrss,
-          [name]: value,
-        },
-      });
-      return;
-    }
-
-    if (name === "galleryName" || name === "localNumber") {
-      setFormData({
-        ...formData,
-        gallery: {
-          ...formData.gallery,
-          [name]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: type === "checkbox" ? checked : value,
-      });
-    }
+    return isValid;
   };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const value = e.target.value;
+
+    setFormData((prev) => {
+      const updatedFormData = { ...prev, [field]: value };
+      const startDate = new Date(updatedFormData.activationStartDate);
+      const endDate = new Date(updatedFormData.activationEndDate);
+
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+        updatedFormData.isActive = startDate <= new Date() && endDate >= new Date();
+      }
+
+      return updatedFormData;
+    });
+  };
+
+const handleChange = (
+  e: React.ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >
+) => {
+  const { name, value, type, checked } = e.target as HTMLInputElement;
+
+  if (name === "latitud") {
+    if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
+      const num = parseFloat(value);
+      if (value === "-" || value === "" || (num >= -90 && num <= 90)) {
+        setFormData({ ...formData, latitud: value });
+      }
+    }
+    return;
+  }
+
+  if (name === "longitude") {
+    if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
+      const num = parseFloat(value);
+      if (value === "-" || value === "" || (num >= -180 && num <= 180)) {
+        setFormData({ ...formData, longitude: value });
+      }
+    }
+    return;
+  }
+
+  if (name === "type") {
+    if (/^[1-4]?$/.test(value)) {
+      setFormData({ ...formData, type: value });
+    }
+    return;
+  }
+
+  if (name === "highlighted") {
+    setFormData({ ...formData, highlighted: value === "true" });
+    return;
+  }
+
+  if (["facebook", "instagram", "other"].includes(name)) {
+    setFormData({
+      ...formData,
+      rrss: {
+        ...formData.rrss,
+        [name]: value,
+      },
+    });
+    return;
+  }
+
+  if (name === "galleryName" || name === "localNumber") {
+    setFormData({
+      ...formData,
+      gallery: {
+        ...formData.gallery,
+        [name]: value,
+      },
+    });
+  } else {
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  }
+};
+
 
   const handleCancel = () => {
     navigate("/");
@@ -529,6 +593,15 @@ const EditPointPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateDates()) {
+      Swal.fire("Error", "Por favor corrige los errores en las fechas.", "error");
+      return;
+    }
+
+    const startDate = new Date(formData.activationStartDate);
+    const endDate = new Date(formData.activationEndDate);
+
 
     // Función para validar si una URL es válida
     const isValidUrl = (url: string) => {
@@ -586,6 +659,8 @@ const EditPointPage: React.FC = () => {
 
       const dataToSend = {
         ...formData,
+        activationStartDate: startDate ? startDate.toISOString() : undefined,
+        activationEndDate: endDate ? endDate.toISOString() : undefined,
         latitud: parseFloat(formData.latitud || "0"),
         longitude: parseFloat(formData.longitude || "0"),
         type: parseInt(formData.type || "0", 10),
@@ -632,7 +707,7 @@ const EditPointPage: React.FC = () => {
         subHeaderText={`${isOnEditPage ? "Editar" : "Crear"} punto de interés`}
       >
         {step === 1 && (
-          <Step1Form formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} isUploading={isUploading} />
+          <Step1Form formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} handleDateChange={handleDateChange} isUploading={isUploading} />
         )}
         {step === 2 && (
           <Step2Form formData={formData} handleChange={handleChange} />
