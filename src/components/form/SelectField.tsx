@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Select, { Props as ReactSelectProps, ActionMeta, SingleValue, MultiValue, GroupBase } from "react-select";
+import Select, { Props as ReactSelectProps, ActionMeta, SingleValue, GroupBase } from "react-select";
 import { customStyles } from "./utils";
 import iconoTijeras from '/images/icon-scissors.png';
 import iconoCanino from '/images/icono-canino.png';
