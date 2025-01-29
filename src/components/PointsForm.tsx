@@ -393,7 +393,7 @@ const EditPointPage: React.FC = () => {
       galleryName: "",
       localNumber: "",
     },
-    phone: "",
+    phone: "+569",
     rrss: {
       facebook: "",
       instagram: "",
@@ -639,6 +639,10 @@ const EditPointPage: React.FC = () => {
   const handleToggleChange = (value: boolean, field: string) => {
     setFormData({ ...formData, [field]: value });
   };
+
+  const handlePhoneChange = (value: string) => {
+    setFormData({ ...formData, phone: value });
+  };
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const isOnEditPage = location.pathname.includes("edit-point");
@@ -662,6 +666,7 @@ const EditPointPage: React.FC = () => {
             handleChange={handleChange}
             handleFileChange={handleFileChange}
             handleToggleChange={handleToggleChange}
+            handlePhoneChange={handlePhoneChange}
             isUploading={isUploading}
           />
         )}

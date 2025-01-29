@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Select, {
   components,
   ControlProps,
-  MultiValue,
   OptionProps,
   SingleValue,
   SingleValueProps,
@@ -91,10 +90,11 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({ onChange }) => {
   };
 
   const handleCountryChange = (
-    newValue: SingleValue<CountryOption> | MultiValue<CountryOption>,
+    newValue: SingleValue<CountryOption>,
   ) => {
-    if (newValue && !Array.isArray(newValue)) {
+    if (newValue) {
       setSelectedCountry(newValue as CountryOption);
+      onChange(`${newValue.code}${phoneNumber}`);
     }
   };
 
@@ -105,7 +105,7 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({ onChange }) => {
         <Select
           className="bg-transparent text-sm font-medium focus:outline-none"
           value={selectedCountry}
-          onChange={handleCountryChange}
+          onChange={(value => handleCountryChange(value as CountryOption))}
           options={COUNTRIES}
           getOptionLabel={(option) => option.code}
           getOptionValue={(option) => option.code}
