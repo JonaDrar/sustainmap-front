@@ -21,16 +21,10 @@ const InputField: React.FC<InputFieldProps> = ({
         <label className="text-sm font-medium text-gray-700">{label}</label>
         <label
           htmlFor="file-upload"
-          className="flex items-center justify-center w-10 h-[40px] text-blue-500 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100"
+          className="flex items-center justify-center w-10 h-[40px] rounded-lg cursor-pointer"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M16.707 10.707a1 1 0 01-1.414 0L11 6.414V15a1 1 0 11-2 0V6.414L4.707 10.707a1 1 0 01-1.414-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 010 1.414z" />
-          </svg>
+          <img src="/images/icon-add-image.png" alt="upload file image" className="w-10 h-10 mt-1" />
+
         </label>
         <input
           id="file-upload"
