@@ -13,6 +13,7 @@ import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { MultiValue, SingleValue } from "react-select";
 import ToggleField from "./form/ToggleField";
 import highlightImage from "/images/Star.png";
+import PhoneNumberInput from "./form/PhoneNumberInput";
 
 interface OptionType {
   label: string;
@@ -57,10 +58,12 @@ const Step1Form: React.FC<{
   ) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleToggleChange: (value: boolean, field: string) => void;
+  handlePhoneChange: (value: string) => void;
   isUploading: boolean;
 }> = ({
   formData,
   handleChange,
+  handlePhoneChange,
   handleFileChange,
   handleSelectChange,
   handleToggleChange,
@@ -148,14 +151,8 @@ const Step1Form: React.FC<{
           value={formData.highlighted ? { value: "true", label: "Sí" } : { value: "false", label: "No" }}
           onChange={(value) => handleSelectChange(value, "highlighted")}
         /> */}
+        <PhoneNumberInput onChange={handlePhoneChange} />
 
-        <InputField
-          label="Número de teléfono"
-          placeholder="E.g: +56912345678"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-        />
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
