@@ -6,9 +6,43 @@ import { Pointdata } from "../hooks/UseFetchPoints";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import Swal from "sweetalert2";
 import Wizard from "../components/Wizard";
-import { MapContainer, Marker, TileLayer } from "react-leaflet";
-import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload';
 import CenterMap from "./maps/CenterPointMap";
+import { useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
+import CreatableSelectField from "./form/CreatableSelectField";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import {
+  MultiValue,
+  SingleValue,
+} from "react-select";
+interface OptionType {
+  label: string;
+  value: string;
+}
+
+interface FormData {
+  id: string;
+  name: string;
+  address: string;
+  commune: string;
+  description: string;
+  highlighted: boolean;
+  latitud: string;
+  longitude: string;
+  photo_url: string;
+  region: string;
+  services: OptionType[];
+  rrss: {
+    facebook: string;
+    instagram: string;
+    other: string;
+  };
+  phone: string;
+  type: OptionType | null;
+  gallery: {
+    galleryName: string;
+    localNumber: string;
+  };
+}
 
 const Step1Form: React.FC<{
   formData: FormData;
@@ -17,9 +51,19 @@ const Step1Form: React.FC<{
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => void;
+  handleSelectChange: (
+    value: MultiValue<OptionType> | SingleValue<OptionType>,
+    field: string
+  ) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isUploading: boolean;
-}> = ({ formData, handleChange, handleFileChange, isUploading }) => {
+}> = ({
+  formData,
+  handleChange,
+  handleFileChange,
+  handleSelectChange,
+  isUploading,
+}) => {
   // Función para manejar la limitación de caracteres
   const handleLimitedChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -39,8 +83,8 @@ const Step1Form: React.FC<{
         <div className="relative">
           <InputField
             label="Nombre del centro"
+            placeholder="E.g: Siempre Linda "
             name="name"
-            placeholder="E.g: Siempre Linda"
             value={formData.name}
             onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
           />
@@ -58,7 +102,7 @@ const Step1Form: React.FC<{
             { value: "3", label: "3. Centro de acopio" },
             { value: "4", label: "4. Centro de estudio" },
           ]}
-          onChange={handleChange}
+          onChange={(value) => handleSelectChange(value, "type")}
         />
         <InputField
           label="Adjunta imagen"
@@ -67,17 +111,22 @@ const Step1Form: React.FC<{
           onChange={handleFileChange}
         />
         {isUploading && <p>Subiendo imagen...</p>}
-        <SelectField
+
+        <CreatableSelectField
           label="Servicios"
           name="services"
           value={formData.services}
           options={[
+            { value: "cabello", label: "Cabello" },
             { value: "peinados", label: "Peinados" },
-            { value: "masajes", label: "Masajes" },
-            { value: "manicure", label: "Manicure" },
+            { value: "especialista", label: "Especialista en rulos" },
             { value: "depilación", label: "Depilación" },
+            { value: "manicure", label: "Manicure" },
+            { value: "pedicure", label: "Pedicure" },
+            { value: "masajes", label: "Masajes" },
+            { value: "decoloración", label: "Decoloración" },
           ]}
-          onChange={handleChange}
+          onChange={(value) => handleSelectChange(value, "services")}
         />
 
         <SelectField
@@ -87,8 +136,8 @@ const Step1Form: React.FC<{
             { value: "true", label: "Sí" },
             { value: "false", label: "No" },
           ]}
-          value={formData.highlighted ? "true" : "false"}
-          onChange={handleChange}
+          value={formData.highlighted ? { value: "true", label: "Sí" } : { value: "false", label: "No" }}
+          onChange={(value) => handleSelectChange(value, "highlighted")}
         />
 
         <InputField
@@ -311,33 +360,6 @@ const Step2Form: React.FC<{
   );
 };
 
-
-
-interface FormData {
-  id: string;
-  name: string;
-  address: string;
-  commune: string;
-  description: string;
-  highlighted: boolean;
-  latitud: string;
-  longitude: string;
-  photo_url: string;
-  region: string;
-  services: string;
-  rrss: {
-    facebook: string;
-    instagram: string;
-    other: string;
-  };
-  phone: string;
-  type: string;
-  gallery: {
-    galleryName: string;
-    localNumber: string;
-  };
-}
-
 const EditPointPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -356,15 +378,14 @@ const EditPointPage: React.FC = () => {
     longitude: "",
     photo_url: "",
     region: "",
-    services: "",
-    type: "",
+    services: [],
+    type: null,
     gallery: {
       galleryName: "",
       localNumber: "",
     },
     phone: "",
     rrss: {
-      // Asegúrate de incluir este objeto
       facebook: "",
       instagram: "",
       other: "",
@@ -387,8 +408,8 @@ const EditPointPage: React.FC = () => {
         longitude: point.longitude?.toString() || "",
         photo_url: point.photo_url || "",
         region: point.region || "",
-        services: point.services.join(", ") || "",
-        type: point.type?.toString() || "",
+        services: point.services.map(service => ({ value: service, label: service })) || [],
+        type: point.type ? { value: point.type.toString(), label: `Categoría ${point.type}` } : null,
         gallery: {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
@@ -421,6 +442,12 @@ const EditPointPage: React.FC = () => {
     }
   };
 
+  const handleSelectChange = (
+    value: MultiValue<OptionType> | SingleValue<OptionType>,
+    field: string
+  ) => {    setFormData({ ...formData, [field]: value });
+  };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -450,7 +477,7 @@ const EditPointPage: React.FC = () => {
 
     if (name === "type") {
       if (/^[1-4]?$/.test(value)) {
-        setFormData({ ...formData, type: value });
+        setFormData({ ...formData, type: { value, label: `Categoría ${value}` } });
       }
       return;
     }
@@ -506,9 +533,18 @@ const EditPointPage: React.FC = () => {
       facebook: string | null;
       other: string | null;
     } = {
-      instagram: formData.rrss?.instagram && isValidUrl(formData.rrss.instagram) ? formData.rrss.instagram : null,
-      facebook: formData.rrss?.facebook && isValidUrl(formData.rrss.facebook) ? formData.rrss.facebook : null,
-      other: formData.rrss?.other && isValidUrl(formData.rrss.other) ? formData.rrss.other : null,
+      instagram:
+        formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)
+          ? formData.rrss.instagram
+          : null,
+      facebook:
+        formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)
+          ? formData.rrss.facebook
+          : null,
+      other:
+        formData.rrss?.other && isValidUrl(formData.rrss.other)
+          ? formData.rrss.other
+          : null,
     };
 
     // Solo asignamos si la URL es válida
@@ -531,7 +567,11 @@ const EditPointPage: React.FC = () => {
     }
 
     // Si no hay valores en rrss, lo dejamos como null
-    if (!socialMediaLinks.facebook && !socialMediaLinks.instagram && !socialMediaLinks.other) {
+    if (
+      !socialMediaLinks.facebook &&
+      !socialMediaLinks.instagram &&
+      !socialMediaLinks.other
+    ) {
       socialMediaLinks.facebook = null;
       socialMediaLinks.instagram = null;
       socialMediaLinks.other = null;
@@ -543,22 +583,19 @@ const EditPointPage: React.FC = () => {
       localNumber: formData.gallery?.localNumber || null,
     };
 
-    
-      const services = formData.services
-        .split(",")
-        .map((service) => service.trim());
+    const { services } = formData;
 
-      const dataToSend = {
-        ...formData,
-        latitud: parseFloat(formData.latitud || "0"),
-        longitude: parseFloat(formData.longitude || "0"),
-        type: parseInt(formData.type || "0", 10),
-        gallery: galleryData,
-        services,
-        rrss: socialMediaLinks,
-      };
+    const dataToSend = {
+      ...formData,
+      latitud: parseFloat(formData.latitud || "0"),
+      longitude: parseFloat(formData.longitude || "0"),
+      type: parseInt(formData.type?.value || "0", 10),
+      gallery: galleryData,
+      services: services.map(service => service.value),
+      rrss: socialMediaLinks,
+    };
 
-      try {
+    try {
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
@@ -596,7 +633,13 @@ const EditPointPage: React.FC = () => {
         subHeaderText={`${isOnEditPage ? "Editar" : "Crear"} punto de interés`}
       >
         {step === 1 && (
-          <Step1Form formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} isUploading={isUploading} />
+          <Step1Form
+            formData={formData}
+            handleSelectChange={handleSelectChange}
+            handleChange={handleChange}
+            handleFileChange={handleFileChange}
+            isUploading={isUploading}
+          />
         )}
         {step === 2 && (
           <Step2Form formData={formData} handleChange={handleChange} />
@@ -605,7 +648,5 @@ const EditPointPage: React.FC = () => {
     </div>
   );
 };
-
-
 
 export default EditPointPage;
