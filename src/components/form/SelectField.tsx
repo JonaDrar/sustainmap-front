@@ -5,6 +5,7 @@ import iconoTijeras from '/images/icon-scissors.png';
 import iconoCanino from '/images/icono-canino.png';
 import iconoCentroAcopio from '/images/icono-centro-acopio.png';
 import iconoCentroEstudio from '/images/icono-centro-estudio.png';
+import { components, OptionProps } from "react-select";
 
 interface OptionType {
   label: string;
@@ -22,6 +23,25 @@ const iconMap: { [key: string]: string } = {
   "2": iconoCanino,
   "3": iconoCentroAcopio,
   "4": iconoCentroEstudio,
+};
+
+const CustomOption: React.FC<OptionProps<OptionType>> = (props) => {
+  return (
+    <components.Option {...props}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            checked={props.isSelected}
+            onChange={() => null}
+            className="mr-2"
+          />
+          <label>{props.label}</label>
+        </div>
+        <img src={iconMap[props.data.value]} alt={props.data.label} className="w-6 h-6 ml-2" />
+      </div>
+    </components.Option>
+  );
 };
 
 const formatOptionLabel = ({ value, label }: OptionType) => (
@@ -58,6 +78,8 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
         onBlur={() => setIsFocused(false)}
         onChange={handleChange}
         isClearable
+        components={{ Option: CustomOption }}
+        isMulti
         placeholder={label}
         value={selectedOption} // Añadido para pasar el valor seleccionado
         formatOptionLabel={label === 'Categoría' ? formatOptionLabel : undefined} // Usar formatOptionLabel para personalizar la etiqueta de la opción
