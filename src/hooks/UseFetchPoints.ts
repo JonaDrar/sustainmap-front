@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios, { AxiosError } from "axios";
 import { backendUrlBase } from "../utils/environment";
+import { UserContext } from "../contexts/UserContext";
 
 export interface Pointdata {
     id: string;
@@ -34,6 +35,7 @@ export interface Pointdata {
 }
 
 const UseFetchPoints = () => {
+    const { loggedInUser } = useContext(UserContext);
     const [points, setPoints] = useState<Pointdata[]>([]);
     const [loading, setLoading] =useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -52,12 +54,6 @@ const UseFetchPoints = () => {
         };
         fetchPoints();
     }, []);
-
-    // const formatISODate = (date?: string): string | null => {
-    //     if (!date) return null;
-    //     const parsedDate = new Date(date);
-    //     return isNaN(parsedDate.getTime()) ? null : parsedDate.toISOString();
-    // };
 
     const createPoint = async (newPoint: Partial<Pointdata>) => {
         try {
@@ -106,6 +102,9 @@ const UseFetchPoints = () => {
 
     const activePoints = points.filter((point) => {
         if (point.deleted) return false;
+
+        // Si el usuario está autenticado, mostrar todos los puntos (activos e inactivos)
+        if (loggedInUser) return true; 
     
         // Verificar fechas para calcular si el punto está activo
         if (point.activationStartDate && point.activationEndDate) {
@@ -115,7 +114,7 @@ const UseFetchPoints = () => {
             return now >= start && now <= end;
         }
     
-        return true; // Si no tiene fechas, se considera activo por defecto
+        return point.isActive; // Si no hay fechas, usa el estado `isActive`
     });
 
     const updatePoint = async (id: string, data: Pointdata) => {
@@ -153,10 +152,7 @@ const UseFetchPoints = () => {
         }
     };
 
-
     return {points: activePoints, loading, error, deletePoint, updatePoint, createPoint};
 };
-
-
 
 export default UseFetchPoints; 

@@ -160,15 +160,15 @@ const Step1Form: React.FC<{
           label="Fecha de inicio"
           name="activationStartDate"
           type="date"
-          value={formatDateForInput(formData.activationStartDate)}
-          onChange={(e) => handleDateChange(e, "activationStartDate")} // Usamos handleDateChange
+          value={formatDateForInput(formData.activationStartDate) || ""}
+          onChange={(e) => handleDateChange(e, "activationStartDate")} 
         />
         <InputField
           label="Fecha de término"
           name="activationEndDate"
           type="date"
-          value={formatDateForInput(formData.activationEndDate)}
-          onChange={(e) => handleDateChange(e, "activationEndDate")} // Usamos handleDateChange
+          value={formatDateForInput(formData.activationEndDate) || ""}
+          onChange={(e) => handleDateChange(e, "activationEndDate")} 
         />
         <div className="col-span-2">
           <p className="text-sm font-medium">
