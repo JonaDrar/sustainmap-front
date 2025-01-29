@@ -82,15 +82,15 @@ const Step1Form: React.FC<{
         Información básica
       </h6>
       <div className="grid grid-cols-2 gap-6 ">
-          <InputField
-            label="Nombre del centro"
-            placeholder="E.g: Siempre Linda "
-            name="name"
-            value={formData.name}
-            maxLength={30}
-            onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
-          />
-      
+        <InputField
+          label="Nombre del centro"
+          placeholder="E.g: Siempre Linda "
+          name="name"
+          value={formData.name}
+          maxLength={30}
+          onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
+        />
+
         <SelectField
           label="Categoría"
           name="type"
@@ -100,6 +100,7 @@ const Step1Form: React.FC<{
             { value: "2", label: "2. Peluquería canina" },
             { value: "3", label: "3. Centro de acopio" },
             { value: "4", label: "4. Centro de estudio" },
+            { value: "5", label: "5. Otros" },
           ]}
           onChange={(value) => handleSelectChange(value, "type")}
         />
@@ -155,26 +156,6 @@ const Step1Form: React.FC<{
           value={formData.phone}
           onChange={handleChange}
         />
-        <InputField
-          label="Nombre de Galería(opcional)"
-          placeholder="E.g: Galería Caracoles"
-          name="galleryName"
-          value={formData.gallery.galleryName}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Nombre de depto/local(opcional)"
-          placeholder="Local 304 E"
-          name="localNumber"
-          value={formData.gallery.localNumber}
-          onChange={handleChange}
-        />
-        {/* <InputField
-          label="Descripción"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-        /> */}
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
@@ -333,6 +314,20 @@ const Step2Form: React.FC<{
           placeholder="Ej: Región Metropolitana"
           name="region"
           value={formData.region}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Nombre de Galería(opcional)"
+          placeholder="E.g: Galería Caracoles"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Nombre de depto/local(opcional)"
+          placeholder="Local 304 E"
+          name="localNumber"
+          value={formData.gallery.localNumber}
           onChange={handleChange}
         />
         <div className="col-span-2">
@@ -646,7 +641,7 @@ const EditPointPage: React.FC = () => {
 
   const handleToggleChange = (value: boolean, field: string) => {
     setFormData({ ...formData, [field]: value });
-  }
+  };
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const isOnEditPage = location.pathname.includes("edit-point");

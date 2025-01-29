@@ -15,10 +15,6 @@ interface CreatableSelectFieldProps extends CreatableProps<OptionType, true, Gro
   onChange: (newValue: MultiValue<OptionType> | SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => void;
 }
 
-interface OptionType {
-  label: string;
-  value: string;
-}
 const CustomOption: React.FC<OptionProps<OptionType>> = (props) => {
   return (
     <components.Option {...props}>
@@ -45,6 +41,15 @@ const CreatableSelectField: React.FC<CreatableSelectFieldProps> = ({ label, opti
     onChange(newValue, actionMeta);
   };
 
+  const styles = {
+    ...customStyles,
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? 'white' : provided.backgroundColor,
+      color: state.isSelected ? 'black' : provided.color,
+    }),
+  } as StylesConfig<OptionType, true>;
+
   const formatCreateLabel = (inputValue: string) => `Agregar nuevo: "${inputValue}"`;
 
   return (
@@ -61,7 +66,7 @@ const CreatableSelectField: React.FC<CreatableSelectFieldProps> = ({ label, opti
       <CreatableSelect
         isMulti={true}
         options={options}
-        styles={customStyles}
+        styles={styles}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onChange={handleChange}

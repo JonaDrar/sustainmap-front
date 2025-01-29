@@ -1,21 +1,22 @@
 import React, { useState } from "react";
-import Select, { Props as ReactSelectProps, ActionMeta, SingleValue, GroupBase } from "react-select";
+import Select, { Props as ReactSelectProps, ActionMeta, SingleValue, MultiValue, GroupBase, components, OptionProps } from "react-select";
 import { customStyles } from "./utils";
 import iconoTijeras from '/images/icon-scissors.png';
 import iconoCanino from '/images/icono-canino.png';
 import iconoCentroAcopio from '/images/icono-centro-acopio.png';
 import iconoCentroEstudio from '/images/icono-centro-estudio.png';
-import { components, OptionProps } from "react-select";
+import iconoOtros from '/images/icono-otros.png';
+
 
 interface OptionType {
   label: string;
   value: string;
 }
 
-interface SelectFieldProps extends ReactSelectProps<OptionType, false, GroupBase<OptionType>> {
+interface SelectFieldProps extends ReactSelectProps<OptionType, true, GroupBase<OptionType>> {
   label: string;
-  value: OptionType | null; // Ajustado para aceptar el valor seleccionado
-  onChange: (newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => void;
+  value: MultiValue<OptionType> | SingleValue<OptionType>; // Ajustado para aceptar el valor seleccionado
+  onChange: (newValue: MultiValue<OptionType> | SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => void;
 }
 
 const iconMap: { [key: string]: string } = {
@@ -23,6 +24,7 @@ const iconMap: { [key: string]: string } = {
   "2": iconoCanino,
   "3": iconoCentroAcopio,
   "4": iconoCentroEstudio,
+  "5": iconoOtros
 };
 
 const CustomOption: React.FC<OptionProps<OptionType>> = (props) => {
@@ -53,9 +55,9 @@ const formatOptionLabel = ({ value, label }: OptionType) => (
 
 const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChange }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<OptionType | null>(value);
+  const [selectedOption, setSelectedOption] = useState<MultiValue<OptionType> | SingleValue<OptionType>>(value);
 
-  const handleChange = (newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => {
+  const handleChange = (newValue: MultiValue<OptionType> | SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => {
     setSelectedOption(newValue);
     onChange(newValue, actionMeta);
   };
