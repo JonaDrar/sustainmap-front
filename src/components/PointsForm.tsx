@@ -10,6 +10,7 @@ import CenterMap from "./maps/CenterPointMap";
 import { useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
 import CreatableSelectField from "./form/CreatableSelectField";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import pointMarker from "./maps/MarkerPoint";
 import {
   MultiValue,
   SingleValue,
@@ -288,20 +289,7 @@ const Step2Form: React.FC<{
     <>
       <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
-        <InputField
-          label="Coordenadas -Latitud (opcional)"
-          placeholder="Ej: -33.4489"
-          name="latitud"
-          value={formData.latitud}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Coordenadas-Longitud (opcional)"
-          placeholder="Ej: -70.6693"
-          name="longitude"
-          value={formData.longitude}
-          onChange={handleChange}
-        />
+        
         <InputField
           label="Dirección"
           placeholder="Av. Providencia 675"
@@ -321,6 +309,30 @@ const Step2Form: React.FC<{
           placeholder="Ej: Región Metropolitana"
           name="region"
           value={formData.region}
+          onChange={handleChange}
+        />
+        <div className="flex items-center">
+  <img 
+    src="/images/icon-pin.png" 
+    alt="Icono de ubicación" 
+    className="w-6 h-6 mr-4" 
+  />
+  <h2 className="font-bold text-blue-600">
+    .Arrastre el marcador para mejorar la ubicación en el mapa.
+  </h2>
+</div>
+        <InputField
+          label="Coordenadas -Latitud (opcional)"
+          placeholder="Ej: -33.4489"
+          name="latitud"
+          value={formData.latitud}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Coordenadas-Longitud (opcional)"
+          placeholder="Ej: -70.6693"
+          name="longitude"
+          value={formData.longitude}
           onChange={handleChange}
         />
         <div className="col-span-2">
@@ -349,6 +361,7 @@ const Step2Form: React.FC<{
             <Marker
               position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
               draggable={true}
+              icon={pointMarker}
               eventHandlers={{
                 dragend: handleMarkerDrag,
               }}
