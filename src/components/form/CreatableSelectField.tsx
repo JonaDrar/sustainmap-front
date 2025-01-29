@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import CreatableSelect, { CreatableProps, MultiValue, SingleValue, ActionMeta, GroupBase } from "react-select/creatable";
-import { components, OptionProps, StylesConfig, CSSObjectWithLabel } from "react-select";
+import CreatableSelect, { CreatableProps } from "react-select/creatable";
+import { components, OptionProps, StylesConfig, MultiValue, SingleValue, ActionMeta, GroupBase } from "react-select";
 import { customStyles } from "./utils";
 
 interface OptionType {
@@ -41,14 +41,14 @@ const CreatableSelectField: React.FC<CreatableSelectFieldProps> = ({ label, opti
     onChange(newValue, actionMeta);
   };
 
-  const styles: StylesConfig<OptionType, true> = {
+  const styles = {
     ...customStyles,
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected ? 'white' : provided.backgroundColor,
       color: state.isSelected ? 'black' : provided.color,
     }),
-  };
+  } as StylesConfig<OptionType, true>;
 
   const formatCreateLabel = (inputValue: string) => `Agregar nuevo: "${inputValue}"`;
 
