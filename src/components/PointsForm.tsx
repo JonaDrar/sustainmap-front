@@ -140,17 +140,6 @@ const Step1Form: React.FC<{
           }
           imageSrc={highlightImage}
         />
-
-        {/* <SelectField
-          label="Peluquería destacada"
-          name="highlighted"
-          options={[
-            { value: "true", label: "Sí" },
-            { value: "false", label: "No" },
-          ]}
-          value={formData.highlighted ? { value: "true", label: "Sí" } : { value: "false", label: "No" }}
-          onChange={(value) => handleSelectChange(value, "highlighted")}
-        /> */}
         <PhoneNumberInput onChange={handlePhoneChange} />
 
       </div>
@@ -369,6 +358,27 @@ const Step2Form: React.FC<{
   );
 };
 
+// Define las opciones en una constante
+const typeOptions = [
+  { value: "1", label: "1. Peluquería" },
+  { value: "2", label: "2. Peluquería canina" },
+  { value: "3", label: "3. Centro de acopio" },
+  { value: "4", label: "4. Centro de estudio" },
+  { value: "5", label: "5. Otros" },
+];
+
+// Función para obtener el objeto con value y label
+const getTypeLabel = (type: number) => {
+  if (type === null) return null;
+  const option = typeOptions.find(opt => opt.value === type.toString());
+  return option?.label || "";
+};
+
+// Función para capitalizar la primera letra de una cadena
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const EditPointPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -420,11 +430,13 @@ const EditPointPage: React.FC = () => {
         services:
           point.services.map((service) => ({
             value: service,
-            label: service,
+            label: capitalizeFirstLetter(service),
           })) || [],
-        type: point.type
-          ? { value: point.type.toString(), label: `Categoría ${point.type}` }
-          : null,
+        type: point.type ? point.type.map((type: number) => ({
+              value: type.toString(),
+              label: getTypeLabel(type),
+            } as OptionType))
+          : [],
         gallery: {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
@@ -488,21 +500,6 @@ const EditPointPage: React.FC = () => {
           setFormData({ ...formData, longitude: value });
         }
       }
-      return;
-    }
-
-    if (name === "type") {
-      if (/^[1-4]?$/.test(value)) {
-        setFormData({
-          ...formData,
-          type: { value, label: `Categoría ${value}` },
-        });
-      }
-      return;
-    }
-
-    if (name === "highlighted") {
-      setFormData({ ...formData, highlighted: value === "true" });
       return;
     }
 
