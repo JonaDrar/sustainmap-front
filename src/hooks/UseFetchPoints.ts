@@ -52,8 +52,10 @@ const UseFetchPoints = () => {
 
     const createPoint = async (newPoint: Partial<Pointdata>) => {
         try {
+            const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
             const formattedPoint = {
                 ...newPoint,
+                photo_url: newPoint.photo_url || DEFAULT_IMAGE_URL,
                 rrss: {
                     // Si no existen los enlaces, no se incluyen en el objeto
                     ...(newPoint.rrss?.facebook && { facebook: newPoint.rrss.facebook }),
@@ -92,6 +94,7 @@ const UseFetchPoints = () => {
 
     const updatePoint = async (id: string, updatedData: Partial<Pointdata>) => {
         try {
+            const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
             if (id) {
                 const galleryUpdates = updatedData.gallery
                     ? {
@@ -114,7 +117,7 @@ const UseFetchPoints = () => {
                     }
                     : {};
     
-                const dataToUpdate = { ...updatedData, ...galleryUpdates, ...rrssUpdates, id: undefined };
+                const dataToUpdate = { ...updatedData, ...galleryUpdates, ...rrssUpdates, id: undefined, photo_url: updatedData.photo_url || DEFAULT_IMAGE_URL, };
     
                 const response = await axios.put(`${backendUrlBase}/points/${id}`, dataToUpdate);
                 setPoints((prev) =>
