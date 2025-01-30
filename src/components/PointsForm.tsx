@@ -432,7 +432,7 @@ const EditPointPage: React.FC = () => {
             value: service,
             label: capitalizeFirstLetter(service),
           })) || [],
-        type: point.type ? point.type.map((type: number) => ({
+        type: point.type && Array.isArray(point.type) ? point.type.map((type: number) => ({
               value: type.toString(),
               label: getTypeLabel(type),
             } as OptionType))
