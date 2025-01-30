@@ -425,7 +425,7 @@ const EditPointPage: React.FC = () => {
         highlighted: point.highlighted || false,
         latitud: point.latitud?.toString() || "",
         longitude: point.longitude?.toString() || "",
-        photo_url: point.photo_url || "",
+        photo_url: typeof point.photo_url === "string" ? point.photo_url : "",
         region: point.region || "",
         services:
           point.services.map((service) => ({
