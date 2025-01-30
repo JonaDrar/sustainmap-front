@@ -70,11 +70,18 @@ const UseFetchPoints = () => {
             setPoints((prev) => [...prev, response.data]);
         } catch (error) {
             console.error("Error al crear el punto:", error);
-            const errorMessage = 
-              error instanceof AxiosError 
-                ? error.response?.data?.message || error.message 
-                : "Error al crear el punto.";
-            throw new Error(errorMessage);
+            if (error instanceof AxiosError) {
+                const errorData = error.response?.data;
+                if (errorData && typeof errorData === "object") {
+                    const errorMessages = Object.entries(errorData)
+                        .map(([field, msg]) => `${field}: ${msg}`)
+                        .join("\n");
+                    throw new Error(`Error al crear el punto:\n${errorMessages}`);
+                }
+                throw new Error(error.response?.data?.message || error.message);
+            }
+            
+            throw new Error("Error al crear el punto.");
         }
     };
 
@@ -127,8 +134,19 @@ const UseFetchPoints = () => {
                 await createPoint(updatedData);
             }
         } catch (error) {
-            console.error("Error al actualizar o crear el punto:", error);
-            throw new Error("Error al actualizar o crear el punto.");
+            console.error("Error al actualizar:", error);
+            if (error instanceof AxiosError) {
+                const errorData = error.response?.data;
+                if (errorData && typeof errorData === "object") {
+                    const errorMessages = Object.entries(errorData)
+                        .map(([field, msg]) => `${field}: ${msg}`)
+                        .join("\n");
+                    throw new Error(`Error al actualizar el punto:\n${errorMessages}`);
+                }
+                throw new Error(error.response?.data?.message || error.message);
+            }
+    
+            throw new Error("Error al actualizar el punto.");
         }
     };
 
