@@ -14,7 +14,7 @@ export interface Pointdata {
     region: string;
     phone: string;
     services: string[];
-    type: number;
+    type: number[];
     highlighted: boolean;
     gallery?: { 
         galleryName: string | null;
@@ -61,7 +61,6 @@ const UseFetchPoints = () => {
                     ...(newPoint.rrss?.other && { other: newPoint.rrss.other }),
                 },
                 id: undefined,
-                type: Math.max(1, Math.min(4, Math.floor(newPoint.type || 1))),
             };
 
             const response = await axios.post(`${backendUrlBase}/points`, formattedPoint);
