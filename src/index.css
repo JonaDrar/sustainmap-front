@@ -63,7 +63,6 @@ h1 {
 
 label {
     display: block;
-    margin-bottom: 5px;
     font-weight: bold;
     color: #555;
 }
@@ -227,4 +226,20 @@ label {
   /* Flecha del popup */
   .leaflet-popup-tip-container {
     display: none !important;
+  }
+
+  .toggle-checkbox:checked {
+    @apply bg-blue-500;
+  }
+  
+  .toggle-checkbox {
+    @apply appearance-none w-10 h-5 bg-gray-300 rounded-full relative cursor-pointer;
+  }
+  
+  .toggle-checkbox:checked::before {
+    @apply translate-x-full bg-white;
+  }
+  
+  .toggle-checkbox::before {
+    @apply content-[''] block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform;
   }

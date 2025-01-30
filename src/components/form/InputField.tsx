@@ -1,9 +1,12 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   prefixIcon?: ReactNode;
   suffixIcon?: ReactNode;
+  maxLength?: number;
+  placeholder?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -12,26 +15,34 @@ const InputField: React.FC<InputFieldProps> = ({
   prefixIcon,
   suffixIcon,
   placeholder,
-  ...props
+  maxLength,
+  onChange,
+  ...rest
 }) => {
+  const [charCount, setCharCount] = useState(0);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCharCount(event.target.value.length);
+    if (onChange) {
+      onChange(event);
+    }
+  };
 
   if (type === "file") {
     return (
-      <div className="flex items-center justify-between border border-gray-300 rounded-lg bg-white shadow-sm p-2 h-[52px]">
+      <div className="flex items-center justify-between border border-gray-300 rounded-lg bg-white shadow-sm p-3 h-[52px]">
         <label className="text-sm font-medium text-gray-700">{label}</label>
         <label
           htmlFor="file-upload"
           className="flex items-center justify-center w-10 h-[40px] rounded-lg cursor-pointer"
         >
-          <img src="/images/icon-add-image.png" alt="upload file image" className="w-10 h-10 mt-1" />
-
+          <img
+            src="/images/icon-add-image.png"
+            alt="upload file image"
+            className="w-10 h-10 mt-1"
+          />
         </label>
-        <input
-          id="file-upload"
-          type="file"
-          className="hidden"
-          {...props}
-        />
+        <input id="file-upload" type="file" className="hidden" {...rest} />
       </div>
     );
   }
@@ -47,12 +58,23 @@ const InputField: React.FC<InputFieldProps> = ({
         )}
         <input
           type={type}
-          className={`h-[52px] w-full pt-7 ${suffixIcon ? "pl-10" : "pl-3"} pb-2 ${suffixIcon ? "pr-10" : "pr-3"} border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out sm:text-sm`}
+          className={`h-[52px] w-full pt-7 ${
+            suffixIcon ? "pl-10" : "pl-3"
+          } pb-2 ${
+            suffixIcon ? "pr-10" : "pr-3"
+          } border border-gray-300 rounded-md shadow-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out sm:text-sm`}
           placeholder={placeholder || label}
-          {...props}
+          maxLength={maxLength}
+          onChange={handleInputChange}
+          {...rest}
         />
         {suffixIcon && (
           <span className="absolute right-3 text-blue-500">{suffixIcon}</span>
+        )}
+        {maxLength && (
+          <div className="absolute right-3 top-6 text-xs text-gray-500">
+            {charCount}/{maxLength}
+          </div>
         )}
       </div>
     </div>
