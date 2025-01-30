@@ -38,7 +38,7 @@ interface FormData {
     other: string;
   };
   phone: string;
-  type: OptionType | null;
+  type: OptionType[];
   gallery: {
     galleryName: string;
     localNumber: string;
@@ -388,7 +388,7 @@ const EditPointPage: React.FC = () => {
     photo_url: "",
     region: "",
     services: [],
-    type: null,
+    type: [],
     gallery: {
       galleryName: "",
       localNumber: "",
@@ -461,11 +461,7 @@ const EditPointPage: React.FC = () => {
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
   ) => {
-    if (Array.isArray(value)) {
-      setFormData({ ...formData, [field]: value.map(({ value }: OptionType) => value) });
-    } else {
       setFormData({ ...formData, [field]: value });
-    }
   };
 
   const handleChange = (
@@ -606,13 +602,13 @@ const EditPointPage: React.FC = () => {
       localNumber: formData.gallery?.localNumber || null,
     };
 
-    const { services } = formData;
+    const { services, type } = formData;
 
     const dataToSend = {
       ...formData,
       latitud: parseFloat(formData.latitud || "0"),
       longitude: parseFloat(formData.longitude || "0"),
-      type: parseInt(formData.type?.value || "0", 10),
+      type: type.map(({ value }) =>  parseInt(value, 10)),
       gallery: galleryData,
       services: services.map((service) => service.value),
       rrss: socialMediaLinks,
