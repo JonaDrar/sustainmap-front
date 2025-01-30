@@ -41,6 +41,7 @@ const UseFetchPoints = () => {
         const fetchPoints = async () => {
             try {
                 const response= await axios.get(`${backendUrlBase}/points`);
+                // console.log("Datos recuperados:", response.data);
                 setPoints(response.data);
             } catch (error) {
                 console.error('Error al obtener los marcadores:', error);
@@ -83,6 +84,9 @@ const UseFetchPoints = () => {
             const formattedPoint = {
                 ...newPoint,
                 photo_url: photoUrl,
+                type: newPoint.type || [],
+                services: newPoint.services || [],
+                phone: newPoint.phone || "",
                 rrss: {
                     // Si no existen los enlaces, no se incluyen en el objeto
                     ...(newPoint.rrss?.facebook && { facebook: newPoint.rrss.facebook }),
@@ -159,7 +163,15 @@ const UseFetchPoints = () => {
                     }
                     : {};
     
-                const dataToUpdate = { ...updatedData, ...galleryUpdates, ...rrssUpdates, id: undefined, photo_url: photoUrl, };
+                const dataToUpdate = { 
+                    ...updatedData, 
+                    ...galleryUpdates, 
+                    ...rrssUpdates, 
+                    id: undefined, 
+                    photo_url: photoUrl, 
+                    type: updatedData.type || [],
+                    services: updatedData.services || [],
+                    phone: updatedData.phone || "", };
     
                 const response = await axios.put(`${backendUrlBase}/points/${id}`, dataToUpdate);
                 setPoints((prev) =>
