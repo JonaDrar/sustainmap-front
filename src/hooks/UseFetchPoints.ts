@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { backendUrlBase } from "../utils/environment";
+import { useCloudinaryUpload } from "./useCloudinaryUpload";
+
 
 export interface Pointdata {
     id: string;
@@ -8,7 +10,7 @@ export interface Pointdata {
     longitude:number;
     name: string;
     description: string;
-    photo_url: string;
+    photo_url?: string | File;
     address: string;
     commune: string;
     region: string;
@@ -50,13 +52,37 @@ const UseFetchPoints = () => {
         fetchPoints();
     }, []);
 
+    const { uploadImageToCloudinary } = useCloudinaryUpload();
+
+    // const DEFAULT_IMAGE_FILE = new File(
+    //     ["/images/4960717128898555064.jpg"], // Ruta de la imagen por defecto
+    //     "default.jpg",
+    //     { type: "image/jpeg" }
+    //   );
+
+    const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
+
+    const urlToFile = async (imageUrl: string, filename: string): Promise<File> => {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        return new File([blob], filename, { type: blob.type });
+    };
+
     const createPoint = async (newPoint: Partial<Pointdata>) => {
         try {
-            const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
-            console.log("Photo URL before send:", newPoint.photo_url || DEFAULT_IMAGE_URL);
+            let photoUrl = newPoint.photo_url;
+
+            if (!photoUrl) {
+                console.log("No se proporcionó una imagen, subiendo imagen por defecto...");
+                const defaultFile = await urlToFile(DEFAULT_IMAGE_URL, "default.jpg");
+                photoUrl = await uploadImageToCloudinary(defaultFile);
+            } else if (newPoint.photo_url instanceof File) {
+                console.log("Subiendo imagen del usuario a Cloudinary...");
+                photoUrl = await uploadImageToCloudinary(newPoint.photo_url);
+            }
             const formattedPoint = {
                 ...newPoint,
-                photo_url: newPoint.photo_url || DEFAULT_IMAGE_URL,
+                photo_url: photoUrl,
                 rrss: {
                     // Si no existen los enlaces, no se incluyen en el objeto
                     ...(newPoint.rrss?.facebook && { facebook: newPoint.rrss.facebook }),
@@ -101,8 +127,16 @@ const UseFetchPoints = () => {
 
     const updatePoint = async (id: string, updatedData: Partial<Pointdata>) => {
         try {
-            const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
-            console.log("Photo URL before send:", updatedData.photo_url || DEFAULT_IMAGE_URL);
+            let photoUrl = updatedData.photo_url;
+
+            if (!photoUrl) {
+                console.log("No se proporcionó una imagen, subiendo imagen por defecto...");
+                const defaultFile = await urlToFile(DEFAULT_IMAGE_URL, "default.jpg"); 
+                photoUrl = await uploadImageToCloudinary(defaultFile);
+            } else if (updatedData.photo_url instanceof File) {
+                console.log("Subiendo imagen del usuario a Cloudinary...");
+                photoUrl = await uploadImageToCloudinary(updatedData.photo_url);
+            }
             if (id) {
                 const galleryUpdates = updatedData.gallery
                     ? {
@@ -125,7 +159,7 @@ const UseFetchPoints = () => {
                     }
                     : {};
     
-                const dataToUpdate = { ...updatedData, ...galleryUpdates, ...rrssUpdates, id: undefined, photo_url: updatedData.photo_url || DEFAULT_IMAGE_URL, };
+                const dataToUpdate = { ...updatedData, ...galleryUpdates, ...rrssUpdates, id: undefined, photo_url: photoUrl, };
     
                 const response = await axios.put(`${backendUrlBase}/points/${id}`, dataToUpdate);
                 setPoints((prev) =>
