@@ -427,11 +427,10 @@ const EditPointPage: React.FC = () => {
         longitude: point.longitude?.toString() || "",
         photo_url: typeof point.photo_url === "string" ? point.photo_url : "",
         region: point.region || "",
-        services:
-          point.services.map((service) => ({
-            value: service,
-            label: capitalizeFirstLetter(service),
-          })) || [],
+        services: point.services ? point.services.map(service => ({
+          value: service,
+          label: capitalizeFirstLetter(service),
+        })) : [],
         type: point.type && Array.isArray(point.type) ? point.type.map((type: number) => ({
               value: type.toString(),
               label: getTypeLabel(type),
@@ -450,6 +449,22 @@ const EditPointPage: React.FC = () => {
       });
     }
   }, [point]);
+
+  // useEffect(() => {
+  //   console.log("Datos de formData actualizados:", formData);
+  // }, [formData]); // Verificar cómo cambia el formData en cada actualización
+
+  // useEffect(() => {
+  //   // Si el formulario ha cambiado y se está en el paso 2, actualizamos la vista
+  //   if (step === 2 && point) {
+  //     console.log("Formulario está en el paso 2:", formData);
+
+  //     // Aquí podrías realizar alguna validación o actualizar algo del estado
+  //     if (!formData.phone || formData.phone === "+569") {
+  //       console.log("El teléfono no ha sido completado correctamente.");
+  //     }
+  //   }
+  // }, [step, formData]);  // El estado solo cambia cuando el paso cambia
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CreatableSelect, { CreatableProps } from "react-select/creatable";
 import { components, OptionProps, StylesConfig, MultiValue, SingleValue, ActionMeta, GroupBase } from "react-select";
 import { customStyles } from "./utils";
@@ -10,7 +10,7 @@ interface OptionType {
 
 interface CreatableSelectFieldProps extends CreatableProps<OptionType, true, GroupBase<OptionType>> {
   label: string;
-  value: OptionType[];
+  value: OptionType[]; // Asegúrate de que 'value' sea un array de objetos con 'label' y 'value'
   options: OptionType[];
   onChange: (newValue: MultiValue<OptionType> | SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => void;
 }
@@ -34,6 +34,11 @@ const CustomOption: React.FC<OptionProps<OptionType>> = (props) => {
 const CreatableSelectField: React.FC<CreatableSelectFieldProps> = ({ label, options, value, onChange }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedOption, setSelectedOption] = useState<OptionType[]>(value);
+
+  // Sincronizar el valor con el valor de 'formData'
+  useEffect(() => {
+    setSelectedOption(value); // Actualiza selectedOption cuando value cambie
+  }, [value]);
 
   const handleChange = (newValue: MultiValue<OptionType> | SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => {
     const selected = newValue ? (newValue as OptionType[]) : [];
@@ -72,7 +77,7 @@ const CreatableSelectField: React.FC<CreatableSelectFieldProps> = ({ label, opti
         onChange={handleChange}
         isClearable
         placeholder={label}
-        value={selectedOption}
+        value={selectedOption} // Asegúrate de que el valor esté sincronizado
         components={{ Option: CustomOption }}
         hideSelectedOptions={false} // No mostrar los valores seleccionados cuando el menú está cerrado
         closeMenuOnSelect={false} // Mantener el menú abierto al seleccionar una opción
