@@ -461,7 +461,11 @@ const EditPointPage: React.FC = () => {
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
   ) => {
-    setFormData({ ...formData, [field]: value });
+    if (Array.isArray(value)) {
+      setFormData({ ...formData, [field]: value.map(({ value }: OptionType) => value) });
+    } else {
+      setFormData({ ...formData, [field]: value });
+    }
   };
 
   const handleChange = (
