@@ -444,6 +444,7 @@ const EditPointPage: React.FC = () => {
     if (file) {
       try {
         const uploadedUrl = await uploadImageToCloudinary(file);
+        console.log("URL de la imagen subida:", uploadedUrl);
         setFormData({ ...formData, photo_url: uploadedUrl });
         Swal.fire("Éxito", "La imagen se subió correctamente.", "success");
       } catch (error) {
@@ -612,6 +613,7 @@ const EditPointPage: React.FC = () => {
       gallery: galleryData,
       services: services.map((service) => service.value),
       rrss: socialMediaLinks,
+      photo_url: formData.photo_url,
     };
 
     try {

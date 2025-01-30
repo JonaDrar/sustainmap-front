@@ -53,6 +53,7 @@ const UseFetchPoints = () => {
     const createPoint = async (newPoint: Partial<Pointdata>) => {
         try {
             const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
+            console.log("Photo URL before send:", newPoint.photo_url || DEFAULT_IMAGE_URL);
             const formattedPoint = {
                 ...newPoint,
                 photo_url: newPoint.photo_url || DEFAULT_IMAGE_URL,
@@ -102,6 +103,7 @@ const UseFetchPoints = () => {
     const updatePoint = async (id: string, updatedData: Partial<Pointdata>) => {
         try {
             const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
+            console.log("Photo URL before send:", updatedData.photo_url || DEFAULT_IMAGE_URL);
             if (id) {
                 const galleryUpdates = updatedData.gallery
                     ? {
