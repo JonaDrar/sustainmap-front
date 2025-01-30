@@ -425,7 +425,7 @@ const EditPointPage: React.FC = () => {
         highlighted: point.highlighted || false,
         latitud: point.latitud?.toString() || "",
         longitude: point.longitude?.toString() || "",
-        photo_url: point.photo_url || "",
+        photo_url: typeof point.photo_url === "string" ? point.photo_url : "",
         region: point.region || "",
         services:
           point.services.map((service) => ({
@@ -456,6 +456,7 @@ const EditPointPage: React.FC = () => {
     if (file) {
       try {
         const uploadedUrl = await uploadImageToCloudinary(file);
+        console.log("URL de la imagen subida:", uploadedUrl);
         setFormData({ ...formData, photo_url: uploadedUrl });
         Swal.fire("Éxito", "La imagen se subió correctamente.", "success");
       } catch (error) {
@@ -609,6 +610,7 @@ const EditPointPage: React.FC = () => {
       gallery: galleryData,
       services: services.map((service) => service.value),
       rrss: socialMediaLinks,
+      photo_url: formData.photo_url,
     };
 
     try {
@@ -621,14 +623,28 @@ const EditPointPage: React.FC = () => {
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
-      console.error("Error al guardar el punto:", error);
-      Swal.fire(
-        "Error",
-        "No se pudo guardar el punto. Por favor, intenta nuevamente.",
-        "error"
-      );
+        console.error("Error al guardar el punto:", error);
+
+        let errorMessage = "No se pudo guardar el punto. Por favor, intenta nuevamente.";
+
+        if (error instanceof Error) {
+            if (error.message.includes("\n")) {
+                errorMessage = `<ul style="text-align: left;">${error.message
+                    .split("\n")
+                    .map((msg) => `<li>${msg}</li>`)
+                    .join("")}</ul>`;
+            } else {
+                errorMessage = error.message;
+            }
+        }
+
+        Swal.fire({
+            title: "Error",
+            html: errorMessage,
+            icon: "error",
+        });
     }
-  };
+};
 
   const handleNextStep = () =>
     setStep((prev) => Math.min(prev + 1, totalSteps));
