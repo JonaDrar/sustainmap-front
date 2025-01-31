@@ -66,9 +66,9 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             onClick={() => handlePointClick(point)}
             style={{ zIndex: 1000 }}
           >
-            {/* Contenedor superior: Nombre + Edición (más compacto) */}
+            {/* Contenedor superior: Nombre + Edición */}
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-blue-500 text-sm md:text-base">{point.name}</h3>
+              <h3 className="font-semibold text-blue-600 text-sm md:text-base">{point.name}</h3>
               {loggedInUser && (
                 <DropdownButton
                   onEdit={() => handleEdit(point)}
@@ -88,7 +88,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 {typeMapping[point.type] || "Tipo desconocido"}
               </span>
 
-              {/* Redes sociales (iconos más grandes) */}
+              {/* Redes sociales */}
               <div className="flex space-x-2 md:space-x-3">
                 {/* Instagram */}
                 <a
@@ -144,55 +144,51 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
               </div>
             </div>
 
-            {/* Contenedor flexible con imagen y contenido */}
-            <div className="flex items-start gap-4">
-              {/* Imagen */}
-              <img
-                src={point.photo_url}
-                alt={point.name}
-                className="w-24 h-32 md:w-32 md:h-32 rounded-md object-cover"
-              />
+            {/* Contenedor flexible con imagen y contenido textual alineado */}
+            <div className="flex items-start gap-2 md:gap-4">
+              {/* Contenedor de la imagen */}
+              <div className="flex-shrink-0">
+                <img
+                  src={point.photo_url}
+                  alt={point.name}
+                  className="w-24 h-32 md:w-32 md:h-32 rounded-md object-cover"
+                />
+              </div>
 
-              {/* Contenido a la derecha */}
-              <div className="flex-1">
+              {/* Contenedor del contenido textual (Dirección + Servicios) */}
+              <div className="flex-1 flex flex-col justify-center">
                 {/* Dirección */}
                 <p className="text-sm text-gray-600">
                   {point.address}, {point.region}
                 </p>
 
                 {/* Servicios */}
-                <p className="text-sm text-blue-700 font-semibold mt-2">Servicios:</p>
+                <p className="text-sm text-blue-600 font-semibold mt-2">Servicios:</p>
                 <p className="text-sm text-gray-600">{point.services.join(", ") || "No especificados"}</p>
-
-                {/* Facebook y Sitio Web - Se muestran solo si existen */}
-                <div className="mt-3 space-y-2">
-                  {/* Facebook */}
-                  {point.rrss?.facebook && (
-                    <a
-                      href={point.rrss.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-2 text-blue-600 hover:underline"
-                    >
-                      <img src="/images/sitio-web-pin.png" alt="Facebook" className="h-5 w-5 object-contain" />
-                      <span>Facebook</span>
-                    </a>
-                  )}
-
-                  {/* Sitio Web */}
-                  {point.rrss?.other && (
-                    <a
-                      href={point.rrss.other}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-2 text-blue-600 hover:underline"
-                    >
-                      <img src="/images/sitio-web-pin.png" alt="Sitio Web" className="h-5 w-5 object-contain" />
-                      <span>Visitar sitio web</span>
-                    </a>
-                  )}
-                </div>
               </div>
+            </div>
+
+            {/* Facebook y Sitio Web - Ahora debajo de la imagen */}
+            <div className="mt-2 text-blue-600 text-sm flex flex-col w-full">
+              <a
+                href={point.rrss?.facebook || "https://www.facebook.com/prueba"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline flex items-center space-x-1"
+              >
+                <img src="/images/sitio-web.png" alt="Facebook" className="h-5 w-5 object-contain opacity-80" />
+                <span className="truncate">https://www.facebook.com/prueba</span>
+              </a>
+
+              <a
+                href={point.rrss?.other || "https://www.sitiowebprueba.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline flex items-center space-x-1"
+              >
+                <img src="/images/sitio-web.png" alt="Sitio Web" className="h-5 w-5 object-contain opacity-80" />
+                <span className="truncate">https://www.sitiowebprueba.com</span>
+              </a>
             </div>
           </li>
         ))}
@@ -200,6 +196,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
     )}
   </div>
   );
+
 };
 
 export default SidebarMenu;
