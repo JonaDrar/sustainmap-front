@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, useMap} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MarkerList from "../components/MarkerList";
-import CenterMap from "../components/CenterMap";
+import CenterMap from "../components/maps/CenterPointMap";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import SidebarMenu from "../components/SidebarMenu";
 import L from "leaflet";
 import { Pointdata } from "../hooks/UseFetchPoints";
+import MapBoundsUpdater from "../components/maps/FiltersPoints";
+import LocateUser from "../components/maps/FoundLocateUser";
 import SearchBar from "../components/SearchBar";  // Importa el SearchBar
 import CategoryFilter from "../components/CategoryFilter";  // Importa CategoryFilter
 
@@ -129,6 +131,10 @@ const Map = () => {
     highlighted: point.highlighted || false,
     gallery: point.gallery || undefined,
     deleted: point.deleted || false,
+    rrss: point.rrss || undefined,
+    activationStartDate: point.activationStartDate ? new Date(point.activationStartDate).toISOString() : "",
+    activationEndDate: point.activationEndDate ? new Date(point.activationEndDate).toISOString() : "",
+    isActive: point.isActive || false,
   }));
 
   const handleLocationFound = (lat: number, lng: number) => {
