@@ -38,7 +38,7 @@ interface FormData {
     other: string;
   };
   phone: string;
-  type: OptionType | null;
+  type: OptionType[];
   gallery: {
     galleryName: string;
     localNumber: string;
@@ -140,17 +140,6 @@ const Step1Form: React.FC<{
           }
           imageSrc={highlightImage}
         />
-
-        {/* <SelectField
-          label="Peluquería destacada"
-          name="highlighted"
-          options={[
-            { value: "true", label: "Sí" },
-            { value: "false", label: "No" },
-          ]}
-          value={formData.highlighted ? { value: "true", label: "Sí" } : { value: "false", label: "No" }}
-          onChange={(value) => handleSelectChange(value, "highlighted")}
-        /> */}
         <PhoneNumberInput onChange={handlePhoneChange} />
 
       </div>
@@ -369,6 +358,27 @@ const Step2Form: React.FC<{
   );
 };
 
+// Define las opciones en una constante
+const typeOptions = [
+  { value: "1", label: "1. Peluquería" },
+  { value: "2", label: "2. Peluquería canina" },
+  { value: "3", label: "3. Centro de acopio" },
+  { value: "4", label: "4. Centro de estudio" },
+  { value: "5", label: "5. Otros" },
+];
+
+// Función para obtener el objeto con value y label
+const getTypeLabel = (type: number) => {
+  if (type === null) return null;
+  const option = typeOptions.find(opt => opt.value === type.toString());
+  return option?.label || "";
+};
+
+// Función para capitalizar la primera letra de una cadena
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const EditPointPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -388,7 +398,7 @@ const EditPointPage: React.FC = () => {
     photo_url: "",
     region: "",
     services: [],
-    type: null,
+    type: [],
     gallery: {
       galleryName: "",
       localNumber: "",
@@ -415,16 +425,17 @@ const EditPointPage: React.FC = () => {
         highlighted: point.highlighted || false,
         latitud: point.latitud?.toString() || "",
         longitude: point.longitude?.toString() || "",
-        photo_url: point.photo_url || "",
+        photo_url: typeof point.photo_url === "string" ? point.photo_url : "",
         region: point.region || "",
-        services:
-          point.services.map((service) => ({
-            value: service,
-            label: service,
-          })) || [],
-        type: point.type
-          ? { value: point.type.toString(), label: `Categoría ${point.type}` }
-          : null,
+        services: point.services ? point.services.map(service => ({
+          value: service,
+          label: capitalizeFirstLetter(service),
+        })) : [],
+        type: point.type && Array.isArray(point.type) ? point.type.map((type: number) => ({
+              value: type.toString(),
+              label: getTypeLabel(type),
+            } as OptionType))
+          : [],
         gallery: {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
@@ -439,11 +450,28 @@ const EditPointPage: React.FC = () => {
     }
   }, [point]);
 
+  // useEffect(() => {
+  //   console.log("Datos de formData actualizados:", formData);
+  // }, [formData]); // Verificar cómo cambia el formData en cada actualización
+
+  // useEffect(() => {
+  //   // Si el formulario ha cambiado y se está en el paso 2, actualizamos la vista
+  //   if (step === 2 && point) {
+  //     console.log("Formulario está en el paso 2:", formData);
+
+  //     // Aquí podrías realizar alguna validación o actualizar algo del estado
+  //     if (!formData.phone || formData.phone === "+569") {
+  //       console.log("El teléfono no ha sido completado correctamente.");
+  //     }
+  //   }
+  // }, [step, formData]);  // El estado solo cambia cuando el paso cambia
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       try {
         const uploadedUrl = await uploadImageToCloudinary(file);
+        console.log("URL de la imagen subida:", uploadedUrl);
         setFormData({ ...formData, photo_url: uploadedUrl });
         Swal.fire("Éxito", "La imagen se subió correctamente.", "success");
       } catch (error) {
@@ -461,7 +489,7 @@ const EditPointPage: React.FC = () => {
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
   ) => {
-    setFormData({ ...formData, [field]: value });
+      setFormData({ ...formData, [field]: value });
   };
 
   const handleChange = (
@@ -488,21 +516,6 @@ const EditPointPage: React.FC = () => {
           setFormData({ ...formData, longitude: value });
         }
       }
-      return;
-    }
-
-    if (name === "type") {
-      if (/^[1-4]?$/.test(value)) {
-        setFormData({
-          ...formData,
-          type: { value, label: `Categoría ${value}` },
-        });
-      }
-      return;
-    }
-
-    if (name === "highlighted") {
-      setFormData({ ...formData, highlighted: value === "true" });
       return;
     }
 
@@ -602,16 +615,17 @@ const EditPointPage: React.FC = () => {
       localNumber: formData.gallery?.localNumber || null,
     };
 
-    const { services } = formData;
+    const { services, type } = formData;
 
     const dataToSend = {
       ...formData,
       latitud: parseFloat(formData.latitud || "0"),
       longitude: parseFloat(formData.longitude || "0"),
-      type: parseInt(formData.type?.value || "0", 10),
+      type: type.map(({ value }) =>  parseInt(value, 10)),
       gallery: galleryData,
       services: services.map((service) => service.value),
       rrss: socialMediaLinks,
+      photo_url: formData.photo_url,
     };
 
     try {
@@ -624,14 +638,28 @@ const EditPointPage: React.FC = () => {
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
-      console.error("Error al guardar el punto:", error);
-      Swal.fire(
-        "Error",
-        "No se pudo guardar el punto. Por favor, intenta nuevamente.",
-        "error"
-      );
+        console.error("Error al guardar el punto:", error);
+
+        let errorMessage = "No se pudo guardar el punto. Por favor, intenta nuevamente.";
+
+        if (error instanceof Error) {
+            if (error.message.includes("\n")) {
+                errorMessage = `<ul style="text-align: left;">${error.message
+                    .split("\n")
+                    .map((msg) => `<li>${msg}</li>`)
+                    .join("")}</ul>`;
+            } else {
+                errorMessage = error.message;
+            }
+        }
+
+        Swal.fire({
+            title: "Error",
+            html: errorMessage,
+            icon: "error",
+        });
     }
-  };
+};
 
   const handleNextStep = () =>
     setStep((prev) => Math.min(prev + 1, totalSteps));

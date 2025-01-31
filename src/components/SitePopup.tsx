@@ -29,7 +29,7 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
         {/* Imagen superior */}
         <div className="relative">
           <img
-            src={site.photo_url}
+            src={typeof site.photo_url === 'string' ? site.photo_url : ''}
             alt={site.name}
             className="w-full h-32 sm:h-40 object-cover"
           />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Select, { Props as ReactSelectProps, ActionMeta, SingleValue, MultiValue, GroupBase, components, OptionProps } from "react-select";
 import { customStyles } from "./utils";
 import iconoTijeras from '/images/icon-scissors.png';
@@ -7,7 +7,6 @@ import iconoCentroAcopio from '/images/icono-centro-acopio.png';
 import iconoCentroEstudio from '/images/icono-centro-estudio.png';
 import iconoOtros from '/images/icono-otros.png';
 
-
 interface OptionType {
   label: string;
   value: string;
@@ -15,7 +14,7 @@ interface OptionType {
 
 interface SelectFieldProps extends ReactSelectProps<OptionType, true, GroupBase<OptionType>> {
   label: string;
-  value: MultiValue<OptionType> | SingleValue<OptionType>; // Ajustado para aceptar el valor seleccionado
+  value: MultiValue<OptionType> | SingleValue<OptionType>; 
   onChange: (newValue: MultiValue<OptionType> | SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => void;
 }
 
@@ -57,6 +56,10 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
   const [isFocused, setIsFocused] = useState(false);
   const [selectedOption, setSelectedOption] = useState<MultiValue<OptionType> | SingleValue<OptionType>>(value);
 
+  useEffect(() => {
+    setSelectedOption(value);
+  }, [value]);  // Actualiza 'selectedOption' cuando 'value' cambie
+
   const handleChange = (newValue: MultiValue<OptionType> | SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => {
     setSelectedOption(newValue);
     onChange(newValue, actionMeta);
@@ -65,11 +68,7 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
   return (
     <div className="relative">
       <label
-        className={`absolute left-3 transition-all duration-150 ease-in-out ${
-          isFocused || selectedOption
-            ? "top-2 text-sm text-gray-500"
-            : "top-1/2 transform -translate-y-1/2 text-base text-gray-400"
-        } pointer-events-none`}
+        className={`absolute left-3 transition-all duration-150 ease-in-out ${isFocused || selectedOption ? "top-2 text-sm text-gray-500" : "top-1/2 transform -translate-y-1/2 text-base text-gray-400"}`}
       >
         {label}
       </label>
@@ -83,8 +82,8 @@ const SelectField: React.FC<SelectFieldProps> = ({ label, options, value, onChan
         components={{ Option: CustomOption }}
         isMulti
         placeholder={label}
-        value={selectedOption} // Añadido para pasar el valor seleccionado
-        formatOptionLabel={label === 'Categoría' ? formatOptionLabel : undefined} // Usar formatOptionLabel para personalizar la etiqueta de la opción
+        value={selectedOption}  // Asegúrate de que este valor se sincronice con 'selectedOption'
+        formatOptionLabel={label === 'Categoría' ? formatOptionLabel : undefined}
       />
     </div>
   );

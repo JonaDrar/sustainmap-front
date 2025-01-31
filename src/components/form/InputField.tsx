@@ -17,14 +17,23 @@ const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   maxLength,
   onChange,
-  ...rest
+  ...props
 }) => {
   const [charCount, setCharCount] = useState(0);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCharCount(event.target.value.length);
-    if (onChange) {
-      onChange(event);
+    if (type === "file" && event.target.files) {
+      // Si es un archivo, maneja la carga del archivo aquí (por ejemplo, pasando el archivo a la función de carga)
+      // const file = event.target.files[0];
+      if (onChange) {
+        onChange(event); // Llamar al onChange si es necesario para el resto de la lógica
+      }
+    } else {
+      // Para entradas de texto, sigue con la lógica normal
+      setCharCount(event.target.value.length);
+      if (onChange) {
+        onChange(event);
+      }
     }
   };
 
@@ -42,7 +51,7 @@ const InputField: React.FC<InputFieldProps> = ({
             className="w-10 h-10 mt-1"
           />
         </label>
-        <input id="file-upload" type="file" className="hidden" {...rest} />
+        <input id="file-upload" type="file" className="hidden" onChange={handleInputChange} {...props} />
       </div>
     );
   }
@@ -66,7 +75,7 @@ const InputField: React.FC<InputFieldProps> = ({
           placeholder={placeholder || label}
           maxLength={maxLength}
           onChange={handleInputChange}
-          {...rest}
+          {...props}
         />
         {suffixIcon && (
           <span className="absolute right-3 text-blue-500">{suffixIcon}</span>
