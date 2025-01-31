@@ -618,7 +618,7 @@ const handleChange = (
 
   if (name === "type") {
     if (/^[1-4]?$/.test(value)) {
-      setFormData({ ...formData, type: value });
+      setFormData({ ...formData, type: value ? [{ label: value, value: value }] : [] });
     }
     return;
   }

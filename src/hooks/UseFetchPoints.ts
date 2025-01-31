@@ -156,96 +156,41 @@ const UseFetchPoints = () => {
         return point.isActive; // Si no hay fechas, usa el estado `isActive`
     });
 
-    const updatePoint = async (id: string, data: Pointdata) => {
-        try {
-        // Verifica los datos que estás recibiendo
-        console.log("Datos recibidos para actualizar:", data);
-            // Eliminar 'id' de los datos antes de enviar
-        const { id: _, ...formattedData } = data; // Eliminar 'id' de los datos antes de enviar
-        console.log("_:", _);
-
-        // Convertir las fechas a ISO 8601 si existen
-        formattedData.activationStartDate = formattedData.activationStartDate
-            ? new Date(formattedData.activationStartDate).toISOString()
-            : undefined;
-        formattedData.activationEndDate = formattedData.activationEndDate
-            ? new Date(formattedData.activationEndDate).toISOString()
-            : undefined;
-
-            console.log("Datos enviados al backend:", formattedData);
-
-
     const updatePoint = async (id: string, updatedData: Partial<Pointdata>) => {
         try {
-            if (id) {
-                let photoUrl = updatedData.photo_url;
+            if (!id) return;
 
+            let photoUrl = updatedData.photo_url;
             if (!photoUrl) {
-                console.log("No se proporcionó una imagen, subiendo imagen por defecto...");
-                const defaultFile = await urlToFile(DEFAULT_IMAGE_URL, "default.jpg"); 
+                const defaultFile = await urlToFile(DEFAULT_IMAGE_URL, "default.jpg");
                 photoUrl = await uploadImageToCloudinary(defaultFile);
             } else if (updatedData.photo_url instanceof File) {
-                console.log("Subiendo imagen del usuario a Cloudinary...");
                 photoUrl = await uploadImageToCloudinary(updatedData.photo_url);
             }
-                const galleryUpdates = updatedData.gallery
-                    ? {
-                        gallery: {
-                            ...updatedData.gallery,
-                            galleryName: updatedData.gallery?.galleryName || null,
-                            localNumber: updatedData.gallery?.localNumber || null,
-                        },
-                    }
-                    : {};
 
-                const rrssUpdates = updatedData.rrss
-                    ? {
-                        rrss: {
-                            ...updatedData.rrss,
-                            facebook: updatedData.rrss?.facebook || null, 
-                            instagram: updatedData.rrss?.instagram || null,
-                            other: updatedData.rrss?.other || null,
-                        },
-                    }
-                    : {};
-                    
-                    const dataToUpdate = { 
-                        ...updatedData, 
-                        ...galleryUpdates, 
-                        ...rrssUpdates, 
-                        id: undefined, 
-                        photo_url: photoUrl, 
-                        type: updatedData.type || [],
-                        services: updatedData.services || [],
-                        phone: updatedData.phone || "", };
+            const formattedData = {
+                ...updatedData,
+                id: undefined,
+                photo_url: photoUrl,
+                activationStartDate: updatedData.activationStartDate ? new Date(updatedData.activationStartDate).toISOString() : undefined,
+                activationEndDate: updatedData.activationEndDate ? new Date(updatedData.activationEndDate).toISOString() : undefined,
+                type: updatedData.type || [],
+                services: updatedData.services || [],
+                phone: updatedData.phone || "",
+                gallery: updatedData.gallery || { galleryName: null, localNumber: null },
+                rrss: updatedData.rrss || { facebook: null, instagram: null, other: null },
+            };
 
-                const dataToUpdate = { ...updatedData, ...galleryUpdates, ...rrssUpdates, id: undefined };
-    
-                const response = await axios.put(`${backendUrlBase}/points/${id}`, dataToUpdate);
-                const response = await axios.put(`${backendUrlBase}/points/${id}`, formattedData);
+            const response = await axios.put(`${backendUrlBase}/points/${id}`, formattedData);
 
             if (response.status === 200) {
-                setPoints((prev) =>
-                    prev.map((point) => (point.id === id ? { ...point, ...response.data } : point))
-                );
-            }
-                setPoints((prev) =>
-                    prev.map((point) => (point.id === id ? { ...point, ...response.data } : point))
-                );
+                setPoints((prev) => prev.map((point) => (point.id === id ? { ...point, ...response.data } : point)));
             }
         } catch (error) {
-            console.error("Error al actualizar:", error);
+            console.error("Error al actualizar el punto:", error);
             if (error instanceof AxiosError) {
-                const errorData = error.response?.data;
-                if (errorData && typeof errorData === "object") {
-                    const errorMessages = Object.entries(errorData)
-                        .map(([field, msg]) => `${field}: ${msg}`)
-                        .join("\n");
-                    throw new Error(`Error al actualizar el punto:\n${errorMessages}`);
-                }
-                throw new Error(error.response?.data?.message || error.message);
+                throw new Error(error.response?.data?.message || "Error al actualizar el punto.");
             }
-    
             throw new Error("Error al actualizar el punto.");
         }
     };
