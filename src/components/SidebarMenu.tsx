@@ -85,7 +85,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             <div className="flex justify-between items-center mb-4 md:mb-6">
               {/* Tipo de negocio */}
               <span className="text-xs md:text-sm text-gray-800 font-medium">
-                {typeMapping[point.type] || "Tipo desconocido"}
+                {Array.isArray(point.type) ? point.type.map(t => typeMapping[t] || "Tipo desconocido").join(", ") : "Tipo desconocido"}
               </span>
 
               {/* Redes sociales */}
@@ -149,7 +149,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
               {/* Contenedor de la imagen */}
               <div className="flex-shrink-0">
                 <img
-                  src={point.photo_url}
+                  src={typeof point.photo_url === "string" ? point.photo_url : point.photo_url ? URL.createObjectURL(point.photo_url) : ""}
                   alt={point.name}
                   className="w-24 h-32 md:w-32 md:h-32 rounded-md object-cover"
                 />
