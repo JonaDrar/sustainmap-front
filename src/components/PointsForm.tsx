@@ -6,9 +6,47 @@ import { Pointdata } from "../hooks/UseFetchPoints";
 import UseFetchPoints from "../hooks/UseFetchPoints";
 import Swal from "sweetalert2";
 import Wizard from "../components/Wizard";
-import { MapContainer, Marker, TileLayer } from "react-leaflet";
-import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload';
 import CenterMap from "./maps/CenterPointMap";
+import { useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
+import CreatableSelectField from "./form/CreatableSelectField";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import { MultiValue, SingleValue } from "react-select";
+import ToggleField from "./form/ToggleField";
+import highlightImage from "/images/Star.png";
+import PhoneNumberInput from "./form/PhoneNumberInput";
+
+interface OptionType {
+  label: string;
+  value: string;
+}
+
+interface FormData {
+  id: string;
+  name: string;
+  address: string;
+  commune: string;
+  description: string;
+  highlighted: boolean;
+  latitud: string;
+  longitude: string;
+  photo_url: string;
+  region: string;
+  services: OptionType[];
+  rrss: {
+    facebook: string;
+    instagram: string;
+    other: string;
+  };
+  phone: string;
+  type: OptionType[];
+  gallery: {
+    galleryName: string;
+    localNumber: string;
+  };
+  activationStartDate: string;
+  activationEndDate: string;
+  isActive: boolean;
+}
 
 const formatDateForInput = (date: string | undefined): string | undefined => {
   if (date) {
@@ -25,10 +63,24 @@ const Step1Form: React.FC<{
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => void;
+  handleSelectChange: (
+    value: MultiValue<OptionType> | SingleValue<OptionType>,
+    field: string
+  ) => void;
   handleDateChange: (e: React.ChangeEvent<HTMLInputElement>, field: string) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleToggleChange: (value: boolean, field: string) => void;
+  handlePhoneChange: (value: string) => void;
   isUploading: boolean;
-}> = ({ formData, handleChange, handleDateChange, handleFileChange, isUploading }) => {
+}> = ({
+  formData,
+  handleChange, handleDateChange,
+  handlePhoneChange,
+  handleFileChange,
+  handleSelectChange,
+  handleToggleChange,
+  isUploading,
+}) => {
   // Función para manejar la limitación de caracteres
   const handleLimitedChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -45,18 +97,15 @@ const Step1Form: React.FC<{
         Información básica
       </h6>
       <div className="grid grid-cols-2 gap-6 ">
-        <div className="relative">
-          <InputField
-            label="Nombre del centro"
-            name="name"
-            placeholder="E.g: Siempre Linda"
-            value={formData.name}
-            onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
-          />
-          <div className="absolute bottom-0 right-4 text-sm text-gray-500">
-            {formData.name.length}/30
-          </div>
-        </div>
+        <InputField
+          label="Nombre del centro"
+          placeholder="E.g: Siempre Linda "
+          name="name"
+          value={formData.name}
+          maxLength={30}
+          onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
+        />
+
         <SelectField
           label="Categoría"
           name="type"
@@ -66,8 +115,9 @@ const Step1Form: React.FC<{
             { value: "2", label: "2. Peluquería canina" },
             { value: "3", label: "3. Centro de acopio" },
             { value: "4", label: "4. Centro de estudio" },
+            { value: "5", label: "5. Otros" },
           ]}
-          onChange={handleChange}
+          onChange={(value) => handleSelectChange(value, "type")}
         />
         <InputField
           label="Adjunta imagen"
@@ -76,57 +126,34 @@ const Step1Form: React.FC<{
           onChange={handleFileChange}
         />
         {isUploading && <p>Subiendo imagen...</p>}
-        <SelectField
+
+        <CreatableSelectField
           label="Servicios"
           name="services"
           value={formData.services}
           options={[
+            { value: "cabello", label: "Cabello" },
             { value: "peinados", label: "Peinados" },
-            { value: "masajes", label: "Masajes" },
-            { value: "manicure", label: "Manicure" },
+            { value: "especialista", label: "Especialista en rulos" },
             { value: "depilación", label: "Depilación" },
+            { value: "manicure", label: "Manicure" },
+            { value: "pedicure", label: "Pedicure" },
+            { value: "masajes", label: "Masajes" },
+            { value: "decoloración", label: "Decoloración" },
           ]}
-          onChange={handleChange}
+          onChange={(value) => handleSelectChange(value, "services")}
         />
 
-        <SelectField
+        <ToggleField
           label="Peluquería destacada"
-          name="highlighted"
-          options={[
-            { value: "true", label: "Sí" },
-            { value: "false", label: "No" },
-          ]}
-          value={formData.highlighted ? "true" : "false"}
-          onChange={handleChange}
+          value={formData.highlighted}
+          onChange={(highlighted) =>
+            handleToggleChange(highlighted, "highlighted")
+          }
+          imageSrc={highlightImage}
         />
+        <PhoneNumberInput onChange={handlePhoneChange} />
 
-        <InputField
-          label="Número de teléfono"
-          placeholder="E.g: +56912345678"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-        />
-          <InputField
-          label="Nombre de Galería(opcional)"
-          placeholder="E.g: Galería Caracoles"
-          name="galleryName"
-          value={formData.gallery.galleryName}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Nombre de depto/local(opcional)"
-          placeholder="Local 304 E"
-          name="localNumber"
-          value={formData.gallery.localNumber}
-          onChange={handleChange}
-        />
-        {/* <InputField
-          label="Descripción"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-        /> */}
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
@@ -183,11 +210,12 @@ const Step1Form: React.FC<{
   );
 };
 
-
 const Step2Form: React.FC<{
   formData: FormData;
   handleChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => void;
 }> = ({ formData, handleChange }) => {
   const [mapCenter, setMapCenter] = useState<[number, number] | null>([
@@ -200,14 +228,17 @@ const Step2Form: React.FC<{
     commune: string,
     region: string
   ) => {
-    if (query.trim() === "" || commune.trim() === "" || region.trim() === "") return;
+    if (query.trim() === "" || commune.trim() === "" || region.trim() === "")
+      return;
 
     try {
       const fullQuery = `${query}, ${commune}, ${region}`;
       console.log("Buscando dirección:", fullQuery);
 
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&addressdetails=1&limit=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          fullQuery
+        )}&addressdetails=1&limit=1`
       );
 
       const data = await response.json();
@@ -215,9 +246,9 @@ const Step2Form: React.FC<{
 
       if (data.length > 0) {
         const { lat, lon } = data[0];
-        
+
         formData.latitud = lat;
-      formData.longitude = lon;
+        formData.longitude = lon;
 
         formData.latitud = lat.toString();
         formData.longitude = lon.toString();
@@ -308,6 +339,20 @@ const Step2Form: React.FC<{
           value={formData.region}
           onChange={handleChange}
         />
+        <InputField
+          label="Nombre de Galería(opcional)"
+          placeholder="E.g: Galería Caracoles"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Nombre de depto/local(opcional)"
+          placeholder="Local 304 E"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
         <div className="col-span-2">
           <button
             onClick={handleSearch}
@@ -316,7 +361,6 @@ const Step2Form: React.FC<{
             Buscar ubicación
           </button>
         </div>
-      
       </div>
 
       <div>
@@ -330,50 +374,47 @@ const Step2Form: React.FC<{
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
           <CenterMap coords={mapCenter} />
-          {formData.latitud && formData.longitude && parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
-            <Marker
-              position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
-              draggable={true}
-              eventHandlers={{
-                dragend: handleMarkerDrag,
-              }}
-            />
-          )}
+          {formData.latitud &&
+            formData.longitude &&
+            parseFloat(formData.latitud) &&
+            parseFloat(formData.longitude) && (
+              <Marker
+                position={[
+                  parseFloat(formData.latitud),
+                  parseFloat(formData.longitude),
+                ]}
+                draggable={true}
+                eventHandlers={{
+                  dragend: handleMarkerDrag,
+                }}
+              />
+            )}
         </MapContainer>
       </div>
     </>
   );
 };
 
+// Define las opciones en una constante
+const typeOptions = [
+  { value: "1", label: "1. Peluquería" },
+  { value: "2", label: "2. Peluquería canina" },
+  { value: "3", label: "3. Centro de acopio" },
+  { value: "4", label: "4. Centro de estudio" },
+  { value: "5", label: "5. Otros" },
+];
 
+// Función para obtener el objeto con value y label
+const getTypeLabel = (type: number) => {
+  if (type === null) return null;
+  const option = typeOptions.find(opt => opt.value === type.toString());
+  return option?.label || "";
+};
 
-interface FormData {
-  id: string;
-  name: string;
-  address: string;
-  commune: string;
-  description: string;
-  highlighted: boolean;
-  latitud: string;
-  longitude: string;
-  photo_url: string;
-  region: string;
-  services: string;
-  rrss: {
-    facebook: string;
-    instagram: string;
-    other: string;
-  };
-  phone: string;
-  type: string;
-  gallery: {
-    galleryName: string;
-    localNumber: string;
-  };
-  activationStartDate: string;
-  activationEndDate: string;
-  isActive: boolean;
-}
+// Función para capitalizar la primera letra de una cadena
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
 
 const EditPointPage: React.FC = () => {
   const navigate = useNavigate();
@@ -393,15 +434,14 @@ const EditPointPage: React.FC = () => {
     longitude: "",
     photo_url: "",
     region: "",
-    services: "",
-    type: "",
+    services: [],
+    type: [],
     gallery: {
       galleryName: "",
       localNumber: "",
     },
-    phone: "",
+    phone: "+569",
     rrss: {
-      // Asegúrate de incluir este objeto
       facebook: "",
       instagram: "",
       other: "",
@@ -425,10 +465,17 @@ const EditPointPage: React.FC = () => {
         highlighted: point.highlighted || false,
         latitud: point.latitud?.toString() || "",
         longitude: point.longitude?.toString() || "",
-        photo_url: point.photo_url || "",
+        photo_url: typeof point.photo_url === "string" ? point.photo_url : "",
         region: point.region || "",
-        services: point.services.join(", ") || "",
-        type: point.type?.toString() || "",
+        services: point.services ? point.services.map(service => ({
+          value: service,
+          label: capitalizeFirstLetter(service),
+        })) : [],
+        type: point.type && Array.isArray(point.type) ? point.type.map((type: number) => ({
+              value: type.toString(),
+              label: getTypeLabel(type),
+            } as OptionType))
+          : [],
         gallery: {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
@@ -446,11 +493,28 @@ const EditPointPage: React.FC = () => {
     }
   }, [point]);
 
+  // useEffect(() => {
+  //   console.log("Datos de formData actualizados:", formData);
+  // }, [formData]); // Verificar cómo cambia el formData en cada actualización
+
+  // useEffect(() => {
+  //   // Si el formulario ha cambiado y se está en el paso 2, actualizamos la vista
+  //   if (step === 2 && point) {
+  //     console.log("Formulario está en el paso 2:", formData);
+
+  //     // Aquí podrías realizar alguna validación o actualizar algo del estado
+  //     if (!formData.phone || formData.phone === "+569") {
+  //       console.log("El teléfono no ha sido completado correctamente.");
+  //     }
+  //   }
+  // }, [step, formData]);  // El estado solo cambia cuando el paso cambia
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       try {
         const uploadedUrl = await uploadImageToCloudinary(file);
+        console.log("URL de la imagen subida:", uploadedUrl);
         setFormData({ ...formData, photo_url: uploadedUrl });
         Swal.fire("Éxito", "La imagen se subió correctamente.", "success");
       } catch (error) {
@@ -462,6 +526,13 @@ const EditPointPage: React.FC = () => {
         );
       }
     }
+  };
+
+  const handleSelectChange = (
+    value: MultiValue<OptionType> | SingleValue<OptionType>,
+    field: string
+  ) => {
+      setFormData({ ...formData, [field]: value });
   };
 
   const validateDates = () => {
@@ -613,9 +684,18 @@ const handleChange = (
       facebook: string | null;
       other: string | null;
     } = {
-      instagram: formData.rrss?.instagram && isValidUrl(formData.rrss.instagram) ? formData.rrss.instagram : null,
-      facebook: formData.rrss?.facebook && isValidUrl(formData.rrss.facebook) ? formData.rrss.facebook : null,
-      other: formData.rrss?.other && isValidUrl(formData.rrss.other) ? formData.rrss.other : null,
+      instagram:
+        formData.rrss?.instagram && isValidUrl(formData.rrss.instagram)
+          ? formData.rrss.instagram
+          : null,
+      facebook:
+        formData.rrss?.facebook && isValidUrl(formData.rrss.facebook)
+          ? formData.rrss.facebook
+          : null,
+      other:
+        formData.rrss?.other && isValidUrl(formData.rrss.other)
+          ? formData.rrss.other
+          : null,
     };
 
     // Solo asignamos si la URL es válida
@@ -638,7 +718,11 @@ const handleChange = (
     }
 
     // Si no hay valores en rrss, lo dejamos como null
-    if (!socialMediaLinks.facebook && !socialMediaLinks.instagram && !socialMediaLinks.other) {
+    if (
+      !socialMediaLinks.facebook &&
+      !socialMediaLinks.instagram &&
+      !socialMediaLinks.other
+    ) {
       socialMediaLinks.facebook = null;
       socialMediaLinks.instagram = null;
       socialMediaLinks.other = null;
@@ -650,24 +734,22 @@ const handleChange = (
       localNumber: formData.gallery?.localNumber || null,
     };
 
-    
-      const services = formData.services
-        .split(",")
-        .map((service) => service.trim());
+    const { services, type } = formData;
 
-      const dataToSend = {
-        ...formData,
+    const dataToSend = {
+      ...formData,
         activationStartDate: startDate ? startDate.toISOString() : undefined,
         activationEndDate: endDate ? endDate.toISOString() : undefined,
-        latitud: parseFloat(formData.latitud || "0"),
-        longitude: parseFloat(formData.longitude || "0"),
-        type: parseInt(formData.type || "0", 10),
-        gallery: galleryData,
-        services,
-        rrss: socialMediaLinks,
-      };
+      latitud: parseFloat(formData.latitud || "0"),
+      longitude: parseFloat(formData.longitude || "0"),
+      type: type.map(({ value }) =>  parseInt(value, 10)),
+      gallery: galleryData,
+      services: services.map((service) => service.value),
+      rrss: socialMediaLinks,
+      photo_url: formData.photo_url,
+    };
 
-      try {
+    try {
       if (formData.id) {
         await updatePoint(dataToSend.id, dataToSend);
       } else {
@@ -677,17 +759,39 @@ const handleChange = (
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
-      console.error("Error al guardar el punto:", error);
-      Swal.fire(
-        "Error",
-        "No se pudo guardar el punto. Por favor, intenta nuevamente.",
-        "error"
-      );
+        console.error("Error al guardar el punto:", error);
+
+        let errorMessage = "No se pudo guardar el punto. Por favor, intenta nuevamente.";
+
+        if (error instanceof Error) {
+            if (error.message.includes("\n")) {
+                errorMessage = `<ul style="text-align: left;">${error.message
+                    .split("\n")
+                    .map((msg) => `<li>${msg}</li>`)
+                    .join("")}</ul>`;
+            } else {
+                errorMessage = error.message;
+            }
+        }
+
+        Swal.fire({
+            title: "Error",
+            html: errorMessage,
+            icon: "error",
+        });
     }
-  };
+};
 
   const handleNextStep = () =>
     setStep((prev) => Math.min(prev + 1, totalSteps));
+
+  const handleToggleChange = (value: boolean, field: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setFormData({ ...formData, phone: value });
+  };
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const isOnEditPage = location.pathname.includes("edit-point");
@@ -705,7 +809,15 @@ const handleChange = (
         subHeaderText={`${isOnEditPage ? "Editar" : "Crear"} punto de interés`}
       >
         {step === 1 && (
-          <Step1Form formData={formData} handleChange={handleChange} handleFileChange={handleFileChange} handleDateChange={handleDateChange} isUploading={isUploading} />
+          <Step1Form
+            formData={formData}
+            handleSelectChange={handleSelectChange}
+            handleChange={handleChange}
+            handleFileChange={handleFileChange}
+            handleToggleChange={handleToggleChange}
+            handlePhoneChange={handlePhoneChange}
+            handleDateChange={handleDateChange} isUploading={isUploading}
+          />
         )}
         {step === 2 && (
           <Step2Form formData={formData} handleChange={handleChange} />
@@ -714,7 +826,5 @@ const handleChange = (
     </div>
   );
 };
-
-
 
 export default EditPointPage;
