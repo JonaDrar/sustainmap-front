@@ -24,7 +24,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 
                 {/* Mensaje */}
                 <p className="text-gray-700 text-center mb-6">
-                    La peluquería <span className="text-blue-600 font-bold">{name}</span> se eliminó correctamente.
+                  <span className="text-blue-600 font-bold">{name}</span> se eliminó correctamente.
                 </p>
 
                 {/* Botón de cierre */}
