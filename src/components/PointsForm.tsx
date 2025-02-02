@@ -153,7 +153,7 @@ const Step1Form: React.FC<{
           }
           imageSrc={highlightImage}
         />
-        <PhoneNumberInput onChange={handlePhoneChange} />
+        <PhoneNumberInput value={formData.phone} onChange={handlePhoneChange} />
         <InputField
           label="Nombre de Galería(opcional)"
           placeholder="E.g: Galería Caracoles"
