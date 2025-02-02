@@ -1,5 +1,5 @@
-import { useState, useEffect} from "react";
-import { MapContainer, TileLayer} from "react-leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MarkerList from "../components/MarkerList";
 import CenterMap from "../components/maps/CenterPointMap";
@@ -8,7 +8,6 @@ import SidebarMenu from "../components/SidebarMenu";
 import { Pointdata } from "../hooks/UseFetchPoints";
 import MapBoundsUpdater from "../components/maps/FiltersPoints";
 import LocateUser from "../components/maps/FoundLocateUser";
-import SearchBar from "../components/SearchBar";  // Importa el SearchBar
 import SuccessModal from "../components/SucessModal";
 
 const Map = () => {
@@ -51,7 +50,7 @@ const Map = () => {
     );
     setFilteredPoints(filtered);
   };
-  
+
   const handleDeletePoint = (id: string, name: string) => {
     deletePoint(id);
     setSuccessMessage(name); // Solo guardamos el nombre de la peluquería
@@ -87,18 +86,8 @@ const Map = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-white">
-      {/* Barra Lateral */}
-      <div className="order-2 md:order-1 md:w-2/5 lg:w-2/5 w-full h-1/3 md:h-full bg-white overflow-y-auto p-4 relative">
-        <SidebarMenu
-          points={filteredPoints}
-          onPointSelect={(coords) => setSelectedCoords(coords)}
-          userCoords={userCoords}
-          onDeletePoint={(id, name) => handleDeletePoint(id,name)}
-        />
-      </div>
-
-      {/* Mapa */}
-      <div className="order-1 md:order-2 flex-grow w-full h-2/3 md:h-full relative">
+      {/* Mapa - Se mantiene arriba en móviles y a la derecha en escritorio */}
+      <div className="order-1 md:order-2 flex-grow w-full min-h-[50vh] md:h-full relative overflow-hidden">
         <MapContainer
           center={[-33.4489, -70.6693]}
           zoom={9}
@@ -120,12 +109,19 @@ const Map = () => {
             userCoords={userCoords}
           />
         </MapContainer>
-
-        {/* Barra de búsqueda */}
-        <div className="absolute top-4 left-4 z-10">
-          <SearchBar onSearch={handleSearch} />
-        </div>
       </div>
+      {/* Barra Lateral - Se mantiene a la izquierda en escritorio y abajo en móviles */}
+      <div className="order-2 md:order-1 w-full md:2/5 lg:w-2/5 bg-white overflow-y-auto p-4 md:shadow-lg">
+        {/* Barra de búsqueda - Ahora dentro de la barra lateral */}
+        <SidebarMenu
+          points={filteredPoints}
+          onPointSelect={(coords) => setSelectedCoords(coords)}
+          userCoords={userCoords}
+          onDeletePoint={(id, name) => handleDeletePoint(id, name)}
+          onSearch={handleSearch}
+        />
+      </div>
+
       <SuccessModal
         name={successMessage || ""}
         isOpen={!!successMessage}
