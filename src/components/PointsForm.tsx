@@ -10,11 +10,12 @@ import CenterMap from "./maps/CenterPointMap";
 import { useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
 import CreatableSelectField from "./form/CreatableSelectField";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import { MultiValue, SingleValue } from "react-select";
+import ToggleField from "./form/ToggleField";
+import highlightImage from "/images/Star.png";
+import PhoneNumberInput from "./form/PhoneNumberInput";
 import pointMarker from "./maps/MarkerPoint";
-import {
-  MultiValue,
-  SingleValue,
-} from "react-select";
+
 interface OptionType {
   label: string;
   value: string;
@@ -38,12 +39,23 @@ interface FormData {
     other: string;
   };
   phone: string;
-  type: OptionType | null;
+  type: OptionType[];
   gallery: {
     galleryName: string;
     localNumber: string;
   };
+  activationStartDate: string;
+  activationEndDate: string;
+  isActive: boolean;
 }
+
+const formatDateForInput = (date: string | undefined): string | undefined => {
+  if (date) {
+    const dateObj = new Date(date);
+    return dateObj.toISOString().split('T')[0]; // Extracts the date part (YYYY-MM-DD)
+  }
+  return undefined;
+};
 
 const Step1Form: React.FC<{
   formData: FormData;
@@ -56,13 +68,18 @@ const Step1Form: React.FC<{
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
   ) => void;
+  handleDateChange: (e: React.ChangeEvent<HTMLInputElement>, field: string) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleToggleChange: (value: boolean, field: string) => void;
+  handlePhoneChange: (value: string) => void;
   isUploading: boolean;
 }> = ({
   formData,
-  handleChange,
+  handleChange, handleDateChange,
+  handlePhoneChange,
   handleFileChange,
   handleSelectChange,
+  handleToggleChange,
   isUploading,
 }) => {
   // Función para manejar la limitación de caracteres
@@ -81,18 +98,15 @@ const Step1Form: React.FC<{
         Información básica
       </h6>
       <div className="grid grid-cols-2 gap-6 ">
-        <div className="relative">
-          <InputField
-            label="Nombre del centro"
-            placeholder="E.g: Siempre Linda "
-            name="name"
-            value={formData.name}
-            onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
-          />
-          <div className="absolute bottom-0 right-4 text-sm text-gray-500">
-            {formData.name.length}/30
-          </div>
-        </div>
+        <InputField
+          label="Nombre del centro"
+          placeholder="E.g: Siempre Linda "
+          name="name"
+          value={formData.name}
+          maxLength={30}
+          onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
+        />
+
         <SelectField
           label="Categoría"
           name="type"
@@ -102,6 +116,7 @@ const Step1Form: React.FC<{
             { value: "2", label: "2. Peluquería canina" },
             { value: "3", label: "3. Centro de acopio" },
             { value: "4", label: "4. Centro de estudio" },
+            { value: "5", label: "5. Otros" },
           ]}
           onChange={(value) => handleSelectChange(value, "type")}
         />
@@ -130,25 +145,16 @@ const Step1Form: React.FC<{
           onChange={(value) => handleSelectChange(value, "services")}
         />
 
-        <SelectField
+        <ToggleField
           label="Peluquería destacada"
-          name="highlighted"
-          options={[
-            { value: "true", label: "Sí" },
-            { value: "false", label: "No" },
-          ]}
-          value={formData.highlighted ? { value: "true", label: "Sí" } : { value: "false", label: "No" }}
-          onChange={(value) => handleSelectChange(value, "highlighted")}
+          value={formData.highlighted}
+          onChange={(highlighted) =>
+            handleToggleChange(highlighted, "highlighted")
+          }
+          imageSrc={highlightImage}
         />
-
+        <PhoneNumberInput onChange={handlePhoneChange} />
         <InputField
-          label="Número de teléfono"
-          placeholder="E.g: +56912345678"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-        />
-          <InputField
           label="Nombre de Galería(opcional)"
           placeholder="E.g: Galería Caracoles"
           name="galleryName"
@@ -162,12 +168,7 @@ const Step1Form: React.FC<{
           value={formData.gallery.localNumber}
           onChange={handleChange}
         />
-        {/* <InputField
-          label="Descripción"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-        /> */}
+
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
@@ -195,10 +196,34 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
       </div>
+      <h6 className="text-lg font-normal my-4">Configuración de activación</h6>
+      <div className="grid grid-cols-2 gap-4">
+        <InputField
+          label="Fecha de inicio"
+          name="activationStartDate"
+          type="date"
+          value={formatDateForInput(formData.activationStartDate) || ""}
+          onChange={(e) => handleDateChange(e, "activationStartDate")} 
+        />
+        <InputField
+          label="Fecha de término"
+          name="activationEndDate"
+          type="date"
+          value={formatDateForInput(formData.activationEndDate) || ""}
+          onChange={(e) => handleDateChange(e, "activationEndDate")} 
+        />
+        <div className="col-span-2">
+          <p className="text-sm font-medium">
+            Estado de activación:{" "}
+            <span className={formData.isActive ? "text-green-600" : "text-red-600"}>
+              {formData.isActive ? "Activo" : "Inactivo"}
+            </span>
+          </p>
+        </div>
+      </div>
     </>
   );
 };
-
 
 const Step2Form: React.FC<{
   formData: FormData;
@@ -373,6 +398,27 @@ const Step2Form: React.FC<{
   );
 };
 
+// Define las opciones en una constante
+const typeOptions = [
+  { value: "1", label: "1. Peluquería" },
+  { value: "2", label: "2. Peluquería canina" },
+  { value: "3", label: "3. Centro de acopio" },
+  { value: "4", label: "4. Centro de estudio" },
+  { value: "5", label: "5. Otros" },
+];
+
+// Función para obtener el objeto con value y label
+const getTypeLabel = (type: number) => {
+  if (type === null) return null;
+  const option = typeOptions.find(opt => opt.value === type.toString());
+  return option?.label || "";
+};
+
+// Función para capitalizar la primera letra de una cadena
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 const EditPointPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -392,17 +438,20 @@ const EditPointPage: React.FC = () => {
     photo_url: "",
     region: "",
     services: [],
-    type: null,
+    type: [],
     gallery: {
       galleryName: "",
       localNumber: "",
     },
-    phone: "",
+    phone: "+569",
     rrss: {
       facebook: "",
       instagram: "",
       other: "",
     },
+    activationStartDate: "",
+    activationEndDate: "",
+    isActive: false,
   });
 
   const [step, setStep] = useState(1);
@@ -419,10 +468,17 @@ const EditPointPage: React.FC = () => {
         highlighted: point.highlighted || false,
         latitud: point.latitud?.toString() || "",
         longitude: point.longitude?.toString() || "",
-        photo_url: point.photo_url || "",
+        photo_url: typeof point.photo_url === "string" ? point.photo_url : "",
         region: point.region || "",
-        services: point.services.map(service => ({ value: service, label: service })) || [],
-        type: point.type ? { value: point.type.toString(), label: `Categoría ${point.type}` } : null,
+        services: point.services ? point.services.map(service => ({
+          value: service,
+          label: capitalizeFirstLetter(service),
+        })) : [],
+        type: point.type && Array.isArray(point.type) ? point.type.map((type: number) => ({
+              value: type.toString(),
+              label: getTypeLabel(type),
+            } as OptionType))
+          : [],
         gallery: {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
@@ -433,15 +489,35 @@ const EditPointPage: React.FC = () => {
           instagram: point.rrss?.instagram || "",
           other: point.rrss?.other || "",
         },
+        activationStartDate: point.activationStartDate || "",
+        activationEndDate: point.activationEndDate || "",
+        isActive: point.isActive || false,
       });
     }
   }, [point]);
+
+  // useEffect(() => {
+  //   console.log("Datos de formData actualizados:", formData);
+  // }, [formData]); // Verificar cómo cambia el formData en cada actualización
+
+  // useEffect(() => {
+  //   // Si el formulario ha cambiado y se está en el paso 2, actualizamos la vista
+  //   if (step === 2 && point) {
+  //     console.log("Formulario está en el paso 2:", formData);
+
+  //     // Aquí podrías realizar alguna validación o actualizar algo del estado
+  //     if (!formData.phone || formData.phone === "+569") {
+  //       console.log("El teléfono no ha sido completado correctamente.");
+  //     }
+  //   }
+  // }, [step, formData]);  // El estado solo cambia cuando el paso cambia
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       try {
         const uploadedUrl = await uploadImageToCloudinary(file);
+        console.log("URL de la imagen subida:", uploadedUrl);
         setFormData({ ...formData, photo_url: uploadedUrl });
         Swal.fire("Éxito", "La imagen se subió correctamente.", "success");
       } catch (error) {
@@ -458,74 +534,130 @@ const EditPointPage: React.FC = () => {
   const handleSelectChange = (
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
-  ) => {    setFormData({ ...formData, [field]: value });
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
   ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
-
-    if (name === "latitud") {
-      if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
-        const num = parseFloat(value);
-        if (value === "-" || value === "" || (num >= -90 && num <= 90)) {
-          setFormData({ ...formData, latitud: value });
-        }
-      }
-      return;
-    }
-
-    if (name === "longitude") {
-      if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
-        const num = parseFloat(value);
-        if (value === "-" || value === "" || (num >= -180 && num <= 180)) {
-          setFormData({ ...formData, longitude: value });
-        }
-      }
-      return;
-    }
-
-    if (name === "type") {
-      if (/^[1-4]?$/.test(value)) {
-        setFormData({ ...formData, type: { value, label: `Categoría ${value}` } });
-      }
-      return;
-    }
-
-    if (name === "highlighted") {
-      setFormData({ ...formData, highlighted: value === "true" });
-      return;
-    }
-
-    if (["facebook", "instagram", "other"].includes(name)) {
-      setFormData({
-        ...formData,
-        rrss: {
-          ...formData.rrss,
-          [name]: value,
-        },
-      });
-      return;
-    }
-
-    if (name === "galleryName" || name === "localNumber") {
-      setFormData({
-        ...formData,
-        gallery: {
-          ...formData.gallery,
-          [name]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: type === "checkbox" ? checked : value,
-      });
-    }
+      setFormData({ ...formData, [field]: value });
   };
+
+  const validateDates = () => {
+    const startDate = new Date(formData.activationStartDate);
+    const endDate = new Date(formData.activationEndDate);
+
+    const newErrors = { activationStartDate: "", activationEndDate: "" };
+    let isValid = true;
+
+    if (!formData.activationStartDate) {
+      newErrors.activationStartDate = "La fecha de inicio es requerida.";
+      isValid = false;
+    } else if (isNaN(startDate.getTime())) {
+      newErrors.activationStartDate = "La fecha de inicio no es válida.";
+      isValid = false;
+    }
+
+    if (!formData.activationEndDate) {
+      newErrors.activationEndDate = "La fecha de fin es requerida.";
+      isValid = false;
+    } else if (isNaN(endDate.getTime())) {
+      newErrors.activationEndDate = "La fecha de fin no es válida.";
+      isValid = false;
+    }
+
+    if (isValid && startDate > endDate) {
+      newErrors.activationEndDate = "La fecha de fin debe ser posterior a la fecha de inicio.";
+      isValid = false;
+    }
+
+    if (!isValid) {
+      Swal.fire(
+        "Error",
+        `${newErrors.activationStartDate || ""} ${newErrors.activationEndDate || ""}`,
+        "error"
+      );
+    }
+    return isValid;
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const value = e.target.value;
+
+    setFormData((prev) => {
+      const updatedFormData = { ...prev, [field]: value };
+      const startDate = new Date(updatedFormData.activationStartDate);
+      const endDate = new Date(updatedFormData.activationEndDate);
+
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+        updatedFormData.isActive = startDate <= new Date() && endDate >= new Date();
+      }
+
+      return updatedFormData;
+    });
+  };
+
+const handleChange = (
+  e: React.ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >
+) => {
+  const { name, value, type, checked } = e.target as HTMLInputElement;
+
+  if (name === "latitud") {
+    if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
+      const num = parseFloat(value);
+      if (value === "-" || value === "" || (num >= -90 && num <= 90)) {
+        setFormData({ ...formData, latitud: value });
+      }
+    }
+    return;
+  }
+
+  if (name === "longitude") {
+    if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
+      const num = parseFloat(value);
+      if (value === "-" || value === "" || (num >= -180 && num <= 180)) {
+        setFormData({ ...formData, longitude: value });
+      }
+    }
+    return;
+  }
+
+  if (name === "type") {
+    if (/^[1-4]?$/.test(value)) {
+      setFormData({ ...formData, type: value ? [{ label: value, value: value }] : [] });
+    }
+    return;
+  }
+
+  if (name === "highlighted") {
+    setFormData({ ...formData, highlighted: value === "true" });
+    return;
+  }
+
+  if (["facebook", "instagram", "other"].includes(name)) {
+    setFormData({
+      ...formData,
+      rrss: {
+        ...formData.rrss,
+        [name]: value,
+      },
+    });
+    return;
+  }
+
+  if (name === "galleryName" || name === "localNumber") {
+    setFormData({
+      ...formData,
+      gallery: {
+        ...formData.gallery,
+        [name]: value,
+      },
+    });
+  } else {
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  }
+};
+
 
   const handleCancel = () => {
     navigate("/");
@@ -533,6 +665,15 @@ const EditPointPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateDates()) {
+      Swal.fire("Error", "Por favor corrige los errores en las fechas.", "error");
+      return;
+    }
+
+    const startDate = new Date(formData.activationStartDate);
+    const endDate = new Date(formData.activationEndDate);
+
 
     // Función para validar si una URL es válida
     const isValidUrl = (url: string) => {
@@ -596,16 +737,19 @@ const EditPointPage: React.FC = () => {
       localNumber: formData.gallery?.localNumber || null,
     };
 
-    const { services } = formData;
+    const { services, type } = formData;
 
     const dataToSend = {
       ...formData,
+        activationStartDate: startDate ? startDate.toISOString() : undefined,
+        activationEndDate: endDate ? endDate.toISOString() : undefined,
       latitud: parseFloat(formData.latitud || "0"),
       longitude: parseFloat(formData.longitude || "0"),
-      type: parseInt(formData.type?.value || "0", 10),
+      type: type.map(({ value }) =>  parseInt(value, 10)),
       gallery: galleryData,
-      services: services.map(service => service.value),
+      services: services.map((service) => service.value),
       rrss: socialMediaLinks,
+      photo_url: formData.photo_url,
     };
 
     try {
@@ -618,17 +762,39 @@ const EditPointPage: React.FC = () => {
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
-      console.error("Error al guardar el punto:", error);
-      Swal.fire(
-        "Error",
-        "No se pudo guardar el punto. Por favor, intenta nuevamente.",
-        "error"
-      );
+        console.error("Error al guardar el punto:", error);
+
+        let errorMessage = "No se pudo guardar el punto. Por favor, intenta nuevamente.";
+
+        if (error instanceof Error) {
+            if (error.message.includes("\n")) {
+                errorMessage = `<ul style="text-align: left;">${error.message
+                    .split("\n")
+                    .map((msg) => `<li>${msg}</li>`)
+                    .join("")}</ul>`;
+            } else {
+                errorMessage = error.message;
+            }
+        }
+
+        Swal.fire({
+            title: "Error",
+            html: errorMessage,
+            icon: "error",
+        });
     }
-  };
+};
 
   const handleNextStep = () =>
     setStep((prev) => Math.min(prev + 1, totalSteps));
+
+  const handleToggleChange = (value: boolean, field: string) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setFormData({ ...formData, phone: value });
+  };
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const isOnEditPage = location.pathname.includes("edit-point");
@@ -651,7 +817,9 @@ const EditPointPage: React.FC = () => {
             handleSelectChange={handleSelectChange}
             handleChange={handleChange}
             handleFileChange={handleFileChange}
-            isUploading={isUploading}
+            handleToggleChange={handleToggleChange}
+            handlePhoneChange={handlePhoneChange}
+            handleDateChange={handleDateChange} isUploading={isUploading}
           />
         )}
         {step === 2 && (
