@@ -10,11 +10,13 @@ import CenterMap from "./maps/CenterPointMap";
 import { useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
 import CreatableSelectField from "./form/CreatableSelectField";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
-import { MultiValue, SingleValue } from "react-select";
+import {
+  MultiValue,
+  SingleValue,
+} from "react-select";
 import ToggleField from "./form/ToggleField";
-import highlightImage from "/images/Star.png";
+import highlightImage from '/images/Star.png';
 import PhoneNumberInput from "./form/PhoneNumberInput";
-
 interface OptionType {
   label: string;
   value: string;
@@ -278,7 +280,20 @@ const Step2Form: React.FC<{
     <>
       <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
-        
+        <InputField
+          label="Coordenadas -Latitud (opcional)"
+          placeholder="Ej: -33.4489"
+          name="latitud"
+          value={formData.latitud}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Coordenadas-Longitud (opcional)"
+          placeholder="Ej: -70.6693"
+          name="longitude"
+          value={formData.longitude}
+          onChange={handleChange}
+        />
         <InputField
           label="Dirección"
           placeholder="Av. Providencia 675"
@@ -298,20 +313,6 @@ const Step2Form: React.FC<{
           placeholder="Ej: Región Metropolitana"
           name="region"
           value={formData.region}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Nombre de Galería(opcional)"
-          placeholder="E.g: Galería Caracoles"
-          name="galleryName"
-          value={formData.gallery.galleryName}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Nombre de depto/local(opcional)"
-          placeholder="Local 304 E"
-          name="localNumber"
-          value={formData.gallery.localNumber}
           onChange={handleChange}
         />
         <div className="col-span-2">
@@ -335,21 +336,15 @@ const Step2Form: React.FC<{
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
           <CenterMap coords={mapCenter} />
-          {formData.latitud &&
-            formData.longitude &&
-            parseFloat(formData.latitud) &&
-            parseFloat(formData.longitude) && (
-              <Marker
-                position={[
-                  parseFloat(formData.latitud),
-                  parseFloat(formData.longitude),
-                ]}
-                draggable={true}
-                eventHandlers={{
-                  dragend: handleMarkerDrag,
-                }}
-              />
-            )}
+          {formData.latitud && formData.longitude && parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
+            <Marker
+              position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
+              draggable={true}
+              eventHandlers={{
+                dragend: handleMarkerDrag,
+              }}
+            />
+          )}
         </MapContainer>
       </div>
     </>
