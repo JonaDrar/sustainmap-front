@@ -41,6 +41,7 @@ const UseFetchPoints = () => {
     const [points, setPoints] = useState<Pointdata[]>([]);
     const [loading, setLoading] =useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedTypes, setSelectedTypes] = useState<number[]>([]);
 
     useEffect (()=> {
         const fetchPoints = async () => {
@@ -59,12 +60,6 @@ const UseFetchPoints = () => {
     }, []);
 
     const { uploadImageToCloudinary } = useCloudinaryUpload();
-
-    // const DEFAULT_IMAGE_FILE = new File(
-    //     ["/images/4960717128898555064.jpg"], // Ruta de la imagen por defecto
-    //     "default.jpg",
-    //     { type: "image/jpeg" }
-    //   );
 
     const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
 
@@ -139,6 +134,14 @@ const UseFetchPoints = () => {
         }
     };
 
+    const filteredPoints = points.filter((point) => {
+        if (point.deleted) return false;
+        if (selectedTypes.length > 0) {
+            return point.type.some((type) => selectedTypes.includes(type));
+        }
+        return true;
+    });
+
     const activePoints = points.filter((point) => {
         if (point.deleted) return false;
 
@@ -195,7 +198,7 @@ const UseFetchPoints = () => {
         }
     };
 
-    return {points: activePoints, loading, error, deletePoint, updatePoint, createPoint};
+    return {points: activePoints, loading, error, deletePoint, updatePoint, createPoint, selectedTypes, setSelectedTypes, filteredPoints};
 };
 
 export default UseFetchPoints; 

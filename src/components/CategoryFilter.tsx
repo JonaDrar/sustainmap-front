@@ -53,6 +53,15 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedTypes, onCatego
         />
         Centros de Estudio
       </label>
+      <label>
+        <input
+          type="checkbox"
+          value={5}
+          checked={selectedTypes.includes(5)}
+          onChange={(e) => handleFilterChange(e, 5)}
+        />
+        Otros
+      </label>
     </div>
   );
 };
