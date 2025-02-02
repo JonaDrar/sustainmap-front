@@ -14,6 +14,7 @@ import { MultiValue, SingleValue } from "react-select";
 import ToggleField from "./form/ToggleField";
 import highlightImage from "/images/Star.png";
 import PhoneNumberInput from "./form/PhoneNumberInput";
+import pointMarker from "./maps/MarkerPoint";
 
 interface OptionType {
   label: string;
@@ -152,7 +153,21 @@ const Step1Form: React.FC<{
           }
           imageSrc={highlightImage}
         />
-        <PhoneNumberInput onChange={handlePhoneChange} />
+        <PhoneNumberInput value={formData.phone} onChange={handlePhoneChange} />
+        <InputField
+          label="Nombre de Galería(opcional)"
+          placeholder="E.g: Galería Caracoles"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Nombre de depto/local(opcional)"
+          placeholder="Local 304 E"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
 
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
@@ -213,9 +228,7 @@ const Step1Form: React.FC<{
 const Step2Form: React.FC<{
   formData: FormData;
   handleChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
 }> = ({ formData, handleChange }) => {
   const [mapCenter, setMapCenter] = useState<[number, number] | null>([
@@ -228,17 +241,14 @@ const Step2Form: React.FC<{
     commune: string,
     region: string
   ) => {
-    if (query.trim() === "" || commune.trim() === "" || region.trim() === "")
-      return;
+    if (query.trim() === "" || commune.trim() === "" || region.trim() === "") return;
 
     try {
       const fullQuery = `${query}, ${commune}, ${region}`;
       console.log("Buscando dirección:", fullQuery);
 
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          fullQuery
-        )}&addressdetails=1&limit=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&addressdetails=1&limit=1`
       );
 
       const data = await response.json();
@@ -246,9 +256,9 @@ const Step2Form: React.FC<{
 
       if (data.length > 0) {
         const { lat, lon } = data[0];
-
+        
         formData.latitud = lat;
-        formData.longitude = lon;
+      formData.longitude = lon;
 
         formData.latitud = lat.toString();
         formData.longitude = lon.toString();
@@ -304,20 +314,7 @@ const Step2Form: React.FC<{
     <>
       <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
-        <InputField
-          label="Coordenadas -Latitud (opcional)"
-          placeholder="Ej: -33.4489"
-          name="latitud"
-          value={formData.latitud}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Coordenadas-Longitud (opcional)"
-          placeholder="Ej: -70.6693"
-          name="longitude"
-          value={formData.longitude}
-          onChange={handleChange}
-        />
+        
         <InputField
           label="Dirección"
           placeholder="Av. Providencia 675"
@@ -339,18 +336,28 @@ const Step2Form: React.FC<{
           value={formData.region}
           onChange={handleChange}
         />
+        <div className="flex items-center">
+  <img 
+    src="/images/icon-pin.png" 
+    alt="Icono de ubicación" 
+    className="w-6 h-6 mr-4" 
+  />
+  <h2 className="font-bold text-blue-600">
+    .Arrastre el marcador para mejorar la ubicación en el mapa.
+  </h2>
+</div>
         <InputField
-          label="Nombre de Galería(opcional)"
-          placeholder="E.g: Galería Caracoles"
-          name="galleryName"
-          value={formData.gallery.galleryName}
+          label="Coordenadas -Latitud (opcional)"
+          placeholder="Ej: -33.4489"
+          name="latitud"
+          value={formData.latitud}
           onChange={handleChange}
         />
         <InputField
-          label="Nombre de depto/local(opcional)"
-          placeholder="Local 304 E"
-          name="localNumber"
-          value={formData.gallery.localNumber}
+          label="Coordenadas-Longitud (opcional)"
+          placeholder="Ej: -70.6693"
+          name="longitude"
+          value={formData.longitude}
           onChange={handleChange}
         />
         <div className="col-span-2">
@@ -361,6 +368,7 @@ const Step2Form: React.FC<{
             Buscar ubicación
           </button>
         </div>
+      
       </div>
 
       <div>
@@ -374,21 +382,16 @@ const Step2Form: React.FC<{
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
           <CenterMap coords={mapCenter} />
-          {formData.latitud &&
-            formData.longitude &&
-            parseFloat(formData.latitud) &&
-            parseFloat(formData.longitude) && (
-              <Marker
-                position={[
-                  parseFloat(formData.latitud),
-                  parseFloat(formData.longitude),
-                ]}
-                draggable={true}
-                eventHandlers={{
-                  dragend: handleMarkerDrag,
-                }}
-              />
-            )}
+          {formData.latitud && formData.longitude && parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
+            <Marker
+              position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
+              draggable={true}
+              icon={pointMarker}
+              eventHandlers={{
+                dragend: handleMarkerDrag,
+              }}
+            />
+          )}
         </MapContainer>
       </div>
     </>

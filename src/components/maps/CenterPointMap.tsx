@@ -7,7 +7,7 @@ interface CenterMapProps {
 const CenterMap: React.FC<CenterMapProps> = ({ coords }) => {
   const map = useMap();
   if (coords) {
-    map.flyTo(coords, 15, { 
+    map.flyTo(coords, 17, { 
       animate: true, 
     });
   }

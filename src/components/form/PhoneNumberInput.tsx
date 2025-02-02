@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select, {
   components,
   ControlProps,
@@ -79,21 +79,29 @@ const CustomControl: React.FC<ControlProps<CountryOption, false>> = (props) => {
   );
 };
 
-const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({ onChange }) => {
-  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(COUNTRIES[0]); // Default to United States
-  const [phoneNumber, setPhoneNumber] = useState("");
+const PhoneNumberInput: React.FC<PhoneNumberInputProps & { value: string }> = ({ onChange, value }) => {
+  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(
+    COUNTRIES.find((c) => value.startsWith(c.code)) || COUNTRIES[0]
+  );
+  const [phoneNumber, setPhoneNumber] = useState(value.replace(selectedCountry.code, ""));
+
+  // Actualizar el número y la bandera cuando el valor cambie
+  useEffect(() => {
+    // Comprobar si el código del número corresponde a algún país
+    const country = COUNTRIES.find((c) => value.startsWith(c.code)) || COUNTRIES[0];
+    setSelectedCountry(country);
+    setPhoneNumber(value.replace(country.code, ""));
+  }, [value]);
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ""); // Allow only numbers
-    setPhoneNumber(value);
-    if (onChange) onChange(`${selectedCountry.code}${value}`);
+    const onlyNumbers = e.target.value.replace(/\D/g, ""); // Limitar solo números
+    setPhoneNumber(onlyNumbers);
+    onChange(`${selectedCountry.code}${onlyNumbers}`);
   };
 
-  const handleCountryChange = (
-    newValue: SingleValue<CountryOption>,
-  ) => {
+  const handleCountryChange = (newValue: SingleValue<CountryOption>) => {
     if (newValue) {
-      setSelectedCountry(newValue as CountryOption);
+      setSelectedCountry(newValue);
       onChange(`${newValue.code}${phoneNumber}`);
     }
   };
@@ -101,11 +109,10 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({ onChange }) => {
   return (
     <div className="flex space-x-2 w-full">
       <div className="border border-gray-300 rounded-md pl-4 bg-white">
-        {/* Country Code Input */}
         <Select
           className="bg-transparent text-sm font-medium focus:outline-none"
           value={selectedCountry}
-          onChange={(value => handleCountryChange(value as CountryOption))}
+          onChange={(value) => handleCountryChange(value as CountryOption)}
           options={COUNTRIES}
           getOptionLabel={(option) => option.code}
           getOptionValue={(option) => option.code}
@@ -115,10 +122,9 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({ onChange }) => {
             Option: CustomOption,
             SingleValue: CustomSingleValue,
           }}
-          isSearchable={true} // Allow input in the select field
+          isSearchable={true}
         />
       </div>
-      {/* Phone Number Input */}
       <div className="flex-1">
         <InputField
           label="Número de teléfono"
@@ -131,5 +137,7 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({ onChange }) => {
     </div>
   );
 };
+
+
 
 export default PhoneNumberInput;
