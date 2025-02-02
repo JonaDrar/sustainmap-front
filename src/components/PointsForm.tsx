@@ -10,13 +10,11 @@ import CenterMap from "./maps/CenterPointMap";
 import { useCloudinaryUpload } from "../hooks/useCloudinaryUpload";
 import CreatableSelectField from "./form/CreatableSelectField";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import pointMarker from "./maps/MarkerPoint";
 import {
   MultiValue,
   SingleValue,
 } from "react-select";
-import ToggleField from "./form/ToggleField";
-import highlightImage from '/images/Star.png';
-import PhoneNumberInput from "./form/PhoneNumberInput";
 interface OptionType {
   label: string;
   value: string;
@@ -59,16 +57,12 @@ const Step1Form: React.FC<{
     field: string
   ) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleToggleChange: (value: boolean, field: string) => void;
-  handlePhoneChange: (value: string) => void;
   isUploading: boolean;
 }> = ({
   formData,
   handleChange,
-  handlePhoneChange,
   handleFileChange,
   handleSelectChange,
-  handleToggleChange,
   isUploading,
 }) => {
   // Función para manejar la limitación de caracteres
@@ -87,15 +81,18 @@ const Step1Form: React.FC<{
         Información básica
       </h6>
       <div className="grid grid-cols-2 gap-6 ">
-        <InputField
-          label="Nombre del centro"
-          placeholder="E.g: Siempre Linda "
-          name="name"
-          value={formData.name}
-          maxLength={30}
-          onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
-        />
-
+        <div className="relative">
+          <InputField
+            label="Nombre del centro"
+            placeholder="E.g: Siempre Linda "
+            name="name"
+            value={formData.name}
+            onChange={(e) => handleLimitedChange(e, 30)} // Limitar a 30 caracteres
+          />
+          <div className="absolute bottom-0 right-4 text-sm text-gray-500">
+            {formData.name.length}/30
+          </div>
+        </div>
         <SelectField
           label="Categoría"
           name="type"
@@ -105,7 +102,6 @@ const Step1Form: React.FC<{
             { value: "2", label: "2. Peluquería canina" },
             { value: "3", label: "3. Centro de acopio" },
             { value: "4", label: "4. Centro de estudio" },
-            { value: "5", label: "5. Otros" },
           ]}
           onChange={(value) => handleSelectChange(value, "type")}
         />
@@ -134,16 +130,7 @@ const Step1Form: React.FC<{
           onChange={(value) => handleSelectChange(value, "services")}
         />
 
-        <ToggleField
-          label="Peluquería destacada"
-          value={formData.highlighted}
-          onChange={(highlighted) =>
-            handleToggleChange(highlighted, "highlighted")
-          }
-          imageSrc={highlightImage}
-        />
-
-        {/* <SelectField
+        <SelectField
           label="Peluquería destacada"
           name="highlighted"
           options={[
@@ -152,9 +139,35 @@ const Step1Form: React.FC<{
           ]}
           value={formData.highlighted ? { value: "true", label: "Sí" } : { value: "false", label: "No" }}
           onChange={(value) => handleSelectChange(value, "highlighted")}
-        /> */}
-        <PhoneNumberInput onChange={handlePhoneChange} />
+        />
 
+        <InputField
+          label="Número de teléfono"
+          placeholder="E.g: +56912345678"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+        />
+          <InputField
+          label="Nombre de Galería(opcional)"
+          placeholder="E.g: Galería Caracoles"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Nombre de depto/local(opcional)"
+          placeholder="Local 304 E"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
+        {/* <InputField
+          label="Descripción"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+        /> */}
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
@@ -186,12 +199,11 @@ const Step1Form: React.FC<{
   );
 };
 
+
 const Step2Form: React.FC<{
   formData: FormData;
   handleChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
 }> = ({ formData, handleChange }) => {
   const [mapCenter, setMapCenter] = useState<[number, number] | null>([
@@ -204,17 +216,14 @@ const Step2Form: React.FC<{
     commune: string,
     region: string
   ) => {
-    if (query.trim() === "" || commune.trim() === "" || region.trim() === "")
-      return;
+    if (query.trim() === "" || commune.trim() === "" || region.trim() === "") return;
 
     try {
       const fullQuery = `${query}, ${commune}, ${region}`;
       console.log("Buscando dirección:", fullQuery);
 
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          fullQuery
-        )}&addressdetails=1&limit=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&addressdetails=1&limit=1`
       );
 
       const data = await response.json();
@@ -222,9 +231,9 @@ const Step2Form: React.FC<{
 
       if (data.length > 0) {
         const { lat, lon } = data[0];
-
+        
         formData.latitud = lat;
-        formData.longitude = lon;
+      formData.longitude = lon;
 
         formData.latitud = lat.toString();
         formData.longitude = lon.toString();
@@ -280,20 +289,7 @@ const Step2Form: React.FC<{
     <>
       <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
-        <InputField
-          label="Coordenadas -Latitud (opcional)"
-          placeholder="Ej: -33.4489"
-          name="latitud"
-          value={formData.latitud}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Coordenadas-Longitud (opcional)"
-          placeholder="Ej: -70.6693"
-          name="longitude"
-          value={formData.longitude}
-          onChange={handleChange}
-        />
+        
         <InputField
           label="Dirección"
           placeholder="Av. Providencia 675"
@@ -315,6 +311,30 @@ const Step2Form: React.FC<{
           value={formData.region}
           onChange={handleChange}
         />
+        <div className="flex items-center">
+  <img 
+    src="/images/icon-pin.png" 
+    alt="Icono de ubicación" 
+    className="w-6 h-6 mr-4" 
+  />
+  <h2 className="font-bold text-blue-600">
+    .Arrastre el marcador para mejorar la ubicación en el mapa.
+  </h2>
+</div>
+        <InputField
+          label="Coordenadas -Latitud (opcional)"
+          placeholder="Ej: -33.4489"
+          name="latitud"
+          value={formData.latitud}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Coordenadas-Longitud (opcional)"
+          placeholder="Ej: -70.6693"
+          name="longitude"
+          value={formData.longitude}
+          onChange={handleChange}
+        />
         <div className="col-span-2">
           <button
             onClick={handleSearch}
@@ -323,6 +343,7 @@ const Step2Form: React.FC<{
             Buscar ubicación
           </button>
         </div>
+      
       </div>
 
       <div>
@@ -340,6 +361,7 @@ const Step2Form: React.FC<{
             <Marker
               position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
               draggable={true}
+              icon={pointMarker}
               eventHandlers={{
                 dragend: handleMarkerDrag,
               }}
@@ -375,7 +397,7 @@ const EditPointPage: React.FC = () => {
       galleryName: "",
       localNumber: "",
     },
-    phone: "+569",
+    phone: "",
     rrss: {
       facebook: "",
       instagram: "",
@@ -399,14 +421,8 @@ const EditPointPage: React.FC = () => {
         longitude: point.longitude?.toString() || "",
         photo_url: point.photo_url || "",
         region: point.region || "",
-        services:
-          point.services.map((service) => ({
-            value: service,
-            label: service,
-          })) || [],
-        type: point.type
-          ? { value: point.type.toString(), label: `Categoría ${point.type}` }
-          : null,
+        services: point.services.map(service => ({ value: service, label: service })) || [],
+        type: point.type ? { value: point.type.toString(), label: `Categoría ${point.type}` } : null,
         gallery: {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
@@ -442,8 +458,7 @@ const EditPointPage: React.FC = () => {
   const handleSelectChange = (
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
-  ) => {
-    setFormData({ ...formData, [field]: value });
+  ) => {    setFormData({ ...formData, [field]: value });
   };
 
   const handleChange = (
@@ -475,10 +490,7 @@ const EditPointPage: React.FC = () => {
 
     if (name === "type") {
       if (/^[1-4]?$/.test(value)) {
-        setFormData({
-          ...formData,
-          type: { value, label: `Categoría ${value}` },
-        });
+        setFormData({ ...formData, type: { value, label: `Categoría ${value}` } });
       }
       return;
     }
@@ -592,7 +604,7 @@ const EditPointPage: React.FC = () => {
       longitude: parseFloat(formData.longitude || "0"),
       type: parseInt(formData.type?.value || "0", 10),
       gallery: galleryData,
-      services: services.map((service) => service.value),
+      services: services.map(service => service.value),
       rrss: socialMediaLinks,
     };
 
@@ -617,14 +629,6 @@ const EditPointPage: React.FC = () => {
 
   const handleNextStep = () =>
     setStep((prev) => Math.min(prev + 1, totalSteps));
-
-  const handleToggleChange = (value: boolean, field: string) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
-  const handlePhoneChange = (value: string) => {
-    setFormData({ ...formData, phone: value });
-  };
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const isOnEditPage = location.pathname.includes("edit-point");
@@ -647,8 +651,6 @@ const EditPointPage: React.FC = () => {
             handleSelectChange={handleSelectChange}
             handleChange={handleChange}
             handleFileChange={handleFileChange}
-            handleToggleChange={handleToggleChange}
-            handlePhoneChange={handlePhoneChange}
             isUploading={isUploading}
           />
         )}
