@@ -1,5 +1,5 @@
-import { useState, useEffect} from "react";
-import { MapContainer, TileLayer} from "react-leaflet";
+import { useState, useEffect } from "react";
+import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MarkerList from "../components/MarkerList";
 import CenterMap from "../components/maps/CenterPointMap";
@@ -8,7 +8,8 @@ import SidebarMenu from "../components/SidebarMenu";
 import { Pointdata } from "../hooks/UseFetchPoints";
 import MapBoundsUpdater from "../components/maps/FiltersPoints";
 import LocateUser from "../components/maps/FoundLocateUser";
-import SearchBar from "../components/SearchBar";  // Importa el SearchBar
+import SearchBar from "../components/SearchBar"; // Importa el SearchBar
+import CategoryFilter from "../components/CategoryFilter"; // Importa el CategoryFilter
 
 const Map = () => {
   const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
@@ -16,8 +17,8 @@ const Map = () => {
     lat: number;
     lng: number;
   } | null>(null);
+  const { points, deletePoint, selectedTypes, setSelectedTypes } = UseFetchPoints();
   const [filteredPoints, setFilteredPoints] = useState<Pointdata[]>([]);
-  const { points, deletePoint } = UseFetchPoints();
 
   const pointData: Pointdata[] = points.map((point) => ({
     id: point.id,
@@ -81,6 +82,11 @@ const Map = () => {
     <div>
       <div className="flex" style={{ height: "100vh" }}>
         <div className="flex-none" style={{ width: "25%" }}>
+          {/* Pasa selectedTypes y setSelectedTypes a CategoryFilter */}
+          <CategoryFilter
+            selectedTypes={selectedTypes}   // Pasa selectedTypes
+            onCategoryChange={setSelectedTypes} // Pasa setSelectedTypes
+          />
           <SidebarMenu
             points={filteredPoints}
             onPointSelect={(coords) => setSelectedCoords(coords)}
@@ -108,7 +114,7 @@ const Map = () => {
               resetSelectedCoords={() => setSelectedCoords(null)} 
             />
             <LocateUser
-              onLocationFound={handleLocationFound}
+              onLocationFound={handleLocationFound}  // La firma ahora es compatible
               userCoords={userCoords}
             />
           </MapContainer>
