@@ -30,7 +30,7 @@ const Navbar: React.FC = () => {
         {/* Logo */}
         <div className="flex items-center">
           <img
-            src="images/logo-mot_int.png"
+            src="images/logo-mott_int.png"
             alt="Matter of Trust Logo"
             className="h-8"
           />

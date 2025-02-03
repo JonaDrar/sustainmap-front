@@ -48,7 +48,7 @@ const Login: React.FC = () => {
       <div className="bg-white shadow-md rounded-xxl px-6 py-8 w-full max-w-xs sm:max-w-sm md:max-w-md login-card">
         <div className="mb-6 text-center">
           <img
-            src="images/logo-mot_int.png"
+            src="images/logo-mott_int.png"
             alt="Matter of Trust Logo"
             className="w-24 sm:w-28 lg:w-36 mx-auto mb-4 login-logo"
           />
