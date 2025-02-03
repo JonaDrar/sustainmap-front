@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer} from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MarkerList from "../components/MarkerList";
 import CenterMap from "../components/maps/CenterPointMap";
@@ -8,8 +8,8 @@ import SidebarMenu from "../components/SidebarMenu";
 import { Pointdata } from "../hooks/UseFetchPoints";
 import MapBoundsUpdater from "../components/maps/FiltersPoints";
 import LocateUser from "../components/maps/FoundLocateUser";
-import SearchBar from "../components/SearchBar";  
-import CategoryFilter from "../components/CategoryFilter";  
+import SearchBar from "../components/SearchBar"; // Importa el SearchBar
+import CategoryFilter from "../components/CategoryFilter"; // Importa el CategoryFilter
 
 const Map = () => {
   const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
@@ -17,9 +17,8 @@ const Map = () => {
     lat: number;
     lng: number;
   } | null>(null);
+  const { points, deletePoint, selectedTypes, setSelectedTypes } = UseFetchPoints();
   const [filteredPoints, setFilteredPoints] = useState<Pointdata[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<number[]>([]);  // Para manejar el filtro de tipos
-  const { points, deletePoint } = UseFetchPoints();
 
   const pointData: Pointdata[] = points.map((point) => ({
     id: point.id,
@@ -33,7 +32,7 @@ const Map = () => {
     region: point.region || "",
     phone: point.phone || "",
     services: point.services || [],
-    type: Array.isArray(point.type) ? point.type : [],
+    type: point.type,
     highlighted: point.highlighted || false,
     gallery: point.gallery || undefined,
     deleted: point.deleted || false,
@@ -55,18 +54,6 @@ const Map = () => {
     setFilteredPoints(filtered);
   };
 
-  const handleCategoryChange = (selectedTypes: number[]) => {
-    setSelectedTypes(selectedTypes);
-    if (selectedTypes.length === 0) {
-      setFilteredPoints(pointData);
-    } else {
-      const filtered = pointData.filter((point) =>
-        point.type.some((t) => selectedTypes.includes(t))
-      );
-      setFilteredPoints(filtered);
-    }
-  };
-
   useEffect(() => {
     const savedUserCoords = localStorage.getItem("userCoords");
     if (savedUserCoords) {
@@ -77,26 +64,7 @@ const Map = () => {
     if (savedPoints) {
       setFilteredPoints(JSON.parse(savedPoints));
     }
-
-    // Asegúrate de que `pointData` esté disponible para poder crear `allTypes`
-  if (pointData && pointData.length > 0) {
-    // Extraer todas las categorías únicas (sin duplicados)
-    const allTypes = pointData
-      .map((point) => point.type) // Obtén las categorías de todos los puntos
-      .flat(); // Aplana el array de arrays
-
-    // Eliminar duplicados y establecer las categorías como seleccionadas por defecto
-    const uniqueTypes = Array.from(new Set(allTypes)); // Elimina duplicados
-
-    setSelectedTypes((prevSelectedTypes) => {
-      // Si las categorías únicas son diferentes a las anteriores, actualiza el estado
-      if (JSON.stringify(uniqueTypes) !== JSON.stringify(prevSelectedTypes)) {
-        return uniqueTypes;
-      }
-      return prevSelectedTypes; // Si no hay cambio, no actualiza el estado
-    });
-  }
-}, [pointData]);
+  }, []);
 
   useEffect(() => {
     if (userCoords) {
@@ -114,6 +82,11 @@ const Map = () => {
     <div>
       <div className="flex" style={{ height: "100vh" }}>
         <div className="flex-none" style={{ width: "25%" }}>
+          {/* Pasa selectedTypes y setSelectedTypes a CategoryFilter */}
+          <CategoryFilter
+            selectedTypes={selectedTypes}   // Pasa selectedTypes
+            onCategoryChange={setSelectedTypes} // Pasa setSelectedTypes
+          />
           <SidebarMenu
             points={filteredPoints}
             onPointSelect={(coords) => setSelectedCoords(coords)}
@@ -124,11 +97,6 @@ const Map = () => {
         <div className="flex-grow" style={{ height: "100%" }}>
           {/* Agrega SearchBar aquí */}
           <SearchBar onSearch={handleSearch} />
-          {/* Agregar CategoryFilter aquí */}
-          <CategoryFilter
-            selectedTypes={selectedTypes}
-            onCategoryChange={handleCategoryChange}
-          />
           <MapContainer
             center={[-33.4489, -70.6693]}
             zoom={9}
@@ -138,15 +106,15 @@ const Map = () => {
               attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
-            <MarkerList sites={filteredPoints} onDeletePoint={deletePoint} />
+            <MarkerList sites={pointData} onDeletePoint={deletePoint} />
             <CenterMap coords={selectedCoords} />
             <MapBoundsUpdater
               points={pointData}
               setFilteredPoints={setFilteredPoints}
-              resetSelectedCoords={() => setSelectedCoords(null)}
+              resetSelectedCoords={() => setSelectedCoords(null)} 
             />
             <LocateUser
-              onLocationFound={handleLocationFound}
+              onLocationFound={handleLocationFound}  // La firma ahora es compatible
               userCoords={userCoords}
             />
           </MapContainer>

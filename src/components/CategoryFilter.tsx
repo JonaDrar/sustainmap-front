@@ -2,7 +2,7 @@ import React from "react";
 
 interface CategoryFilterProps {
   selectedTypes: number[];
-  onCategoryChange: (selectedTypes: number[]) => void;  // Asegúrate de que esto esté definido correctamente
+  onCategoryChange: (selectedTypes: number[]) => void;
 }
 
 const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedTypes, onCategoryChange }) => {
