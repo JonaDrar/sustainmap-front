@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Pointdata } from "../hooks/UseFetchPoints";
 import DropdownButton from "./DropdownButton";
 import { UserContext } from "../contexts/UserContext";
@@ -10,7 +10,7 @@ interface SidebarMenuProps {
   onPointSelect: (coords: [number, number]) => void;
   userCoords: { lat: number; lng: number } | null;
   onDeletePoint: (id: string, name: string) => void;
-  onSearch: (searchTerm: string) => void; 
+  onSearch: (searchTerm: string) => void;
 }
 
 const typeMapping: { [key: number]: string } = {
@@ -21,16 +21,34 @@ const typeMapping: { [key: number]: string } = {
   5: "Otros",
 };
 
-const categoriasSinServicios = [2, 3, 4]; // IDs de las categorías sin servicios
+const categoriasSinServicios = [2, 3, 4]; 
 
 const SidebarMenu: React.FC<SidebarMenuProps> = ({
   points,
   onPointSelect,
   onDeletePoint,
   onSearch
-}) => {
+ }) => {
   const { loggedInUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const [showPhoneModal, setShowPhoneModal] = useState<{ visible: boolean; phone: string | null }>({ visible: false, phone: null });
+
+  const isMobile = () => {
+    return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
+  const handlePhoneClick = (phone: string | null | undefined) => {
+    if (!phone) {
+      console.error("El número de teléfono no está disponible.");
+      return;
+    }
+
+    if (isMobile()) {
+      window.location.href = `tel:${phone}`;
+    } else {
+      setShowPhoneModal({ visible: true, phone });
+    }
+  };
 
   const handlePointClick = (point: Pointdata) => {
     if (point.latitud != null && point.longitude != null) {
@@ -42,15 +60,23 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   };
 
   const handleShare = (point: Pointdata) => {
+    const baseURL = "http://localhost:5173"; 
+    const shareURL = `${baseURL}/mapa?lat=${point.latitud}&lng=${point.longitude}&id=${point.id}`;
+
     const shareData = {
       title: point.name,
-      text: `Revisa este lugar: ${point.name}, ubicado en ${point.address}`,
-      url: window.location.href,
+      text: `Revisa este lugar: ${point.name}, ubicado en ${point.address}\n\n${shareURL}`,
+      url: shareURL,
     };
     if (navigator.share) {
       navigator.share(shareData).catch((err) => console.error("Error al compartir", err));
     } else {
-      alert("La funcionalidad de compartir no está soportada en este navegador.");
+      navigator.clipboard.writeText(shareURL).then(() => {
+        alert("Enlace copiado al portapapeles.");
+      }).catch(err => {
+        console.error("Error al copiar enlace", err);
+        alert(`Copia este enlace para compartir: ${shareURL}`);
+      });
     }
   };
 
@@ -60,12 +86,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
 
   const sortedPoints = [...points].sort((a, b) => (b.highlighted ? 1 : 0) - (a.highlighted ? 1 : 0));
 
-
   return (
     <div className="bg-white p-4 h-full w-full overflow-y-auto z-20">
       {/* Barra de búsqueda - Ahora dentro del sidebar */}
       <div className="mb-4">
-      <SearchBar onSearch={onSearch} />
+        <SearchBar onSearch={onSearch} />
       </div>
       {sortedPoints.length === 0 ? (
         <p className="text-gray-500">No hay puntos disponibles cerca de tu ubicación.</p>
@@ -75,7 +100,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             <li
               key={point.id}
               className={`p-4 bg-white border shadow-lg rounded-lg cursor-pointer hover:bg-gray-100 transition duration-200 w-full max-w-md mx-auto 
-              ${point.highlighted ? "border-2 border-yellow-600" : "border border-gray-300"}`} // Cambia el borde si es destacado
+              ${point.highlighted ? "border-2 border-yellow-500" : "border border-gray-300"}`} // Cambia el borde si es destacado
               onClick={() => handlePointClick(point)}
               style={{ zIndex: 1000 }}
             >
@@ -164,14 +189,13 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                     </a>
 
                     {/* Teléfono */}
-                    <a
-                      href={point.phone ? `tel:${point.phone}` : "#"}
-                      className={`${point.phone ? "opacity-100" : "cursor-not-allowed opacity-50"
-                        }`}
+                    <button
+                      onClick={() => handlePhoneClick(point.phone)}
+                      className={`${point.phone ? "opacity-100" : "cursor-not-allowed opacity-50"}`}
                       title={point.phone ? "Llamar" : "Teléfono no disponible"}
                     >
                       <img src="/images/telefono.png" alt="Teléfono" className="h-6 w-6 md:h-7 md:w-7 object-contain" />
-                    </a>
+                    </button>
 
                     {/* Google Maps */}
                     <a
@@ -258,6 +282,37 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             </li>
           ))}
         </ul>
+      )}
+      {showPhoneModal.visible && (
+         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
+         <div className="bg-white p-4 rounded-2xl shadow-lg text-center relative w-[320px]">
+           
+           {/* Botón de cerrar (X) en la esquina superior derecha */}
+           <button
+             onClick={() => setShowPhoneModal({ visible: false, phone: null })}
+             className="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-xl"
+           >
+             ✖
+           </button>
+     
+           {/* Número de teléfono con icono */}
+           <div className="flex items-center justify-center text-blue-600 text-lg font-semibold mt-2">
+             <img src="/images/telefono.png" alt="Teléfono" className="h-6 w-6 mr-2" />
+             <a href={`tel:${showPhoneModal.phone}`} className="hover:underline">
+               {showPhoneModal.phone}
+             </a>
+           </div>
+     
+           {/* Botón "Cancelar" con efecto hover rojo */}
+           <button
+             onClick={() => setShowPhoneModal({ visible: false, phone: null })}
+             className="mt-5 px-4 py-2 w-32 border border-blue-600 text-blue-600 rounded-lg 
+             transition-all duration-300 hover:bg-red-500 hover:border-red-500 hover:text-white"
+           >
+             Cancelar
+           </button>
+         </div>
+       </div>
       )}
     </div>
   );
