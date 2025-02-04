@@ -19,6 +19,24 @@ import CreatePoint from "./pages/CreatePoint";
 const App = () => {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageSrc, setImageSrc] = useState("/images/imagen-inicio.png"); 
+
+  useEffect(() => {
+    const updateImage = () => {
+      if (window.innerWidth <= 768) {
+        setImageSrc("/images/celular-inicio.png"); 
+      } else {
+        setImageSrc("/images/imagen-inicio.png"); 
+      }
+    };
+
+    updateImage(); 
+    window.addEventListener("resize", updateImage); 
+
+    return () => {
+      window.removeEventListener("resize", updateImage); 
+    };
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user) => {
@@ -36,7 +54,16 @@ const App = () => {
   }, []);
 
   if (loading) {
-    return <div>Cargando...</div>;
+    return (
+      <div className=" flex items-center justify-center h-screen w-screen bg-gray-100">
+        <img 
+          src={imageSrc} 
+          alt="Cargando..." 
+          className="max-w-full max-h-full object-contain"
+        />
+      </div>
+    );
+    
   }
 
   return (
@@ -47,7 +74,8 @@ const App = () => {
         </ErrorBoundary>
         <ErrorBoundary>
         <Routes>
-          <Route path="/" element={<Map />} />
+        <Route path="/mapa" element={<Map />} />
+        <Route path="/" element={<Navigate to="/mapa" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/signup"
