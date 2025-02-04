@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../authentication/auth';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 
 
 const Signup: React.FC = () => {
@@ -14,6 +15,17 @@ const Signup: React.FC = () => {
     number: false,
     special: false,
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
+
 
   const validatePassword = (password: string) => {
     const length = password.length >= 8;
@@ -50,7 +62,7 @@ const Signup: React.FC = () => {
       alert('¡Registro exitoso!');
       navigate('/');
     } catch (error) {
-      console.error('Error de registro:', error); 
+      console.error('Error de registro:', error);
       const firebaseError = error as { code?: string };
       if (firebaseError.code === 'auth/email-already-in-use') {
         setErrors({ email: 'Este correo electrónico ya está en uso.' });
@@ -66,9 +78,9 @@ const Signup: React.FC = () => {
   }
 
   const isValidInput =
-  email.length > 0 &&
-  password.length > 0 &&
-  confirmPassword.length > 0 
+    email.length > 0 &&
+    password.length > 0 &&
+    confirmPassword.length > 0
 
   return (
     <div className="gradient-background flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 60px)' }}>
@@ -95,9 +107,9 @@ const Signup: React.FC = () => {
             />
             {errors.email && <p className="error-text text-sm">{errors.email}</p>}
           </div>
-          <div>
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? "text": "password"}
               placeholder="Crea una contraseña"
               value={password}
               onChange={(e) => {
@@ -106,6 +118,19 @@ const Signup: React.FC = () => {
               }}
               className="w-full px-4 py-2 text-sm border rounded-md"
             />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute inset-y-0 right-0 mb-4 flex items-center pr-3 focus:outline-none"
+            >
+              {showPassword ? (
+                <EyeIcon className=" h-5 text-gray-500" />
+              ) : (
+                <EyeSlashIcon className="h-5 w-5 text-gray-500" />
+              )}
+            </button>
+          </div>
+          <div>
             {errors.password && <p className="error-text">{errors.password}</p>}
             {errors.general && <p>{errors.general}</p>}
             {showValidationRequirements ? (<div className="password-tooltip">
@@ -124,29 +149,39 @@ const Signup: React.FC = () => {
             ) : null}
 
           </div>
-          <div>
+          <div className="relative">
             <input
-              type="password"
+              type={ showConfirmPassword ? "text" : "password"}
               placeholder="Repite tu contraseña"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full px-4 py-2 text-sm border rounded-md"
             />
+            <button
+              type="button"
+              onClick={toggleConfirmPasswordVisibility}
+              className="absolute inset-y-0 right-0 mb-4 flex items-center pr-3 focus:outline-none"
+            >
+              {showConfirmPassword ? (
+                <EyeIcon className=" h-5 text-gray-500" />
+              ) : (
+                <EyeSlashIcon className="h-5 w-5 text-gray-500" />
+              )}
+            </button>
             {errors.confirmPassword && <p className="error-text text-sm">{errors.confirmPassword}</p>}
           </div>
 
           <button
             type="submit"
             disabled={!isValidInput}
-            className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${
-              isValidInput
+            className={`submit-button w-full flex justify-center py-2 px-4 border border-transparent transition-colors duration-300 focus:outline-none ${isValidInput
                 ? "bg-[var(--Azul-activado,#146FB7)] cursor-not-allowed text-white"
                 : "bg-[var(--Azul-desactivado,#E1F4FE)] text-gray-700"
-            }`}           >
+              }`}           >
             Registrarse
           </button>
         </form>
-     
+
       </div>
 
     </div >
