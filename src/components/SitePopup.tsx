@@ -24,7 +24,12 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
 
   const { loggedInUser } = useContext(UserContext);
   return (
-    <Popup>
+    <Popup 
+      autoPan={true} 
+      autoPanPadding={[80, 80]} 
+      keepInView={true} 
+      maxWidth={360} 
+    >
       <div className="bg-white rounded-lg shadow-lg overflow-hidden w-[280px] sm:w-[320px] md:w-[360px]">
         {/* Imagen superior */}
         <div className="relative">
@@ -35,7 +40,6 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
           />
         </div>
         {loggedInUser ? (
-          // Botón desplegable
           <div className="ml-2">
             <DropdownButton
               onEdit={handleEdit}
@@ -47,14 +51,11 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
 
         {/* Contenido del cuerpo */}
         <div className="p-4">
-          {/* Nombre del salón, galería y local */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-            {/* Contenedor izquierdo: Nombre */}
             <h3 className="text-blue-700 font-bold text-base md:text-lg">
               {site.name}
             </h3>
 
-            {/* Contenedor derecho: Galería y Local */}
             {site.gallery && (
               <div className="flex flex-col md:flex-row md:items-center md:gap-3 text-green-600 font-thin text-xs md:text-sm mt-1 md:mt-0">
                 {site.gallery.galleryName && (
@@ -73,14 +74,12 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
 
           {/* Dirección */}
           <div className="flex items-center text-gray-700 text-xs sm:text-sm font-sans mb-2">
-           <img
-             src="/images/location-popup.png"
-             alt="Location"
-             className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" // Tamaños ajustables
-           />
-            <p>
-              {site.address}, {site.commune}. {site.region}.
-            </p>
+            <img
+              src="/images/location-popup.png"
+              alt="Location"
+              className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3"
+            />
+            <p>{site.address}, {site.commune}. {site.region}.</p>
           </div>
         </div>
       </div>
