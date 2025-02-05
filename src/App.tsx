@@ -15,6 +15,7 @@ import { onAuthStateChange } from "./authentication/auth";
 import EditPointPage from "./pages/EditPoint";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CreatePoint from "./pages/CreatePoint";
+import AdminLogin from "./pages/AdminLogin";
           
 const App = () => {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
@@ -49,6 +50,14 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Map />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/AdminLogin"
+            element={
+              <ProtectedRoute loggedInUser={loggedInUser}>
+                <AdminLogin/>
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/signup"
             element={

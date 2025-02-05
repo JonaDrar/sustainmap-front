@@ -24,6 +24,8 @@ const Navbar: React.FC = () => {
   const showMapLink = pathname !== "/";
   const getLinkClass = (path: string) => pathname === path ? 'font-bold' : '';
 
+
+
   return (
     <header>
       <nav className="flex items-center justify-between p-4 bg-white border-b border-gray-200 text-[var(--Azul-activado,#146FB7)]">
@@ -40,8 +42,13 @@ const Navbar: React.FC = () => {
         <div className="flex items-center space-x-6">
           {loggedInUser ? (
             <>
-              <Link to="/signup" className={getLinkClass('/signup')}>Registrar Usuario</Link>
+               <span className="welcome-message">
+                {loggedInUser}
+              </span>
+              <Link to="/AdminLogin" className={getLinkClass('/signup')}>Registrar Usuario</Link>
               <Link to="/create-point" className={getLinkClass('/create-point')}>Crear puntos de interés</Link>
+
+              
               { showMapLink ? <Link to="/" className={getLinkClass('/')}>Ver mapa</Link> : null}
               <button onClick={handleLogout} className="logout-button">
                 Cerrar sesión

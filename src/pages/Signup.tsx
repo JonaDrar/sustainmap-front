@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { register } from '../authentication/auth';
+import { register } from '../authentication/auth'; 
+
 
 
 const Signup: React.FC = () => {
@@ -28,47 +29,63 @@ const Signup: React.FC = () => {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const validationErrors: { [key: string]: string } = {};
+  
+    // Validación del email
     if (!email) {
       validationErrors.email = 'El correo es obligatorio.';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       validationErrors.email = 'Por favor, ingresa un correo válido.';
     }
+  
+    // Validación de la contraseña
     if (!password) {
       validationErrors.password = 'La contraseña es obligatoria.';
     } else {
-      if (password.length < 8) validationErrors.password = 'La contraseña debe tener al menos 8 caracteres.';
-      if (password !== confirmPassword) validationErrors.confirmPassword = 'Las contraseñas no coinciden.';
+      if (password.length < 8) {
+        validationErrors.password = 'La contraseña debe tener al menos 8 caracteres.';
+      }
+      if (password !== confirmPassword) {
+        validationErrors.confirmPassword = 'Las contraseñas no coinciden.';
+      }
     }
-
+  
     setErrors(validationErrors);
+  
     if (Object.keys(validationErrors).length > 0) {
       return;
     }
-
+  
     try {
       await register(email, password);
       alert('¡Registro exitoso!');
-      navigate('/');
+      navigate('/');  // Redirigimos a la página principal
     } catch (error) {
-      console.error('Error de registro:', error); 
+      console.error('Error de registro:', error);
       const firebaseError = error as { code?: string };
-      if (firebaseError.code === 'auth/email-already-in-use') {
-        setErrors({ email: 'Este correo electrónico ya está en uso.' });
-      } else if (firebaseError.code === 'auth/invalid-email') {
-        setErrors({ email: 'El correo electrónico no es válido.' });
-      } else if (firebaseError.code === 'auth/weak-password') {
-        setErrors({ password: 'La contraseña debe tener al menos 8 caracteres.' });
-      } else {
-        setErrors({ general: 'Hubo un problema al registrar el usuario.' });
+  
+      switch (firebaseError.code) {
+        case 'auth/email-already-in-use':
+          setErrors({ email: 'Este correo electrónico ya está en uso.' });
+          break;
+        case 'auth/invalid-email':
+          setErrors({ email: 'El correo electrónico no es válido.' });
+          break;
+        case 'auth/weak-password':
+          setErrors({ password: 'La contraseña debe tener al menos 8 caracteres.' });
+          break;
+        default:
+          setErrors({ general: 'Hubo un problema al registrar el usuario.' });
+          break;
       }
     }
+  };
 
-  }
 
+  
   const isValidInput =
-  email.length > 0 &&
-  password.length > 0 &&
-  confirmPassword.length > 0 
+    email.length > 0 &&
+    password.length > 0 &&
+    confirmPassword.length > 0;
 
   return (
     <div className="gradient-background flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 60px)' }}>
@@ -79,11 +96,11 @@ const Signup: React.FC = () => {
             alt="Matter of Trust Logo"
             className="w-24 sm:w-28 lg:w-36 mx-auto mb-4 login-logo"
           />
-          <h2 className=" text-lg md:text-2xl font-bold text-blue-700 login-header">Crear Cuenta </h2>
-          <p className="text-sm text-gray-700 login-sub-header-2">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>
+          <h2 className="text-lg md:text-2xl font-bold text-blue-700 login-header">Crear Cuenta de Usuario</h2>
+          <p className="text-sm text-gray-700 login-sub-header-2">Ingresa los datos del usuario</p>
         </div>
 
-        <form className=" space-y-2 login-form" onSubmit={handleSignup}>
+        <form className="space-y-2 login-form" onSubmit={handleSignup}>
 
           <div>
             <input
@@ -127,7 +144,7 @@ const Signup: React.FC = () => {
           <div>
             <input
               type="password"
-              placeholder="Repite tu contraseña"
+              placeholder="Repite la contraseña"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full px-4 py-2 text-sm border rounded-md"
