@@ -196,7 +196,15 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
       </div>
-      <h6 className="text-lg font-normal my-4">Configuración de activación</h6>
+      <div className="flex items-center justify-between w-full">
+        <h6 className="text-lg font-normal my-4">Configuración de activación</h6>
+        <p className="text-sm font-medium w-[190px] mr-[210px]">
+          Estado de activación:{" "}
+          <span className={formData.isActive ? "text-green-600" : "text-red-600"}>
+            {formData.isActive ? "Activo" : "Inactivo"}
+          </span>
+        </p>
+      </div>
       <div className="grid grid-cols-2 gap-4">
         <InputField
           label="Fecha de inicio"
@@ -212,14 +220,14 @@ const Step1Form: React.FC<{
           value={formatDateForInput(formData.activationEndDate) || ""}
           onChange={(e) => handleDateChange(e, "activationEndDate")} 
         />
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <p className="text-sm font-medium">
             Estado de activación:{" "}
             <span className={formData.isActive ? "text-green-600" : "text-red-600"}>
               {formData.isActive ? "Activo" : "Inactivo"}
             </span>
           </p>
-        </div>
+        </div> */}
       </div>
     </>
   );
