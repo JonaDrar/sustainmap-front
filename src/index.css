@@ -243,3 +243,6 @@ label {
   .toggle-checkbox::before {
     @apply content-[''] block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform;
   }
+
+
+ 
