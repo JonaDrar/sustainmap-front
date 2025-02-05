@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import Modal from "./ModalDelete";
 
 interface DropdownButtonProps {
-  onEdit: () => void;
+  onEdit: (event: React.MouseEvent) => void;
   onDelete: () => void;
   pointName: string | JSX.Element
 }
@@ -63,7 +63,7 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ onEdit, onDelete, point
     >
       {/* Botón Editar */}
       <div
-        onClick={onEdit}
+        onClick={(event) => onEdit(event)}
         className="flex items-center px-3 sm:px-4 py-2 text-gray-700 hover:bg-red-500 hover:text-white cursor-pointer transition duration-200"
       >
         <img
