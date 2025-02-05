@@ -9,7 +9,7 @@ import { UserContext } from '../contexts/UserContext';
 
 interface MarkerListProps {
   sites: Pointdata[];
-  onDeletePoint?: (id: string) => void;
+  onDeletePoint?: (id: string, name: string) => void;
 }
 
 // const IconMarker= new L.Icon({
@@ -40,7 +40,7 @@ const MarkerList: React.FC<MarkerListProps> = ({ sites, onDeletePoint }) => {
 
         return (
           <Marker key={site.id} position={[site.latitud, site.longitude]} icon={icon}>
-            <SitePopup site={site} onDeletePoint={() => onDeletePoint?.(site.id)} />
+            <SitePopup site={site} onDeletePoint={() => onDeletePoint?.(site.id, site.name)} />
           </Marker>
         );
       })}

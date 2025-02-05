@@ -15,7 +15,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedTypes, onCatego
   };
 
   return (
-    <div>
+    <div className="flex flex-col space-y-2">
       {/* Renderiza los checkboxes de tipos de categorías */}
       <label>
         <input
