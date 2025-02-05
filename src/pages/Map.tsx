@@ -8,8 +8,8 @@ import SidebarMenu from "../components/SidebarMenu";
 import { Pointdata } from "../hooks/UseFetchPoints";
 import MapBoundsUpdater from "../components/maps/FiltersPoints";
 import LocateUser from "../components/maps/FoundLocateUser";
-import SearchBar from "../components/SearchBar"; // Importa el SearchBar
-import CategoryFilter from "../components/CategoryFilter"; // Importa el CategoryFilter
+import SearchBar from "../components/SearchBar"; 
+import CategoryFilter from "../components/CategoryFilter"; 
 
 const Map = () => {
   const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
@@ -97,10 +97,12 @@ const Map = () => {
         <div className="flex-grow" style={{ height: "100%" }}>
           {/* Agrega SearchBar aquí */}
           <SearchBar onSearch={handleSearch} />
+          <div className="flex-grow relative h-full">
+          {/* MapContainer envuelto en un div relative */}
           <MapContainer
             center={[-33.4489, -70.6693]}
             zoom={9}
-            style={{ height: "100%", width: "100%" }}
+            className="h-full w-full"
           >
             <TileLayer
               attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
@@ -111,13 +113,14 @@ const Map = () => {
             <MapBoundsUpdater
               points={pointData}
               setFilteredPoints={setFilteredPoints}
-              resetSelectedCoords={() => setSelectedCoords(null)} 
+              resetSelectedCoords={() => setSelectedCoords(null)}
             />
             <LocateUser
-              onLocationFound={handleLocationFound}  // La firma ahora es compatible
+              onLocationFound={handleLocationFound}
               userCoords={userCoords}
             />
           </MapContainer>
+        </div>
         </div>
       </div>
     </div>
