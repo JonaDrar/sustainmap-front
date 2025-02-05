@@ -14,6 +14,7 @@ import { MultiValue, SingleValue } from "react-select";
 import ToggleField from "./form/ToggleField";
 import highlightImage from "/images/Star.png";
 import PhoneNumberInput from "./form/PhoneNumberInput";
+import pointMarker from "./maps/MarkerPoint";
 
 interface OptionType {
   label: string;
@@ -43,7 +44,18 @@ interface FormData {
     galleryName: string;
     localNumber: string;
   };
+  activationStartDate: string;
+  activationEndDate: string;
+  isActive: boolean;
 }
+
+const formatDateForInput = (date: string | undefined): string | undefined => {
+  if (date) {
+    const dateObj = new Date(date);
+    return dateObj.toISOString().split('T')[0]; // Extracts the date part (YYYY-MM-DD)
+  }
+  return undefined;
+};
 
 const Step1Form: React.FC<{
   formData: FormData;
@@ -56,13 +68,14 @@ const Step1Form: React.FC<{
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
   ) => void;
+  handleDateChange: (e: React.ChangeEvent<HTMLInputElement>, field: string) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleToggleChange: (value: boolean, field: string) => void;
   handlePhoneChange: (value: string) => void;
   isUploading: boolean;
 }> = ({
   formData,
-  handleChange,
+  handleChange, handleDateChange,
   handlePhoneChange,
   handleFileChange,
   handleSelectChange,
@@ -140,7 +153,21 @@ const Step1Form: React.FC<{
           }
           imageSrc={highlightImage}
         />
-        <PhoneNumberInput onChange={handlePhoneChange} />
+        <PhoneNumberInput value={formData.phone} onChange={handlePhoneChange} />
+        <InputField
+          label="Nombre de Galería(opcional)"
+          placeholder="E.g: Galería Caracoles"
+          name="galleryName"
+          value={formData.gallery.galleryName}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Nombre de depto/local(opcional)"
+          placeholder="Local 304 E"
+          name="localNumber"
+          value={formData.gallery.localNumber}
+          onChange={handleChange}
+        />
 
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
@@ -169,6 +196,31 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
       </div>
+      <h6 className="text-lg font-normal my-4">Configuración de activación</h6>
+      <div className="grid grid-cols-2 gap-4">
+        <InputField
+          label="Fecha de inicio"
+          name="activationStartDate"
+          type="date"
+          value={formatDateForInput(formData.activationStartDate) || ""}
+          onChange={(e) => handleDateChange(e, "activationStartDate")} 
+        />
+        <InputField
+          label="Fecha de término"
+          name="activationEndDate"
+          type="date"
+          value={formatDateForInput(formData.activationEndDate) || ""}
+          onChange={(e) => handleDateChange(e, "activationEndDate")} 
+        />
+        <div className="col-span-2">
+          <p className="text-sm font-medium">
+            Estado de activación:{" "}
+            <span className={formData.isActive ? "text-green-600" : "text-red-600"}>
+              {formData.isActive ? "Activo" : "Inactivo"}
+            </span>
+          </p>
+        </div>
+      </div>
     </>
   );
 };
@@ -176,9 +228,7 @@ const Step1Form: React.FC<{
 const Step2Form: React.FC<{
   formData: FormData;
   handleChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
 }> = ({ formData, handleChange }) => {
   const [mapCenter, setMapCenter] = useState<[number, number] | null>([
@@ -191,17 +241,14 @@ const Step2Form: React.FC<{
     commune: string,
     region: string
   ) => {
-    if (query.trim() === "" || commune.trim() === "" || region.trim() === "")
-      return;
+    if (query.trim() === "" || commune.trim() === "" || region.trim() === "") return;
 
     try {
       const fullQuery = `${query}, ${commune}, ${region}`;
       console.log("Buscando dirección:", fullQuery);
 
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          fullQuery
-        )}&addressdetails=1&limit=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&addressdetails=1&limit=1`
       );
 
       const data = await response.json();
@@ -209,9 +256,9 @@ const Step2Form: React.FC<{
 
       if (data.length > 0) {
         const { lat, lon } = data[0];
-
+        
         formData.latitud = lat;
-        formData.longitude = lon;
+      formData.longitude = lon;
 
         formData.latitud = lat.toString();
         formData.longitude = lon.toString();
@@ -267,20 +314,7 @@ const Step2Form: React.FC<{
     <>
       <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
       <div className="grid grid-cols-2 gap-4 pb-4">
-        <InputField
-          label="Coordenadas -Latitud (opcional)"
-          placeholder="Ej: -33.4489"
-          name="latitud"
-          value={formData.latitud}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Coordenadas-Longitud (opcional)"
-          placeholder="Ej: -70.6693"
-          name="longitude"
-          value={formData.longitude}
-          onChange={handleChange}
-        />
+        
         <InputField
           label="Dirección"
           placeholder="Av. Providencia 675"
@@ -302,18 +336,28 @@ const Step2Form: React.FC<{
           value={formData.region}
           onChange={handleChange}
         />
+        <div className="flex items-center">
+  <img 
+    src="/images/icon-pin.png" 
+    alt="Icono de ubicación" 
+    className="w-6 h-6 mr-4" 
+  />
+  <h2 className="font-bold text-blue-600">
+    .Arrastre el marcador para mejorar la ubicación en el mapa.
+  </h2>
+</div>
         <InputField
-          label="Nombre de Galería(opcional)"
-          placeholder="E.g: Galería Caracoles"
-          name="galleryName"
-          value={formData.gallery.galleryName}
+          label="Coordenadas -Latitud (opcional)"
+          placeholder="Ej: -33.4489"
+          name="latitud"
+          value={formData.latitud}
           onChange={handleChange}
         />
         <InputField
-          label="Nombre de depto/local(opcional)"
-          placeholder="Local 304 E"
-          name="localNumber"
-          value={formData.gallery.localNumber}
+          label="Coordenadas-Longitud (opcional)"
+          placeholder="Ej: -70.6693"
+          name="longitude"
+          value={formData.longitude}
           onChange={handleChange}
         />
         <div className="col-span-2">
@@ -324,6 +368,7 @@ const Step2Form: React.FC<{
             Buscar ubicación
           </button>
         </div>
+      
       </div>
 
       <div>
@@ -337,21 +382,16 @@ const Step2Form: React.FC<{
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
           <CenterMap coords={mapCenter} />
-          {formData.latitud &&
-            formData.longitude &&
-            parseFloat(formData.latitud) &&
-            parseFloat(formData.longitude) && (
-              <Marker
-                position={[
-                  parseFloat(formData.latitud),
-                  parseFloat(formData.longitude),
-                ]}
-                draggable={true}
-                eventHandlers={{
-                  dragend: handleMarkerDrag,
-                }}
-              />
-            )}
+          {formData.latitud && formData.longitude && parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
+            <Marker
+              position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
+              draggable={true}
+              icon={pointMarker}
+              eventHandlers={{
+                dragend: handleMarkerDrag,
+              }}
+            />
+          )}
         </MapContainer>
       </div>
     </>
@@ -409,6 +449,9 @@ const EditPointPage: React.FC = () => {
       instagram: "",
       other: "",
     },
+    activationStartDate: "",
+    activationEndDate: "",
+    isActive: false,
   });
 
   const [step, setStep] = useState(1);
@@ -446,6 +489,9 @@ const EditPointPage: React.FC = () => {
           instagram: point.rrss?.instagram || "",
           other: point.rrss?.other || "",
         },
+        activationStartDate: point.activationStartDate || "",
+        activationEndDate: point.activationEndDate || "",
+        isActive: point.isActive || false,
       });
     }
   }, [point]);
@@ -492,59 +538,126 @@ const EditPointPage: React.FC = () => {
       setFormData({ ...formData, [field]: value });
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement;
+  const validateDates = () => {
+    const startDate = new Date(formData.activationStartDate);
+    const endDate = new Date(formData.activationEndDate);
 
-    if (name === "latitud") {
-      if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
-        const num = parseFloat(value);
-        if (value === "-" || value === "" || (num >= -90 && num <= 90)) {
-          setFormData({ ...formData, latitud: value });
-        }
-      }
-      return;
+    const newErrors = { activationStartDate: "", activationEndDate: "" };
+    let isValid = true;
+
+    if (!formData.activationStartDate) {
+      newErrors.activationStartDate = "La fecha de inicio es requerida.";
+      isValid = false;
+    } else if (isNaN(startDate.getTime())) {
+      newErrors.activationStartDate = "La fecha de inicio no es válida.";
+      isValid = false;
     }
 
-    if (name === "longitude") {
-      if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
-        const num = parseFloat(value);
-        if (value === "-" || value === "" || (num >= -180 && num <= 180)) {
-          setFormData({ ...formData, longitude: value });
-        }
-      }
-      return;
+    if (!formData.activationEndDate) {
+      newErrors.activationEndDate = "La fecha de fin es requerida.";
+      isValid = false;
+    } else if (isNaN(endDate.getTime())) {
+      newErrors.activationEndDate = "La fecha de fin no es válida.";
+      isValid = false;
     }
 
-    if (["facebook", "instagram", "other"].includes(name)) {
-      setFormData({
-        ...formData,
-        rrss: {
-          ...formData.rrss,
-          [name]: value,
-        },
-      });
-      return;
+    if (isValid && startDate > endDate) {
+      newErrors.activationEndDate = "La fecha de fin debe ser posterior a la fecha de inicio.";
+      isValid = false;
     }
 
-    if (name === "galleryName" || name === "localNumber") {
-      setFormData({
-        ...formData,
-        gallery: {
-          ...formData.gallery,
-          [name]: value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: type === "checkbox" ? checked : value,
-      });
+    if (!isValid) {
+      Swal.fire(
+        "Error",
+        `${newErrors.activationStartDate || ""} ${newErrors.activationEndDate || ""}`,
+        "error"
+      );
     }
+    return isValid;
   };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const value = e.target.value;
+
+    setFormData((prev) => {
+      const updatedFormData = { ...prev, [field]: value };
+      const startDate = new Date(updatedFormData.activationStartDate);
+      const endDate = new Date(updatedFormData.activationEndDate);
+
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+        updatedFormData.isActive = startDate <= new Date() && endDate >= new Date();
+      }
+
+      return updatedFormData;
+    });
+  };
+
+const handleChange = (
+  e: React.ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >
+) => {
+  const { name, value, type, checked } = e.target as HTMLInputElement;
+
+  if (name === "latitud") {
+    if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
+      const num = parseFloat(value);
+      if (value === "-" || value === "" || (num >= -90 && num <= 90)) {
+        setFormData({ ...formData, latitud: value });
+      }
+    }
+    return;
+  }
+
+  if (name === "longitude") {
+    if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
+      const num = parseFloat(value);
+      if (value === "-" || value === "" || (num >= -180 && num <= 180)) {
+        setFormData({ ...formData, longitude: value });
+      }
+    }
+    return;
+  }
+
+  if (name === "type") {
+    if (/^[1-4]?$/.test(value)) {
+      setFormData({ ...formData, type: value ? [{ label: value, value: value }] : [] });
+    }
+    return;
+  }
+
+  if (name === "highlighted") {
+    setFormData({ ...formData, highlighted: value === "true" });
+    return;
+  }
+
+  if (["facebook", "instagram", "other"].includes(name)) {
+    setFormData({
+      ...formData,
+      rrss: {
+        ...formData.rrss,
+        [name]: value,
+      },
+    });
+    return;
+  }
+
+  if (name === "galleryName" || name === "localNumber") {
+    setFormData({
+      ...formData,
+      gallery: {
+        ...formData.gallery,
+        [name]: value,
+      },
+    });
+  } else {
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  }
+};
+
 
   const handleCancel = () => {
     navigate("/");
@@ -552,6 +665,15 @@ const EditPointPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateDates()) {
+      Swal.fire("Error", "Por favor corrige los errores en las fechas.", "error");
+      return;
+    }
+
+    const startDate = new Date(formData.activationStartDate);
+    const endDate = new Date(formData.activationEndDate);
+
 
     // Función para validar si una URL es válida
     const isValidUrl = (url: string) => {
@@ -619,6 +741,8 @@ const EditPointPage: React.FC = () => {
 
     const dataToSend = {
       ...formData,
+        activationStartDate: startDate ? startDate.toISOString() : undefined,
+        activationEndDate: endDate ? endDate.toISOString() : undefined,
       latitud: parseFloat(formData.latitud || "0"),
       longitude: parseFloat(formData.longitude || "0"),
       type: type.map(({ value }) =>  parseInt(value, 10)),
@@ -695,7 +819,7 @@ const EditPointPage: React.FC = () => {
             handleFileChange={handleFileChange}
             handleToggleChange={handleToggleChange}
             handlePhoneChange={handlePhoneChange}
-            isUploading={isUploading}
+            handleDateChange={handleDateChange} isUploading={isUploading}
           />
         )}
         {step === 2 && (

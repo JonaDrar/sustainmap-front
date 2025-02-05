@@ -8,6 +8,8 @@ import SidebarMenu from "../components/SidebarMenu";
 import { Pointdata } from "../hooks/UseFetchPoints";
 import MapBoundsUpdater from "../components/maps/FiltersPoints";
 import LocateUser from "../components/maps/FoundLocateUser";
+import SearchBar from "../components/SearchBar"; // Importa el SearchBar
+import CategoryFilter from "../components/CategoryFilter"; // Importa el CategoryFilter
 import SuccessModal from "../components/SucessModal";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -17,8 +19,8 @@ const Map = () => {
     lat: number;
     lng: number;
   } | null>(null);
+  const { points, deletePoint, selectedTypes, setSelectedTypes } = UseFetchPoints();
   const [filteredPoints, setFilteredPoints] = useState<Pointdata[]>([]);
-  const { points, deletePoint } = UseFetchPoints();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const location = useLocation();
@@ -76,6 +78,9 @@ const Map = () => {
     gallery: point.gallery || undefined,
     deleted: point.deleted || false,
     rrss: point.rrss || undefined,
+    activationStartDate: point.activationStartDate ? new Date(point.activationStartDate).toISOString() : "",
+    activationEndDate: point.activationEndDate ? new Date(point.activationEndDate).toISOString() : "",
+    isActive: point.isActive || false,
   }));
 
   const handleLocationFound = (lat: number, lng: number) => {
@@ -125,41 +130,47 @@ const Map = () => {
 
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-white">
+    <div>
+      <div className="flex flex-col md:flex-row h-screen bg-white">
       {/* Mapa */}
       <div className="order-1 md:order-2 flex-grow w-full min-h-[50vh] md:h-full relative overflow-hidden">
-        <MapContainer
-          center={ [-33.4489, -70.6693]}
-          zoom={9}
-          className="h-full w-full z-0"
-        >
-          <TileLayer
-            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          {/* Pasa selectedTypes y setSelectedTypes a CategoryFilter */}
+          <CategoryFilter
+            selectedTypes={selectedTypes}   // Pasa selectedTypes
+            onCategoryChange={setSelectedTypes} // Pasa setSelectedTypes
           />
-          <MarkerList sites={pointData} onDeletePoint={(id, name) => handleDeletePoint(id, name)} />
-          <CenterMap coords={selectedCoords} />
-          <MapBoundsUpdater
-            points={pointData}
-            setFilteredPoints={setFilteredPoints}
-            resetSelectedCoords={() => setSelectedCoords(null)}
-          />
-          <LocateUser
-            onLocationFound={handleLocationFound}
+          <SidebarMenu
+            points={filteredPoints}
+            onPointSelect={(coords) => setSelectedCoords(coords)}
             userCoords={userCoords}
           />
-        </MapContainer>
-      </div>
-      {/* Barra Lateral */}
-      <div className=" order-2 md:order-1 w-full md:2/5 lg:w-2/5 bg-white overflow-y-auto p-4 md:shadow-lg">
-        {/* Barra de búsqueda  */}
-        <SidebarMenu
-          points={id && selectedPoint ? [selectedPoint] : filteredPoints}
-          onPointSelect={(coords) => setSelectedCoords(coords)}
-          userCoords={userCoords}
-          onDeletePoint={(id, name) => handleDeletePoint(id, name)}
-          onSearch={handleSearch}
-        />
+        </div>
+
+        <div className="flex-grow" style={{ height: "100%" }}>
+          {/* Agrega SearchBar aquí */}
+          <SearchBar onSearch={handleSearch} />
+          <MapContainer
+            center={[-33.4489, -70.6693]}
+            zoom={9}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors &copy; <a href='https://carto.com/'>CARTO</a>"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            />
+            <MarkerList sites={pointData} onDeletePoint={deletePoint} />
+            <CenterMap coords={selectedCoords} />
+            <MapBoundsUpdater
+              points={pointData}
+              setFilteredPoints={setFilteredPoints}
+              resetSelectedCoords={() => setSelectedCoords(null)} 
+            />
+            <LocateUser
+              onLocationFound={handleLocationFound}  // La firma ahora es compatible
+              userCoords={userCoords}
+            />
+          </MapContainer>
+        </div>
       </div>
       <SuccessModal
         name={successMessage || ""}

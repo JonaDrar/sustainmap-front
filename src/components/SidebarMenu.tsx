@@ -96,7 +96,10 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
         <p className="text-gray-500">No hay puntos disponibles cerca de tu ubicación.</p>
       ) : (
         <ul className="space-y-6">
-          {sortedPoints.map((point) => (
+          {sortedPoints 
+          .filter((point) => loggedInUser || point.isActive) // Solo mostramos puntos activos si no está logueado
+          .map((point) => (
+             
             <li
               key={point.id}
               className={`p-4 bg-white border shadow-lg rounded-lg cursor-pointer hover:bg-gray-100 transition duration-200 w-full max-w-md mx-auto 
