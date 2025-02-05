@@ -142,7 +142,7 @@ const Map = () => {
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
           {/* Pasa selectedTypes y setSelectedTypes a CategoryFilter */}
-          <div className="absolute bottom-4 left-4 z-[1000] bg-white p-4 rounded-lg shadow-lg w-45 h-auto flex flex-col justify-center items-start mb-16">
+          <div className="absolute top-2 left-14 z-[1000] bg-white p-4 rounded-lg shadow-lg w-56 h-auto flex flex-col justify-center items-start">
             <CategoryFilter
               selectedTypes={selectedTypes}
               onCategoryChange={setSelectedTypes}

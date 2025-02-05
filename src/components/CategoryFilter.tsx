@@ -29,7 +29,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedTypes, onCatego
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex justify-between items-center bg-white border border-gray-300 rounded-lg px-4 py-2 shadow-sm"
@@ -42,7 +42,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedTypes, onCatego
       {isOpen && (
         <div className="absolute w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-md p-2 z-10">
           {Object.entries(iconMap).map(([key, icon]) => (
-            <label key={key} className="flex justify-between items-center px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer">
+            <label key={key} className="flex justify-between items-center px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer w-full">
               <div className="flex items-center">
                 <input
                   type="checkbox"
