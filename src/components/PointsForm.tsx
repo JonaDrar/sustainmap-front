@@ -812,7 +812,7 @@ const validateStep1 = () => {
     Swal.fire("Error", "Por favor selecciona o ingresa al menos un servicio.", "error");
     return false;
   }
-  if (!formData.phone) {
+  if (!formData.phone || formData.phone === "") {
     Swal.fire("Error", "Por favor ingresa un teléfono.", "error");
     return false;
   }
