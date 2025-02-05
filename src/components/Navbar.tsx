@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
     return null; 
   }
   
-  const showMapLink = pathname !== "/";
+  const showMapLink = pathname !== "/mapa";
   const getLinkClass = (path: string) => pathname === path ? 'font-bold' : '';
 
   return (

@@ -48,7 +48,7 @@ const CustomOption: React.FC<OptionProps<OptionType>> = (props) => {
 const formatOptionLabel = ({ value, label }: OptionType) => (
   <div className="flex justify-between items-center">
     <span className="text-gray-900">{label}</span>
-    <img src={iconMap[value]} alt="Selected" className="w-9 h-9 p-1" />
+    <img src={iconMap[value]} alt="Selected" className="w-7 h-5 pl-2" />
   </div>
 );
 

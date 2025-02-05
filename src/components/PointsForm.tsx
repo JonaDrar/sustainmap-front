@@ -628,7 +628,7 @@ const handleChange = (
   }
 
   if (name === "type") {
-    if (/^[1-4]?$/.test(value)) {
+    if (/^[1-5]?$/.test(value)) {
       setFormData({ ...formData, type: value ? [{ label: value, value: value }] : [] });
     }
     return;
@@ -793,9 +793,43 @@ const handleChange = (
     }
 };
 
-  const handleNextStep = () =>
-    setStep((prev) => Math.min(prev + 1, totalSteps));
+const validateStep1 = () => {
+  if (!formData.name) {
+    Swal.fire("Error", "Por favor ingresa un nombre.", "error");
+    return false;
+  }
 
+  if (!formData.type || formData.type.length === 0) {
+    Swal.fire("Error", "Por favor selecciona al menos una categoría.", "error");
+    return false;
+  }
+  if (!formData.photo_url || formData.photo_url === "") {
+    Swal.fire("Error", "Por favor sube una imagen.", "error");
+    return false;
+  }
+
+  if (!formData.services || formData.services.length === 0) {
+    Swal.fire("Error", "Por favor selecciona o ingresa al menos un servicio.", "error");
+    return false;
+  }
+  if (!formData.phone) {
+    Swal.fire("Error", "Por favor ingresa un teléfono.", "error");
+    return false;
+  }
+
+
+  if (!validateDates()) {
+    return false;
+  }
+  return true;
+}
+
+  const handleNextStep = () => {
+    // only go to the next step if the form is valid
+    if (!validateStep1()) return;
+    
+    setStep((prev) => Math.min(prev + 1, totalSteps));
+  };
   const handleToggleChange = (value: boolean, field: string) => {
     setFormData({ ...formData, [field]: value });
   };
@@ -808,6 +842,7 @@ const handleChange = (
   const isOnEditPage = location.pathname.includes("edit-point");
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
+      {JSON.stringify(formData)}
       <Wizard
         step={step}
         totalSteps={totalSteps}
