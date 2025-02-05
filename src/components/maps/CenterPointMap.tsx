@@ -1,4 +1,5 @@
-import { useMap } from 'react-leaflet';
+import { useEffect, useState } from "react";
+import { useMap, useMapEvent } from "react-leaflet";
 
 interface CenterMapProps {
   coords: [number, number] | null;
@@ -6,12 +7,21 @@ interface CenterMapProps {
 
 const CenterMap: React.FC<CenterMapProps> = ({ coords }) => {
   const map = useMap();
-  if (coords) {
-    map.flyTo(coords, 17, { 
-      animate: true, 
-    });
-  }
+  const [popupOpen, setPopupOpen] = useState(false);
+
+  // Detecta si un popup está abierto
+  useMapEvent("popupopen", () => setPopupOpen(true));
+  useMapEvent("popupclose", () => setPopupOpen(false));
+
+  useEffect(() => {
+    if (coords && !popupOpen) {
+      map.flyTo(coords, 15, {
+        animate: true, //Evita animaciones innecesarias
+      });
+    }
+  }, [coords, map, popupOpen]); // Ahora depende de popupOpen
+
   return null;
 };
 
-export default CenterMap
+export default CenterMap;
