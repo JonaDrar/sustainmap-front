@@ -80,7 +80,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
     }
   };
 
-  const handleEdit = (point: Pointdata) => {
+  const handleEdit = (event: React.MouseEvent, point: Pointdata) => {
+    event.stopPropagation(); 
     navigate("/edit-point", { state: { point } });
   };
 
@@ -112,7 +113,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 <h3 className="font-semibold text-blue-600 text-sm md:text-base">{point.name}</h3>
                 {loggedInUser && (
                   <DropdownButton
-                    onEdit={() => handleEdit(point)}
+                    onEdit={(event) => handleEdit(event, point)}
                     onDelete={() => onDeletePoint(point.id, point.name)}
                     pointName={point.name}
                   />
