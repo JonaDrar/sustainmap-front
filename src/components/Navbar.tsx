@@ -1,17 +1,24 @@
-import { useContext } from "react";
-import { Link, useLocation } from 'react-router-dom';
+import { useContext, useState } from "react";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from "../contexts/UserContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../authentication/auth";
+import LogoutModal from "./LogoutModal";
+
 
 const Navbar: React.FC = () => {
   const { loggedInUser } = useContext(UserContext);
   const { pathname } = useLocation();
+  const navigate = useNavigate ();
+  const [isModalOpen, setIsModalOpen]= useState(false);
+  const handleCloseModal = () => setIsModalOpen(false);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
       console.log("Logout exitoso");
+      handleCloseModal();
+      navigate("/logout-success");
     } catch (error) {
       console.error("Error al hacer logout", error);
     }
@@ -43,7 +50,7 @@ const Navbar: React.FC = () => {
               <Link to="/signup" className={getLinkClass('/signup')}>Registrar Usuario</Link>
               <Link to="/create-point" className={getLinkClass('/create-point')}>Crear puntos de interés</Link>
               { showMapLink ? <Link to="/" className={getLinkClass('/')}>Ver mapa</Link> : null}
-              <button onClick={handleLogout} className="logout-button">
+              <button onClick={() => setIsModalOpen(true)} className="logout-button">
                 Cerrar sesión
               </button>
             </>
@@ -54,6 +61,7 @@ const Navbar: React.FC = () => {
           )}
         </div>
       </nav>
+      <LogoutModal isOpen={isModalOpen} onClose={handleCloseModal} onConfirm={handleLogout} />
     </header>
   );
 };

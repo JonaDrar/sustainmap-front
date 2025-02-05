@@ -15,8 +15,8 @@ const CenterMap: React.FC<CenterMapProps> = ({ coords }) => {
 
   useEffect(() => {
     if (coords && !popupOpen) {
-      map.setView(coords, 15, {
-        animate: false, //Evita animaciones innecesarias
+      map.flyTo(coords, 15, {
+        animate: true, //Evita animaciones innecesarias
       });
     }
   }, [coords, map, popupOpen]); // Ahora depende de popupOpen

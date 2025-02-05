@@ -9,7 +9,7 @@ import { Pointdata } from "../hooks/UseFetchPoints";
 import MapBoundsUpdater from "../components/maps/FiltersPoints";
 import LocateUser from "../components/maps/FoundLocateUser";
 import SuccessModal from "../components/SucessModal";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Map = () => {
   const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
@@ -26,11 +26,13 @@ const Map = () => {
   const lat = searchParams.get("lat");
   const lng = searchParams.get("lng");
   const id = searchParams.get("id");
+  const navigate = useNavigate()
 
   // Nuevo estado para manejar el punto seleccionado
   const [selectedPoint, setSelectedPoint] = useState<Pointdata | null>(null);
   useEffect(() => {
     if (!points || points.length === 0) return;
+
   
     if (lat && lng) {
       const latitude = parseFloat(lat);
@@ -46,7 +48,16 @@ const Map = () => {
         setSelectedPoint(foundPoint);
       }
     }
-  }, [lat, lng, id, points, selectedCoords, selectedPoint]);
+  }, [lat, lng, id, points]);
+
+  useEffect ( () => {
+    if (selectedCoords || selectedPoint ) {
+      navigate(location.pathname, {replace:true})
+    }
+
+  }, [selectedCoords, selectedPoint]
+  )
+
 
   const pointData: Pointdata[] = points.map((point) => ({
     id: point.id,

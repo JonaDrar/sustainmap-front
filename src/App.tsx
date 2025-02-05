@@ -15,6 +15,7 @@ import { onAuthStateChange } from "./authentication/auth";
 import EditPointPage from "./pages/EditPoint";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CreatePoint from "./pages/CreatePoint";
+import LogoutSuccess from "./components/LogoutSuccess";
           
 const App = () => {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
@@ -40,13 +41,15 @@ const App = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user) => {
-      if (user) {
-        setLoggedInUser(user.email);
-        console.log(`Usuario activo ${user.email}`);
-      } else {
-        setLoggedInUser(null);
-      }
-      setLoading(false);
+      setTimeout(() => {
+        if (user) {
+          setLoggedInUser(user.email);
+          console.log(`Usuario activo ${user.email}`);
+        } else {
+          setLoggedInUser(null);
+        }
+        setLoading(false);
+      }, 2500); 
     });
     return () => {
       unsubscribe();
@@ -77,6 +80,7 @@ const App = () => {
         <Route path="/mapa" element={<Map />} />
         <Route path="/" element={<Navigate to="/mapa" replace />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/logout-success" element={<LogoutSuccess />} />
           <Route
             path="/signup"
             element={
