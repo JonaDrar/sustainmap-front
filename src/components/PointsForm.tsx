@@ -803,15 +803,6 @@ const validateStep1 = () => {
     Swal.fire("Error", "Por favor selecciona al menos una categoría.", "error");
     return false;
   }
-  if (!formData.photo_url || formData.photo_url === "") {
-    Swal.fire("Error", "Por favor sube una imagen.", "error");
-    return false;
-  }
-
-  if (!formData.services || formData.services.length === 0) {
-    Swal.fire("Error", "Por favor selecciona o ingresa al menos un servicio.", "error");
-    return false;
-  }
   if (!formData.phone || formData.phone.length < 8) {
     Swal.fire("Error", "Por favor ingresa un teléfono.", "error");
     return false;
