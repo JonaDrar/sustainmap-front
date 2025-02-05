@@ -770,27 +770,26 @@ const handleChange = (
       Swal.fire("Éxito", "El punto se ha guardado correctamente.", "success");
       navigate("/");
     } catch (error) {
-        console.error("Error al guardar el punto:", error);
+      console.error("Error al guardar el punto:", error);
 
-        let errorMessage = "No se pudo guardar el punto. Por favor, intenta nuevamente.";
+      let errorMessage = "No se pudo guardar el punto. Por favor, intenta nuevamente.";
 
-        if (error instanceof Error) {
-            if (error.message.includes("\n")) {
-                errorMessage = `<ul style="text-align: left;">${error.message
-                    .split("\n")
-                    .map((msg) => `<li>${msg}</li>`)
-                    .join("")}</ul>`;
-            } else {
-                errorMessage = error.message;
-            }
-        }
+      if (error instanceof Error) {
+          if (error.message.includes("<ul>")) {
+              // If it's a list of errors (formatted as <ul>)
+              errorMessage = error.message;
+          } else {
+              // Single error message
+              errorMessage = error.message;
+          }
+      }
 
-        Swal.fire({
-            title: "Error",
-            html: errorMessage,
-            icon: "error",
-        });
-    }
+      Swal.fire({
+          title: "Error",
+          html: errorMessage, // Displays formatted error message
+          icon: "error",
+      });
+  }
 };
 
   const handleNextStep = () =>
