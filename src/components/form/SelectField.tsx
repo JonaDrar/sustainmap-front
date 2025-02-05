@@ -4,7 +4,7 @@ import { customStyles } from "./utils";
 import iconoTijeras from '/images/icon-scissors.png';
 import iconoCanino from '/images/icono-canino.png';
 import iconoCentroAcopio from '/images/icono-centro-acopio.png';
-import iconoCentroEstudio from '/images/icono-centro-estudio.png';
+import iconoCentroEstudio from '/images/centro-estudio-g.png';
 import iconoOtros from '/images/icono-otros.png';
 
 interface OptionType {
