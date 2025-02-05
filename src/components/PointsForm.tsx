@@ -842,7 +842,7 @@ const validateStep1 = () => {
   const isOnEditPage = location.pathname.includes("edit-point");
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
-      {JSON.stringify(formData)}
+      
       <Wizard
         step={step}
         totalSteps={totalSteps}
