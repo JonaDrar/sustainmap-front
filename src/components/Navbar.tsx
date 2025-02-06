@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
   if (!loggedInUser) {
     return null;
   }
-    
+
   const showMapLink = pathname !== "/mapa";
   const getLinkClass = (path: string) => pathname === path ? 'font-bold' : '';
 
@@ -48,11 +48,24 @@ const Navbar: React.FC = () => {
 
         {/* Menú en pantallas grandes */}
         <div className="hidden md:flex items-center space-x-6 text-[#146FB7]">
-          <span>Bienvenido, {loggedInUser}</span>
-          <Link to="/AdminLogin" className={getLinkClass("/AdminLogin")}>Registrar Usuario</Link>
-          <Link to="/create-point" className={getLinkClass("/create-point")}>Crear puntos de interés</Link>
-          {showMapLink && <Link to="/" className={getLinkClass("/")}>Ver mapa</Link>}
-          <button onClick={() => setIsModalOpen(true)}>Cerrar sesión</button>
+          <span className="hover:text-gray-700 transition duration-200">Bienvenido, {loggedInUser}</span>
+          <Link to="/AdminLogin" className={`${getLinkClass("/AdminLogin")}  hover:underline transition duration-200`}>
+            Registrar Usuario
+          </Link>
+          <Link to="/create-point" className={`${getLinkClass("/create-point")} hover:underline transition duration-200`}>
+            Crear puntos de interés
+          </Link>
+          {showMapLink && (
+            <Link to="/" className={`${getLinkClass("/")} hover:underline transition duration-200`}>
+              Ver mapa
+            </Link>
+          )}
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="hover:text-red-500 hover:underline transition duration-200"
+          >
+            Cerrar sesión
+          </button>
         </div>
 
         {/* Menú hamburguesa en pantallas pequeñas */}
