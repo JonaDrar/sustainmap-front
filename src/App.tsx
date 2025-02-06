@@ -16,26 +16,27 @@ import EditPointPage from "./pages/EditPoint";
 import ErrorBoundary from "./components/ErrorBoundary";
 import CreatePoint from "./pages/CreatePoint";
 import LogoutSuccess from "./components/LogoutSuccess";
-          
+import AdminLogin from "./pages/AdminLogin";
+
 const App = () => {
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [imageSrc, setImageSrc] = useState("/images/imagen-inicio.png"); 
+  const [imageSrc, setImageSrc] = useState("/images/imagen-inicio.png");
 
   useEffect(() => {
     const updateImage = () => {
       if (window.innerWidth <= 768) {
-        setImageSrc("/images/celular-inicio.png"); 
+        setImageSrc("/images/celular-inicio.png");
       } else {
-        setImageSrc("/images/imagen-inicio.png"); 
+        setImageSrc("/images/imagen-inicio.png");
       }
     };
 
-    updateImage(); 
-    window.addEventListener("resize", updateImage); 
+    updateImage();
+    window.addEventListener("resize", updateImage);
 
     return () => {
-      window.removeEventListener("resize", updateImage); 
+      window.removeEventListener("resize", updateImage);
     };
   }, []);
 
@@ -59,53 +60,60 @@ const App = () => {
   if (loading) {
     return (
       <div className=" flex items-center justify-center h-screen w-screen bg-gray-100">
-        <img 
-          src={imageSrc} 
-          alt="Cargando..." 
+        <img
+          src={imageSrc}
+          alt="Cargando..."
           className="max-w-full max-h-full object-contain"
         />
       </div>
     );
-    
   }
 
   return (
     <UserContext.Provider value={{ loggedInUser, setLoggedInUser }}>
       <Router>
         <ErrorBoundary>
-        <Navbar />
+          <Navbar />
         </ErrorBoundary>
         <ErrorBoundary>
-        <Routes>
-        <Route path="/mapa" element={<Map />} />
-        <Route path="/" element={<Navigate to="/mapa" replace />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/logout-success" element={<LogoutSuccess />} />
-          <Route
-            path="/signup"
-            element={
-              <ProtectedRoute loggedInUser={loggedInUser}>
-                <SignupPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create-point"
-            element={
-              <ProtectedRoute loggedInUser={loggedInUser}>
-                <CreatePoint />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/edit-point"
-            element={
-              <ProtectedRoute loggedInUser={loggedInUser}>
-                <EditPointPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+          <Routes>
+            <Route path="/mapa" element={<Map />} />
+            <Route path="/" element={<Navigate to="/mapa" replace />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/logout-success" element={<LogoutSuccess />} />
+            <Route
+              path="/AdminLogin"
+              element={
+                <ProtectedRoute loggedInUser={loggedInUser}>
+                  <AdminLogin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <AdminRoute loggedInUser={loggedInUser}>
+                  <SignupPage />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/create-point"
+              element={
+                <ProtectedRoute loggedInUser={loggedInUser}>
+                  <CreatePoint />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-point"
+              element={
+                <ProtectedRoute loggedInUser={loggedInUser}>
+                  <EditPointPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </ErrorBoundary>
       </Router>
     </UserContext.Provider>
@@ -121,5 +129,21 @@ const ProtectedRoute: React.FC<{
   }
   return <>{children}</>;
 };
+
+const AdminRoute: React.FC<{
+  loggedInUser: string | null;
+  children: React.ReactNode;
+}> = ({ loggedInUser, children }) => {
+  // Recuperar el rol del usuario desde sessionStorage
+  const role = sessionStorage.getItem("userRole");
+
+  // Verificar si el usuario está autenticado y si tiene rol de administrador
+  if (!loggedInUser || role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 
 export default App;
