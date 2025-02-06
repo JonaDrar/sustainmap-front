@@ -749,10 +749,10 @@ const handleChange = (
 
     const dataToSend = {
       ...formData,
-        activationStartDate: startDate ? startDate.toISOString() : undefined,
-        activationEndDate: endDate ? endDate.toISOString() : undefined,
-      latitud: parseFloat(formData.latitud || "0"),
-      longitude: parseFloat(formData.longitude || "0"),
+      activationStartDate: startDate ? startDate.toISOString() : undefined,
+      activationEndDate: endDate ? endDate.toISOString() : undefined,
+      latitud: formData.latitud.trim() === "" ? undefined : parseFloat(formData.latitud || "0"),  // Solo asigna undefined si está vacío
+      longitude: formData.longitude.trim() === "" ? undefined : parseFloat(formData.longitude || "0"),  // Lo mismo para longitud
       type: type.map(({ value }) =>  parseInt(value, 10)),
       gallery: galleryData,
       services: services.map((service) => service.value),
