@@ -15,6 +15,8 @@ const Navbar: React.FC = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      sessionStorage.removeItem('userPassword');
+      sessionStorage.removeItem('userRole');
       console.log("Logout exitoso");
       handleCloseModal();
       navigate("/logout-success");

@@ -2,7 +2,6 @@ import {
     getAuth,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
-    signOut,
     onAuthStateChanged,
     User
 } from "firebase/auth";
@@ -25,13 +24,11 @@ export const login = async (email: string, password: string) => {
 export const loginAdmin = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
+    
     // Verificamos que userCredential y user existan antes de acceder a sus propiedades
     if (!userCredential || !userCredential.user) {
       throw new Error("No se pudo obtener el usuario.");
     }
-
-    sessionStorage.setItem("userPassword", password);
     console.log(sessionStorage.setItem) // Guardar la contraseña temporalmente
 
     return userCredential.user; // Retornamos el usuario autenticado
@@ -57,7 +54,7 @@ export const register = async (
     // 2. Crear el nuevo usuario en Firebase
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const newUser = userCredential.user;
-    console.log('newUser:', newUser);
+    
     
     // 3. Crear el usuario en la base de datos
     const formattedUser = {
@@ -67,7 +64,7 @@ export const register = async (
       userId: newUser.uid, 
     };
 
-    await signOut(auth);
+    // await signOut(auth);
     // Llamada a la API para crear el usuario en tu base de datos
     await axios.post(`${backendUrlBase}/user`, formattedUser);
 

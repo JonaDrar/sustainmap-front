@@ -33,6 +33,7 @@ const AdminLogin: React.FC = () => {
   
         const response = await axios.get(`${backendUrlBase}/user/${user.uid}`);
         const userData = response.data;
+        
         console.log("Datos del usuario:", userData);
   
         // Verificar si el usuario es admin
@@ -40,7 +41,8 @@ const AdminLogin: React.FC = () => {
           setError("No tienes permisos de administrador.");
           return; // Detener ejecución aquí
         }
-  
+        sessionStorage.setItem('userRole', userData.roles);
+        sessionStorage.setItem("userPassword", password);
         console.log("Usuario autenticado como administrador");
         setLoggedInAdmin(true);
         navigate("/signup"); 
@@ -48,11 +50,11 @@ const AdminLogin: React.FC = () => {
       } catch (error: unknown) {
         console.error("Error de inicio de sesión:", error);
         setLoggedInAdmin(false); 
-  
-        if (axios.isAxiosError(error)) {
-          setError(error.response?.data?.message || "Error del servidor.");
-        } else if (error instanceof Error) {
-          setError(error.message);
+        const firebaseError = error as { code?: string };
+        if (firebaseError.code === "auth/user-disabled") {
+          setError("Usuario desabilitado");
+        } else if (firebaseError.code === "auth/invalid-credential") {
+          setError("Credenciales inválidas. Por favor, intenta de nuevo.");
         } else {
           setError("Error al iniciar sesión. Por favor, intenta de nuevo.");
         }

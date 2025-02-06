@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { register } from '../authentication/auth';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 
 
 const Signup: React.FC = () => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -69,7 +67,11 @@ const Signup: React.FC = () => {
     try {
       await register(email, password);
       alert('¡Registro exitoso!');
-      navigate('/');  // Redirigimos a la página principal
+      setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setErrors({});
+    setPasswordChecks({ length: false, number: false, special: false });
     } catch (error) {
       console.error('Error de registro:', error);
       const firebaseError = error as { code?: string };
