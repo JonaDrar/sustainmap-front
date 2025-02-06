@@ -35,7 +35,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   const [showPhoneModal, setShowPhoneModal] = useState<{ visible: boolean; phone: string | null }>({ visible: false, phone: null });
   const isMobileDevice = useIsMobile();
   //Drawer
-  const [sidebarPosition, setSidebarPosition] = useState(0);
+  const [sidebarPosition] = useState(0);
   const [menuHeight, setMenuHeight] = useState(200); // Altura inicial en px
   const minMenuHeight = 150; // Altura mínima
   const maxMenuHeight = 600; // Altura máxima
