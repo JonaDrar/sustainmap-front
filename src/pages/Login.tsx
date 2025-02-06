@@ -50,7 +50,7 @@ const Login: React.FC = () => {
           <img
             src="images/logo-mott_int.png"
             alt="Matter of Trust Logo"
-            className="w-24 sm:w-28 lg:w-36 mx-auto mb-4 login-logo"
+            className="w-36 sm:w-56 lg:w-42 mx-auto mb-10 login-logo"
           />
           <h2 className="text-lg md:text-2xl font-bold text-blue-700 login-header">Iniciar sesión</h2>
           <p className="text-sm md:text-base text-gray-700 login-sub-header">Bienvenido/a<br /> Ingresa tus datos para comenzar.</p>

@@ -38,9 +38,9 @@ const Navbar: React.FC = () => {
           <img
             src="images/logo-mott_int.png"
             alt="Matter of Trust Logo"
-            className="h-8"
+            className="h-12"
           />
-          <span className="ml-2 text-lg font-semibold">Matter of Trust</span>
+          
         </div>
 
         <div className="flex items-center space-x-6">
