@@ -15,6 +15,8 @@ const Navbar: React.FC = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      sessionStorage.removeItem('userPassword');
+      sessionStorage.removeItem('userRole');
       console.log("Logout exitoso");
       handleCloseModal();
       navigate("/logout-success");
@@ -29,6 +31,8 @@ const Navbar: React.FC = () => {
     
   const showMapLink = pathname !== "/mapa";
   const getLinkClass = (path: string) => pathname === path ? 'font-bold' : '';
+
+
 
   return (
     <header>
@@ -49,9 +53,7 @@ const Navbar: React.FC = () => {
               <span className="welcome-message">
                 Bienvenido, {loggedInUser}
               </span>
-              <Link to="/signup" className={getLinkClass("/signup")}>
-                Registrar Usuario
-              </Link>
+              <Link to="/AdminLogin" className={getLinkClass('/signup')}>Registrar Usuario</Link>
               <Link
                 to="/create-point"
                 className={getLinkClass("/create-point")}
