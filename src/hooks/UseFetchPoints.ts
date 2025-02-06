@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { backendUrlBase } from "../utils/environment";
 import { useCloudinaryUpload } from "./useCloudinaryUpload";
 
@@ -195,23 +195,27 @@ const UseFetchPoints = () => {
             if (response.status === 200) {
                 setPoints((prev) => prev.map((point) => (point.id === id ? { ...point, ...response.data } : point)));
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Error al actualizar el punto:", error);
+        
+            let errorMessages = "No se pudo actualizar el punto. Por favor, revisa los siguientes errores:";
     
-            if (error instanceof AxiosError) {
-                const errorData = error.response?.data;
-                if (errorData && typeof errorData === "object") {
-                    const errorMessages = Object.entries(errorData)
-                        .map(([field, msg]) => `<li>${field}: ${msg}</li>`)
-                        .join("");
-                    throw new Error(`<ul>${errorMessages}</ul>`);
+            if (axios.isAxiosError(error)) {
+                const responseData = error.response?.data;
+                if (responseData && Array.isArray(responseData.message)) {
+                    // Concatenamos los errores en un solo string separado por '|'
+                    errorMessages = responseData.message.join(" | ");
+                } else {
+                    errorMessages = responseData?.message || error.message;
                 }
-                throw new Error(error.response?.data?.message || error.message);
+            } else if (error instanceof Error) {
+                errorMessages = error.message;
             }
     
-            throw new Error("Error al actualizar el punto.");
+            // Lanza el error con los mensajes en un formato más manejable
+            throw new Error(errorMessages);
         }
-    };
+    };    
 
     return {points: activePoints, loading, error, deletePoint, updatePoint, createPoint, selectedTypes, setSelectedTypes, filteredPoints};
 };
