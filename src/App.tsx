@@ -49,7 +49,7 @@ const App = () => {
           setLoggedInUser(null);
         }
         setLoading(false);
-      }, 2500); 
+      }, 1500); 
     });
     return () => {
       unsubscribe();
