@@ -40,7 +40,7 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
           />
         </div>
         {loggedInUser ? (
-          <div className="ml-2">
+          <div className="ml-2 mt-2">
             <DropdownButton
               onEdit={handleEdit}
               onDelete={handleDelete}
@@ -57,15 +57,15 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
             </h3>
 
             {site.gallery && (
-              <div className="flex flex-col md:flex-row md:items-center md:gap-3 text-green-600 font-thin text-xs md:text-sm mt-1 md:mt-0">
+              <div className="flex flex-col md:flex-row md:items-center md:gap-3 text-green-600 font-medium text-xs md:text-sm mt-1 md:mt-0">
                 {site.gallery.galleryName && (
                   <div className="whitespace-nowrap">
-                    <strong>Galería:</strong> {site.gallery.galleryName}
+                    <span>Galería:</span> {site.gallery.galleryName}
                   </div>
                 )}
                 {site.gallery.localNumber && (
                   <div className="whitespace-nowrap">
-                    <strong>Local:</strong> {site.gallery.localNumber}
+                    <span>Local:</span> {site.gallery.localNumber}
                   </div>
                 )}
               </div>
