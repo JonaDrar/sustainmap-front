@@ -142,27 +142,27 @@ const UseFetchPoints = () => {
 
     const filteredPoints = points.filter((point) => {
         if (point.deleted) return false;
+
+        // Asegurarse de que `point.type` siempre sea un arreglo
         if (selectedTypes.length > 0) {
-            return point.type.some((type) => selectedTypes.includes(type));
+            return Array.isArray(point.type) && point.type.some((type) => selectedTypes.includes(type));
         }
         return true;
     });
 
-    const activePoints = points.filter((point) => {
+    const activePoints = filteredPoints.filter((point) => {
         if (point.deleted) return false;
 
-        // Si el usuario está autenticado, mostrar todos los puntos (activos e inactivos)
-        if (loggedInUser) return true; 
-    
-        // Verificar fechas para calcular si el punto está activo
+        if (loggedInUser) return true;
+
         if (point.activationStartDate && point.activationEndDate) {
             const now = new Date();
             const start = new Date(point.activationStartDate);
             const end = new Date(point.activationEndDate);
             return now >= start && now <= end;
         }
-    
-        return point.isActive; // Si no hay fechas, usa el estado `isActive`
+
+        return point.isActive;
     });
 
     const updatePoint = async (id: string, updatedData: Partial<Pointdata>) => {
