@@ -72,7 +72,7 @@ const UseFetchPoints = () => {
     const createPoint = async (newPoint: Partial<Pointdata>) => {
         try {
             let photoUrl = newPoint.photo_url;
-
+    
             if (!photoUrl) {
                 console.log("No se proporcionó una imagen, subiendo imagen por defecto...");
                 const defaultFile = await urlToFile(DEFAULT_IMAGE_URL, "default.jpg");
@@ -81,6 +81,7 @@ const UseFetchPoints = () => {
                 console.log("Subiendo imagen del usuario a Cloudinary...");
                 photoUrl = await uploadImageToCloudinary(newPoint.photo_url);
             }
+    
             // Calcular si el punto estará activo según las fechas al momento de crearlo
             const isActive = newPoint.activationStartDate && newPoint.activationEndDate
                 ? new Date() >= new Date(newPoint.activationStartDate) && new Date() <= new Date(newPoint.activationEndDate)
@@ -105,34 +106,27 @@ const UseFetchPoints = () => {
     
             const response = await axios.post(`${backendUrlBase}/points`, formattedPoint);
             setPoints((prev) => [...prev, response.data]);
-        } catch (error: unknown) { // Aquí especificamos que error es de tipo 'unknown'
+        } catch (error: unknown) {
             console.error("Error al crear el punto:", error);
-    
+        
             let errorMessages = "No se pudo crear el punto. Por favor, revisa los siguientes errores:";
     
-            // Verificar si el error es de tipo AxiosError
             if (axios.isAxiosError(error)) {
                 const responseData = error.response?.data;
-                if (responseData) {
-                    // Formatear los errores que vienen del backend
-                    if (typeof responseData === 'object') {
-                        const formattedErrors = Object.entries(responseData)
-                            .map(([field, message]) => `<li>${field}: ${message}</li>`)
-                            .join('');
-                        errorMessages = `<ul>${formattedErrors}</ul>`;
-                    } else {
-                        errorMessages = responseData.message || error.message;
-                    }
+                if (responseData && Array.isArray(responseData.message)) {
+                    // Concatenamos los errores en un solo string separado por '|'
+                    errorMessages = responseData.message.join(" | ");
+                } else {
+                    errorMessages = responseData?.message || error.message;
                 }
             } else if (error instanceof Error) {
-                // Si el error es una instancia de Error, podemos acceder a su mensaje
-                errorMessages = `<ul><li>${error.message}</li></ul>`;
+                errorMessages = error.message;
             }
     
-            // Lanza el error con los mensajes formateados
+            // Lanza el error con los mensajes en un formato más manejable
             throw new Error(errorMessages);
         }
-    };
+    };    
 
     const deletePoint = async (id: string) => {
         try {

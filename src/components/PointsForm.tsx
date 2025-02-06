@@ -15,6 +15,7 @@ import ToggleField from "./form/ToggleField";
 import highlightImage from "/images/Star.png";
 import PhoneNumberInput from "./form/PhoneNumberInput";
 import pointMarker from "./maps/MarkerPoint";
+// import { AxiosError } from "axios";
 
 interface OptionType {
   label: string;
@@ -671,6 +672,22 @@ const handleChange = (
     navigate("/");
   };
 
+  const errorMessagesDict: { [key: string]: string } = {
+    name: "El nombre debe tener al menos 2 caracteres",
+    address: "La dirección debe tener al menos 2 caracteres",
+    region: "La región debe tener al menos 2 caracteres",
+    commune: "La comuna debe tener al menos 2 caracteres",
+    type: "Categoría debe contener al menos 1 elemento",
+    phone: "El teléfono debe tener al menos 7 caracteres",
+    photo_url: "La URL de la foto debe ser válida",
+    latitud: "La latitud debe ser un valor numérico válido",
+    longitude: "La longitud debe ser un valor numérico válido",
+    'rrss.facebook': "La URL de Facebook debe ser válida",
+    'rrss.instagram': "La URL de Instagram debe ser válida",
+    'rrss.twitter': "La URL de Twitter debe ser válida",
+    'rrss.other': "La URL de otro RRSS debe ser válida"
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -772,23 +789,44 @@ const handleChange = (
     } catch (error) {
       console.error("Error al guardar el punto:", error);
 
-      let errorMessage = "No se pudo guardar el punto. Por favor, intenta nuevamente.";
+      let errorMessage = `
+  <div style="text-align: center; font-weight: bold; font-size: 18px; margin-bottom: 10px;">
+    No se pudo guardar el punto. Por favor, revisa los siguientes errores:
+  </div>
+`;
 
-      if (error instanceof Error) {
-          if (error.message.includes("<ul>")) {
-              // If it's a list of errors (formatted as <ul>)
-              errorMessage = error.message;
-          } else {
-              // Single error message
-              errorMessage = error.message;
-          }
-      }
+// Si el error es una instancia de Error
+if (error instanceof Error) {
+  console.log("Error instanceof Error:", error.message);
 
-      Swal.fire({
-          title: "Error",
-          html: errorMessage, // Displays formatted error message
-          icon: "error",
-      });
+  if (error.message.includes("<ul>")) {
+    errorMessage += error.message;  
+  } else {
+    // Dividimos los errores usando '|'
+    const errorList = error.message.split("|").map(item => {
+      const field = item.trim().split(' ')[0];  
+      const translatedMessage = errorMessagesDict[field] || item;  
+      console.log("Mensaje traducido:", translatedMessage);
+      return `<li>${translatedMessage}</li>`;
+    }).join('');
+
+    errorMessage += `
+      <ul style="text-align: left; margin: 10px auto; width: fit-content; padding: 10px; font-size: 16px;">
+        ${errorList}
+      </ul>
+    `;
+  }
+}
+
+console.log("errorMessage final:", errorMessage);
+
+// Mostrar en Swal
+Swal.fire({
+  title: 'Error',
+  html: `<div style="max-height: 400px; overflow-y: auto; padding: 10px;">${errorMessage}</div>`,
+  icon: 'error',
+  width: 'auto',
+});
   }
 };
 
