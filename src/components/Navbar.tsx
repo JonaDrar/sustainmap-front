@@ -1,16 +1,15 @@
 import { useContext, useState } from "react";
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
 import { signOut } from "firebase/auth";
 import { auth } from "../authentication/auth";
 import LogoutModal from "./LogoutModal";
 
-
 const Navbar: React.FC = () => {
   const { loggedInUser } = useContext(UserContext);
   const { pathname } = useLocation();
-  const navigate = useNavigate ();
-  const [isModalOpen, setIsModalOpen]= useState(false);
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCloseModal = () => setIsModalOpen(false);
 
   const handleLogout = async () => {
@@ -25,10 +24,10 @@ const Navbar: React.FC = () => {
   };
 
   if (!loggedInUser) {
-    return null; 
+    return null;
   }
-  
-  const showMapLink = pathname !== "/";
+    
+  const showMapLink = pathname !== "/mapa";
   const getLinkClass = (path: string) => pathname === path ? 'font-bold' : '';
 
   return (
@@ -47,21 +46,44 @@ const Navbar: React.FC = () => {
         <div className="flex items-center space-x-6">
           {loggedInUser ? (
             <>
-              <Link to="/signup" className={getLinkClass('/signup')}>Registrar Usuario</Link>
-              <Link to="/create-point" className={getLinkClass('/create-point')}>Crear puntos de interés</Link>
-              { showMapLink ? <Link to="/" className={getLinkClass('/')}>Ver mapa</Link> : null}
-              <button onClick={() => setIsModalOpen(true)} className="logout-button">
+              <span className="welcome-message">
+                Bienvenido, {loggedInUser}
+              </span>
+              <Link to="/signup" className={getLinkClass("/signup")}>
+                Registrar Usuario
+              </Link>
+              <Link
+                to="/create-point"
+                className={getLinkClass("/create-point")}
+              >
+                Crear puntos de interés
+              </Link>
+              {showMapLink ? (
+                <Link to="/" className={getLinkClass("/")}>
+                  Ver mapa
+                </Link>
+              ) : null}
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="logout-button"
+              >
                 Cerrar sesión
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className={getLinkClass('/login')}>Iniciar sesión</Link>
+              <Link to="/login" className={getLinkClass("/login")}>
+                Iniciar sesión
+              </Link>
             </>
           )}
         </div>
       </nav>
-      <LogoutModal isOpen={isModalOpen} onClose={handleCloseModal} onConfirm={handleLogout} />
+      <LogoutModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleLogout}
+      />
     </header>
   );
 };
