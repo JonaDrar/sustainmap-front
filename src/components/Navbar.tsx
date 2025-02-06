@@ -42,8 +42,12 @@ const Navbar: React.FC = () => {
       <nav className="flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <img src="images/logo-mott_int.png" alt="Matter of Trust Logo" className="h-8" />
-          <span className="ml-2 text-lg font-semibold text-[#146FB7]">Matter of Trust</span>
+          <img
+            src="images/logo-mott_int.png"
+            alt="Matter of Trust Logo"
+            className="h-12"
+          />
+          
         </div>
 
         {/* Menú en pantallas grandes */}
