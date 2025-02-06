@@ -196,7 +196,15 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
       </div>
-      <h6 className="text-lg font-normal my-4">Configuración de activación</h6>
+      <div className="flex items-center justify-between w-full">
+        <h6 className="text-lg font-normal my-4">Configuración de activación</h6>
+        <p className="text-sm font-medium w-[190px] mr-[210px]">
+          Estado de activación:{" "}
+          <span className={formData.isActive ? "text-green-600" : "text-red-600"}>
+            {formData.isActive ? "Activo" : "Inactivo"}
+          </span>
+        </p>
+      </div>
       <div className="grid grid-cols-2 gap-4">
         <InputField
           label="Fecha de inicio"
@@ -212,14 +220,14 @@ const Step1Form: React.FC<{
           value={formatDateForInput(formData.activationEndDate) || ""}
           onChange={(e) => handleDateChange(e, "activationEndDate")} 
         />
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <p className="text-sm font-medium">
             Estado de activación:{" "}
             <span className={formData.isActive ? "text-green-600" : "text-red-600"}>
               {formData.isActive ? "Activo" : "Inactivo"}
             </span>
           </p>
-        </div>
+        </div> */}
       </div>
     </>
   );
@@ -620,7 +628,7 @@ const handleChange = (
   }
 
   if (name === "type") {
-    if (/^[1-4]?$/.test(value)) {
+    if (/^[1-5]?$/.test(value)) {
       setFormData({ ...formData, type: value ? [{ label: value, value: value }] : [] });
     }
     return;
@@ -785,9 +793,34 @@ const handleChange = (
     }
 };
 
-  const handleNextStep = () =>
-    setStep((prev) => Math.min(prev + 1, totalSteps));
+const validateStep1 = () => {
+  if (!formData.name) {
+    Swal.fire("Error", "Por favor ingresa un nombre.", "error");
+    return false;
+  }
 
+  if (!formData.type || formData.type.length === 0) {
+    Swal.fire("Error", "Por favor selecciona al menos una categoría.", "error");
+    return false;
+  }
+  if (!formData.phone || formData.phone.length < 8) {
+    Swal.fire("Error", "Por favor ingresa un teléfono.", "error");
+    return false;
+  }
+
+
+  if (!validateDates()) {
+    return false;
+  }
+  return true;
+}
+
+  const handleNextStep = () => {
+    // only go to the next step if the form is valid
+    if (!validateStep1()) return;
+    
+    setStep((prev) => Math.min(prev + 1, totalSteps));
+  };
   const handleToggleChange = (value: boolean, field: string) => {
     setFormData({ ...formData, [field]: value });
   };
@@ -800,6 +833,7 @@ const handleChange = (
   const isOnEditPage = location.pathname.includes("edit-point");
   return (
     <div className="gradient-background min-h-screen p-10 items-center justify-center ">
+      
       <Wizard
         step={step}
         totalSteps={totalSteps}

@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react"; 
 import axios, { AxiosError } from "axios";
 import { backendUrlBase } from "../utils/environment";
 import { useCloudinaryUpload } from "./useCloudinaryUpload";
@@ -8,7 +8,7 @@ import { UserContext } from "../contexts/UserContext";
 export interface Pointdata {
     id: string;
     latitud: number;
-    longitude:number;
+    longitude: number;
     name: string;
     description: string;
     photo_url?: string | File;
@@ -17,7 +17,7 @@ export interface Pointdata {
     region: string;
     phone: string;
     services: string[];
-    type: number[];
+    type: number[];  // Asegúrate de que 'type' sea un arreglo de números
     highlighted: boolean;
     gallery?: { 
         galleryName: string | null;
@@ -39,14 +39,14 @@ export interface Pointdata {
 const UseFetchPoints = () => {
     const { loggedInUser } = useContext(UserContext);
     const [points, setPoints] = useState<Pointdata[]>([]);
-    const [loading, setLoading] =useState(true);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedTypes, setSelectedTypes] = useState<number[]>([]);
 
-    useEffect (()=> {
+    useEffect(() => {
         const fetchPoints = async () => {
             try {
-                const response= await axios.get(`${backendUrlBase}/points`);
-                // console.log("Datos recuperados:", response.data);
+                const response = await axios.get(`${backendUrlBase}/points`);
                 setPoints(response.data);
             } catch (error) {
                 console.error('Error al obtener los marcadores:', error);
@@ -59,12 +59,6 @@ const UseFetchPoints = () => {
     }, []);
 
     const { uploadImageToCloudinary } = useCloudinaryUpload();
-
-    // const DEFAULT_IMAGE_FILE = new File(
-    //     ["/images/4960717128898555064.jpg"], // Ruta de la imagen por defecto
-    //     "default.jpg",
-    //     { type: "image/jpeg" }
-    //   );
 
     const DEFAULT_IMAGE_URL = "/images/4960717128898555064.jpg";
 
@@ -86,18 +80,18 @@ const UseFetchPoints = () => {
                 console.log("Subiendo imagen del usuario a Cloudinary...");
                 photoUrl = await uploadImageToCloudinary(newPoint.photo_url);
             }
-            // Calcular si el punto estará activo según las fechas al momento de crearlo
+
             const isActive = newPoint.activationStartDate && newPoint.activationEndDate
                 ? new Date() >= new Date(newPoint.activationStartDate) && new Date() <= new Date(newPoint.activationEndDate)
-                : newPoint.isActive || false;  // Si no hay fechas, usar el valor de isActive pasado.
-    
+                : newPoint.isActive || false;
+
             const formattedPoint = {
                 ...newPoint,
                 photo_url: photoUrl,
                 type: newPoint.type || [],
                 services: newPoint.services || [],
                 phone: newPoint.phone || "",
-                isActive, // Incluir el valor de isActive calculado
+                isActive,
                 rrss: {
                     ...(newPoint.rrss?.facebook && { facebook: newPoint.rrss.facebook }),
                     ...(newPoint.rrss?.instagram && { instagram: newPoint.rrss.instagram }),
@@ -107,7 +101,7 @@ const UseFetchPoints = () => {
                 activationEndDate: newPoint.activationEndDate ? new Date(newPoint.activationEndDate) : undefined,
                 id: undefined,
             };
-    
+
             const response = await axios.post(`${backendUrlBase}/points`, formattedPoint);
             setPoints((prev) => [...prev, response.data]);
         } catch (error) {
@@ -122,7 +116,6 @@ const UseFetchPoints = () => {
                 }
                 throw new Error(error.response?.data?.message || error.message);
             }
-            
             throw new Error("Error al crear el punto.");
         }
     };
@@ -139,21 +132,29 @@ const UseFetchPoints = () => {
         }
     };
 
-    const activePoints = points.filter((point) => {
+    const filteredPoints = points.filter((point) => {
         if (point.deleted) return false;
 
-        // Si el usuario está autenticado, mostrar todos los puntos (activos e inactivos)
-        if (loggedInUser) return true; 
-    
-        // Verificar fechas para calcular si el punto está activo
+        // Asegurarse de que `point.type` siempre sea un arreglo
+        if (selectedTypes.length > 0) {
+            return Array.isArray(point.type) && point.type.some((type) => selectedTypes.includes(type));
+        }
+        return true;
+    });
+
+    const activePoints = filteredPoints.filter((point) => {
+        if (point.deleted) return false;
+
+        if (loggedInUser) return true;
+
         if (point.activationStartDate && point.activationEndDate) {
             const now = new Date();
             const start = new Date(point.activationStartDate);
             const end = new Date(point.activationEndDate);
             return now >= start && now <= end;
         }
-    
-        return point.isActive; // Si no hay fechas, usa el estado `isActive`
+
+        return point.isActive;
     });
 
     const updatePoint = async (id: string, updatedData: Partial<Pointdata>) => {
@@ -195,7 +196,7 @@ const UseFetchPoints = () => {
         }
     };
 
-    return {points: activePoints, loading, error, deletePoint, updatePoint, createPoint};
+    return { points: activePoints, loading, error, deletePoint, updatePoint, createPoint, selectedTypes, setSelectedTypes, filteredPoints };
 };
 
-export default UseFetchPoints; 
+export default UseFetchPoints;

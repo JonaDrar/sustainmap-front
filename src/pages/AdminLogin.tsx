@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
-import { login } from "../authentication/auth";
+import { loginAdmin } from "../authentication/auth";
 import axios from "axios";
 import { backendUrlBase } from "../utils/environment";
 import { AdminContext } from "../contexts/AdminContext";
@@ -28,10 +28,10 @@ const AdminLogin: React.FC = () => {
     setLoading(true);
   
     try {
-        const user = await login(email, password);
-        console.log("UID del usuario:", user.user.uid);
+        const user = await loginAdmin(email, password);
+        console.log("UID del usuario:", user.uid);
   
-        const response = await axios.get(`${backendUrlBase}/user/${user.user.uid}`);
+        const response = await axios.get(`${backendUrlBase}/user/${user.uid}`);
         const userData = response.data;
         console.log("Datos del usuario:", userData);
   
