@@ -35,12 +35,18 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   const [showPhoneModal, setShowPhoneModal] = useState<{ visible: boolean; phone: string | null }>({ visible: false, phone: null });
   const isMobileDevice = useIsMobile();
   //Drawer
-  const [sidebarPosition] = useState(0);
-  const [menuHeight, setMenuHeight] = useState(200); // Altura inicial en px
-  const minMenuHeight = 150; // Altura mínima
-  const maxMenuHeight = 600; // Altura máxima
+  const [isExpanded, setIsExpanded] = useState(false); // Estado para controlar la expansión
+  const minMenuHeight = window.innerHeight * 0.2;  // Altura contraída
+  const maxMenuHeight = window.innerHeight * 0.6;  // Altura expandida
+  const [menuHeight, setMenuHeight] = useState(minMenuHeight);
+
   const startYRef = useRef<number | null>(null);
   const startHeightRef = useRef<number>(menuHeight);
+
+  const toggleMenu = () => {
+    setIsExpanded(!isExpanded);
+    setMenuHeight(isExpanded ? minMenuHeight : maxMenuHeight);
+  };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     startYRef.current = e.touches[0].clientY;
@@ -49,19 +55,13 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!startYRef.current) return;
-
     const deltaY = startYRef.current - e.touches[0].clientY;
     let newHeight = startHeightRef.current + deltaY;
 
-    // Restringir entre los valores mínimo y máximo
     if (newHeight < minMenuHeight) newHeight = minMenuHeight;
     if (newHeight > maxMenuHeight) newHeight = maxMenuHeight;
 
     setMenuHeight(newHeight);
-  };
-
-  const handleTouchEnd = () => {
-    startYRef.current = null;
   };
 
   const isMobile = () => {
@@ -119,14 +119,19 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   const sortedPoints = [...points].sort((a, b) => (b.highlighted ? 1 : 0) - (a.highlighted ? 1 : 0));
 
   return (
-    <div className={`relative ${isMobileDevice ? "fixed bottom-0 w-full bg-white transition-transform duration-300" : "h-full w-full overflow-y-auto"}`}
-      style={isMobileDevice ? { transform: `translateY(${sidebarPosition}px)`, height: 'auto', maxHeight: '90vh' } : {}}>
+    <div
+      className={`bg-white transition-all duration-300 ${isMobileDevice ? "fixed bottom-0 left-0 w-full shadow-lg" : "h-full w-full"} p-2 overflow-y-auto`}
+      style={isMobileDevice ? { height: `${menuHeight}px`, maxHeight: "90vh", minHeight: `${minMenuHeight}` } : {}}
+    >
+      {/* Barra de agarre */}
       {isMobileDevice && (
-        <div className="relative w-full bg-white cursor-grab"
+        <div
+          className=" flex justify-center items-center cursor-pointer py-2 mb-2"
+          onClick={toggleMenu}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}>
-          <div className="mx-auto w-16 h-2 bg-gray-300 rounded-full my-2"></div>
+        >
+          <div className="w-12 h-2 bg-gray-400 rounded-full"></div>
         </div>
       )}
       {/* Barra de búsqueda - Ahora dentro del sidebar */}
@@ -134,7 +139,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
         <SearchBar onSearch={onSearch} />
       </div>
       {sortedPoints.length === 0 ? (
-        <p className="text-gray-500 ml-6">No hay puntos disponibles cerca de tu ubicación.</p>
+        <p className="text-gray-500 ml-4">No hay puntos disponibles cerca de tu ubicación.</p>
       ) : (
         <ul className="space-y-6">
           {sortedPoints
@@ -150,7 +155,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
               >
                 {/* Contenedor superior: Nombre + Edición */}
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-semibold text-blue-600 text-sm md:text-base">{point.name}</h3>
+                  <h3 className="font-semibold text-[#146FB7] text-sm md:text-base">{point.name}</h3>
                   {loggedInUser && (
                     <DropdownButton
                       onEdit={(event) => handleEdit(event, point)}
@@ -298,7 +303,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 </div>
 
                 {/* Facebook y Sitio Web - Ahora debajo de la imagen */}
-                <div className="mt-2 text-blue-600 text-sm flex flex-col w-full">
+                <div className="mt-2 text-[#146FB7] text-sm flex flex-col w-full">
                   {point.rrss?.facebook && (
                     <a
                       href={point.rrss.facebook}
@@ -327,38 +332,40 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
             ))}
         </ul>
       )}
-      {showPhoneModal.visible && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
-          <div className="bg-white p-4 rounded-2xl shadow-lg text-center relative w-[320px]">
+      {
+        showPhoneModal.visible && (
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
+            <div className="bg-white p-4 rounded-2xl shadow-lg text-center relative w-[320px]">
 
-            {/* Botón de cerrar (X) en la esquina superior derecha */}
-            <button
-              onClick={() => setShowPhoneModal({ visible: false, phone: null })}
-              className="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-xl"
-            >
-              ✖
-            </button>
+              {/* Botón de cerrar (X) en la esquina superior derecha */}
+              <button
+                onClick={() => setShowPhoneModal({ visible: false, phone: null })}
+                className="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-xl"
+              >
+                ✖
+              </button>
 
-            {/* Número de teléfono con icono */}
-            <div className="flex items-center justify-center text-blue-600 text-lg font-semibold mt-2">
-              <img src="/images/telefono.png" alt="Teléfono" className="h-6 w-6 mr-2" />
-              <a href={`tel:${showPhoneModal.phone}`} className="hover:underline">
-                {showPhoneModal.phone}
-              </a>
-            </div>
+              {/* Número de teléfono con icono */}
+              <div className="flex items-center justify-center text-blue-600 text-lg font-semibold mt-2 ml-2">
+                <img src="/images/telefono.png" alt="Teléfono" className="h-6 w-6 mr-2" />
+                <a href={`tel:${showPhoneModal.phone}`} className="hover:underline">
+                  {showPhoneModal.phone}
+                </a>
+              </div>
 
-            {/* Botón "Cancelar" con efecto hover rojo */}
-            <button
-              onClick={() => setShowPhoneModal({ visible: false, phone: null })}
-              className="mt-5 px-4 py-2 w-32 border border-blue-600 text-blue-600 rounded-lg 
+              {/* Botón "Cancelar" con efecto hover rojo */}
+              <button
+                onClick={() => setShowPhoneModal({ visible: false, phone: null })}
+                className="mt-5 px-4 py-2 w-32 border border-blue-600 text-blue-600 rounded-lg 
              transition-all duration-300 hover:bg-red-500 hover:border-red-500 hover:text-white"
-            >
-              Cancelar
-            </button>
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 
 };

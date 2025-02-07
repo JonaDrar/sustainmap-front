@@ -40,7 +40,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder="Buscar"
-        className="pl-4 pr-20 py-2 w-full border-none focus:ring-0 outline-none bg-transparent text-gray-800 placeholder-blue-600"
+        className="pl-4 pr-20 py-2 w-full border-none focus:ring-0 outline-none bg-transparent text-gray-800 placeholder-[#146FB7]"
       />
 
       {/* Contenedor de íconos (Lupa + X) */}
