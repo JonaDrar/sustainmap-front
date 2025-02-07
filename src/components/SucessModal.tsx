@@ -24,14 +24,14 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 
                 {/* Mensaje */}
                 <p className="text-gray-700 text-center mb-6">
-                  <span className="text-blue-600 font-bold">{name}</span> se eliminó correctamente.
+                  <span className="text-[#146FB7] font-bold">{name}</span> se eliminó correctamente.
                 </p>
 
                 {/* Botón de cierre */}
                 <div>
                     <button
                         onClick={onClose}
-                        className="border border-blue-500 text-blue-500 rounded-lg px-6 py-2 sm:px-8 sm:py-3 hover:bg-red-500 hover:text-white hover:border-red-500 transition duration-200"
+                        className="border border-[#146FB7] text-[#146FB7] rounded-lg px-6 py-2 sm:px-8 sm:py-3 hover:bg-red-500 hover:text-white hover:border-red-500 transition duration-200"
                     >
                         Cerrar
                     </button>

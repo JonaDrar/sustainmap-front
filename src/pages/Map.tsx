@@ -176,8 +176,7 @@ const Map = () => {
     </div>
 
     {/* Barra Lateral */}
-    <div className="order-2 md:order-1 w-full md:w-2/5 lg:w-2/5 bg-white overflow-y-auto p-4 md:shadow-lg">
-      {/* Barra de búsqueda */}
+    <div className="order-2 md:order-1 w-full md:w-2/5 lg:w-2/5 bg-white p-4 md:shadow-lg">
       <SidebarMenu
         points={id && selectedPoint ? [selectedPoint] : filteredPoints || []} 
         onPointSelect={(coords) => setSelectedCoords(coords)}

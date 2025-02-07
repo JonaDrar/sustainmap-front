@@ -44,7 +44,7 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
             <DropdownButton
               onEdit={handleEdit}
               onDelete={handleDelete}
-              pointName={<span className="text-blue-500 font-bold">{site.name}</span>}
+              pointName={<span className="text-[#146FB7] font-bold">{site.name}</span>}
             />
           </div>
         ) : null}
@@ -52,7 +52,7 @@ const SitePopup: React.FC<SitePopupProps> = ({ site, onDeletePoint }) => {
         {/* Contenido del cuerpo */}
         <div className="p-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
-            <h3 className="text-blue-700 font-bold text-base md:text-lg">
+            <h3 className="text-[#146FB7] font-bold text-base md:text-lg">
               {site.name}
             </h3>
 
