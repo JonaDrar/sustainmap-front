@@ -121,7 +121,7 @@ label {
 
 .login-logo {
     height: 90px;
-    width: 142px;
+    width: auto;
     padding: 10px 5px;
     margin-bottom: 12px;
 }
