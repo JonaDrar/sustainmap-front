@@ -68,9 +68,9 @@ const AdminLogin: React.FC = () => {
       <div className="bg-white shadow-md rounded-xxl px-6 py-8 w-full max-w-xs sm:max-w-sm md:max-w-md login-card">
         <div className="mb-6 text-center">
           <img
-            src="/images/logo-mot.png"
+            src="/images/logo-mott_int.png"
             alt="Matter of Trust Logo"
-            className="w-24 sm:w-28 lg:w-36 mx-auto mb-4 login-logo"
+            className="w-32 sm:w-57 md:w-61 lg:w-64 h-auto mx-auto mb-6 login-logo"
           />
           <h2 className="text-lg md:text-2xl font-bold text-blue-700 login-header">Iniciar sesión de Administrador</h2>
           

@@ -107,7 +107,7 @@ const Signup: React.FC = () => {
           <img
             src="images/logo-mott_int.png"
             alt="Matter of Trust Logo"
-            className="w-36 sm:w-56 lg:w-42 mx-auto mb-10 login-logo"
+            className="w-32 sm:w-57 md:w-61 lg:w-64 h-auto mx-auto mb-6 login-logo"
           />
           <h2 className="text-lg md:text-2xl font-bold text-blue-700 login-header">Crear Cuenta de Usuario</h2>
           <p className="text-sm text-gray-700 login-sub-header-2">Ingresa los datos del usuario</p>
