@@ -11,6 +11,22 @@ const LocateUser: React.FC<LocateUserProps> = ({ onLocationFound, userCoords }) 
   const [hasCentered, setHasCentered] = useState(false);
   const [locationRequested, setLocationRequested] = useState(false);
 
+  // Obtener ubicación por IP
+  const fetchLocationByIP = async () => {
+    try {
+      const res = await fetch("https://ipapi.co/json/");
+      const data = await res.json();
+      if (data.latitude && data.longitude) {
+        console.log("Ubicación aproximada por IP:", data.latitude, data.longitude);
+        onLocationFound(data.latitude, data.longitude);
+      } else {
+        console.warn("No se pudo obtener la ubicación por IP");
+      }
+    } catch (error) {
+      console.error("Error al obtener ubicación por IP:", error);
+    }
+  };
+
   const handleLocationFound = useCallback(
     (e: L.LocationEvent) => {
       const { lat, lng } = e.latlng;
@@ -22,7 +38,7 @@ const LocateUser: React.FC<LocateUserProps> = ({ onLocationFound, userCoords }) 
 
   const handleLocationError = useCallback((error: L.ErrorEvent) => {
     console.error("Error al obtener la ubicación:", error.message);
-    alert("No se pudo obtener tu ubicación. Por favor, habilita la geolocalización.");
+    fetchLocationByIP();
   }, []);
 
   // Centrar el mapa en la ubicación del usuario si está disponible
@@ -34,7 +50,7 @@ const LocateUser: React.FC<LocateUserProps> = ({ onLocationFound, userCoords }) 
     }
   }, [userCoords, map, hasCentered]);
 
-  // Solicitar la ubicación solo una vez y manejar el watch
+
   useEffect(() => {
     if (!locationRequested && map) {
       setLocationRequested(true);
@@ -47,7 +63,7 @@ const LocateUser: React.FC<LocateUserProps> = ({ onLocationFound, userCoords }) 
       map.on("locationfound", handleLocationFound);
       map.on("locationerror", handleLocationError);
 
-      // Limpiar los event listeners cuando el componente se desmonte o la ubicación cambie
+  
       return () => {
         map.off("locationfound", handleLocationFound);
         map.off("locationerror", handleLocationError);
