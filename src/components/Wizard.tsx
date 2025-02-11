@@ -13,7 +13,8 @@ interface WizardProps {
 }
 
 const Wizard: React.FC<WizardProps> = ({ step, totalSteps, onPrevious, onNext, onCancel, headerText, subHeaderText, children }) => (
-  <div className="max-w-4xl mx-auto p-10 bg-white shadow-md rounded-lg">
+  <div className="max-w-4xl mx-auto p-5 md:p-6 xs:p-4 bg-white shadow-md rounded-lg">
+    
     {/* Header */}
     <header>
       <h2 className="text-xl font-semibold">{headerText}</h2>

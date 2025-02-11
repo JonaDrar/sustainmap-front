@@ -53,7 +53,7 @@ interface FormData {
 const formatDateForInput = (date: string | undefined): string | undefined => {
   if (date) {
     const dateObj = new Date(date);
-    return dateObj.toISOString().split('T')[0]; // Extracts the date part (YYYY-MM-DD)
+    return dateObj.toISOString().split("T")[0]; // Extracts the date part (YYYY-MM-DD)
   }
   return undefined;
 };
@@ -69,14 +69,18 @@ const Step1Form: React.FC<{
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
   ) => void;
-  handleDateChange: (e: React.ChangeEvent<HTMLInputElement>, field: string) => void;
+  handleDateChange: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleToggleChange: (value: boolean, field: string) => void;
   handlePhoneChange: (value: string) => void;
   isUploading: boolean;
 }> = ({
   formData,
-  handleChange, handleDateChange,
+  handleChange,
+  handleDateChange,
   handlePhoneChange,
   handleFileChange,
   handleSelectChange,
@@ -112,7 +116,7 @@ const Step1Form: React.FC<{
       <h6 className="col-span-2 text-lg font-normal mb-4">
         Información básica
       </h6>
-      <div className="grid grid-cols-2 gap-6 ">
+      <div className="grid md:grid-cols-2 xs:grid-cols-1 gap-6 ">
         <InputField
           label="Nombre del centro"
           placeholder="E.g: Siempre Linda "
@@ -183,7 +187,6 @@ const Step1Form: React.FC<{
           value={formData.gallery.localNumber}
           onChange={handleChange}
         />
-
       </div>
       <h6 className="text-lg font-normal my-4">Redes sociales (opcional)</h6>
 
@@ -211,29 +214,33 @@ const Step1Form: React.FC<{
           onChange={handleChange}
         />
       </div>
-      <div className="flex items-center justify-between w-full">
-        <h6 className="text-lg font-normal my-4">Configuración de activación</h6>
-        <p className="text-sm font-medium w-[190px] mr-[210px]">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full">
+        <h6 className="text-lg font-normal my-4">
+          Configuración de activación
+        </h6>
+        <p className="text-sm font-medium w-full md:w-[190px] md:mr-[210px]">
           Estado de activación:{" "}
-          <span className={formData.isActive ? "text-green-600" : "text-red-600"}>
+          <span
+            className={formData.isActive ? "text-green-600" : "text-red-600"}
+          >
             {formData.isActive ? "Activo" : "Inactivo"}
           </span>
         </p>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-4">
         <InputField
           label="Fecha de inicio"
           name="activationStartDate"
           type="date"
           value={formatDateForInput(formData.activationStartDate) || ""}
-          onChange={(e) => handleDateChange(e, "activationStartDate")} 
+          onChange={(e) => handleDateChange(e, "activationStartDate")}
         />
         <InputField
           label="Fecha de término"
           name="activationEndDate"
           type="date"
           value={formatDateForInput(formData.activationEndDate) || ""}
-          onChange={(e) => handleDateChange(e, "activationEndDate")} 
+          onChange={(e) => handleDateChange(e, "activationEndDate")}
         />
         {/* <div className="col-span-2">
           <p className="text-sm font-medium">
@@ -251,7 +258,9 @@ const Step1Form: React.FC<{
 const Step2Form: React.FC<{
   formData: FormData;
   handleChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => void;
 }> = ({ formData, handleChange }) => {
   const [mapCenter, setMapCenter] = useState<[number, number] | null>([
@@ -264,14 +273,17 @@ const Step2Form: React.FC<{
     commune: string,
     region: string
   ) => {
-    if (query.trim() === "" || commune.trim() === "" || region.trim() === "") return;
+    if (query.trim() === "" || commune.trim() === "" || region.trim() === "")
+      return;
 
     try {
       const fullQuery = `${query}, ${commune}, ${region}`;
       console.log("Buscando dirección:", fullQuery);
 
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&addressdetails=1&limit=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          fullQuery
+        )}&addressdetails=1&limit=1`
       );
 
       const data = await response.json();
@@ -279,9 +291,9 @@ const Step2Form: React.FC<{
 
       if (data.length > 0) {
         const { lat, lon } = data[0];
-        
+
         formData.latitud = lat;
-      formData.longitude = lon;
+        formData.longitude = lon;
 
         formData.latitud = lat.toString();
         formData.longitude = lon.toString();
@@ -336,8 +348,7 @@ const Step2Form: React.FC<{
   return (
     <>
       <h6 className="col-span-2 text-lg font-normal mb-4">Dirección</h6>
-      <div className="grid grid-cols-2 gap-4 pb-4">
-        
+      <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-4 pb-4">
         <InputField
           label="Dirección"
           placeholder="Av. Providencia 675"
@@ -352,6 +363,8 @@ const Step2Form: React.FC<{
           value={formData.commune}
           onChange={handleChange}
         />
+      </div>
+      <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-4 pb-4">
         <InputField
           label="Región"
           placeholder="Ej: Región Metropolitana"
@@ -360,15 +373,18 @@ const Step2Form: React.FC<{
           onChange={handleChange}
         />
         <div className="flex items-center">
-  <img 
-    src="/images/icon-pin.png" 
-    alt="Icono de ubicación" 
-    className="w-6 h-6 mr-4" 
-  />
-  <h2 className="font-bold text-blue-600">
-    .Arrastre el marcador para mejorar la ubicación en el mapa.
-  </h2>
-</div>
+          <img
+            src="/images/icon-pin.png"
+            alt="Icono de ubicación"
+            className="w-5 h-6 mr-4"
+          />
+          <h2 className="font-bold text-blue-600 sm:text-sm">
+            Arrastre el marcador para mejorar la ubicación en el mapa.
+          </h2>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-4 pb-4">
         <InputField
           label="Coordenadas -Latitud (opcional)"
           placeholder="Ej: -33.4489"
@@ -383,15 +399,14 @@ const Step2Form: React.FC<{
           value={formData.longitude}
           onChange={handleChange}
         />
-        <div className="col-span-2">
-          <button
-            onClick={handleSearch}
-            className="bg-blue-500 text-white py-2 px-4 rounded w-full"
-          >
-            Buscar ubicación
-          </button>
-        </div>
-      
+      </div>
+      <div className="col-span-2 mb-4">
+        <button
+          onClick={handleSearch}
+          className="bg-blue-500 text-white py-2 px-4 rounded w-full"
+        >
+          Buscar ubicación
+        </button>
       </div>
 
       <div>
@@ -405,16 +420,22 @@ const Step2Form: React.FC<{
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
           <CenterMap coords={mapCenter} />
-          {formData.latitud && formData.longitude && parseFloat(formData.latitud) && parseFloat(formData.longitude) && (
-            <Marker
-              position={[parseFloat(formData.latitud), parseFloat(formData.longitude)]}
-              draggable={true}
-              icon={pointMarker}
-              eventHandlers={{
-                dragend: handleMarkerDrag,
-              }}
-            />
-          )}
+          {formData.latitud &&
+            formData.longitude &&
+            parseFloat(formData.latitud) &&
+            parseFloat(formData.longitude) && (
+              <Marker
+                position={[
+                  parseFloat(formData.latitud),
+                  parseFloat(formData.longitude),
+                ]}
+                draggable={true}
+                icon={pointMarker}
+                eventHandlers={{
+                  dragend: handleMarkerDrag,
+                }}
+              />
+            )}
         </MapContainer>
       </div>
     </>
@@ -433,7 +454,7 @@ const typeOptions = [
 // Función para obtener el objeto con value y label
 const getTypeLabel = (type: number) => {
   if (type === null) return null;
-  const option = typeOptions.find(opt => opt.value === type.toString());
+  const option = typeOptions.find((opt) => opt.value === type.toString());
   return option?.label || "";
 };
 
@@ -493,15 +514,22 @@ const EditPointPage: React.FC = () => {
         longitude: point.longitude?.toString() || "",
         photo_url: typeof point.photo_url === "string" ? point.photo_url : "",
         region: point.region || "",
-        services: point.services ? point.services.map(service => ({
-          value: service,
-          label: capitalizeFirstLetter(service),
-        })) : [],
-        type: point.type && Array.isArray(point.type) ? point.type.map((type: number) => ({
-              value: type.toString(),
-              label: getTypeLabel(type),
-            } as OptionType))
+        services: point.services
+          ? point.services.map((service) => ({
+              value: service,
+              label: capitalizeFirstLetter(service),
+            }))
           : [],
+        type:
+          point.type && Array.isArray(point.type)
+            ? point.type.map(
+                (type: number) =>
+                  ({
+                    value: type.toString(),
+                    label: getTypeLabel(type),
+                  } as OptionType)
+              )
+            : [],
         gallery: {
           galleryName: point.gallery?.galleryName || "",
           localNumber: point.gallery?.localNumber || "",
@@ -558,7 +586,7 @@ const EditPointPage: React.FC = () => {
     value: MultiValue<OptionType> | SingleValue<OptionType>,
     field: string
   ) => {
-      setFormData({ ...formData, [field]: value });
+    setFormData({ ...formData, [field]: value });
   };
 
   const validateDates = () => {
@@ -585,21 +613,27 @@ const EditPointPage: React.FC = () => {
     }
 
     if (isValid && startDate > endDate) {
-      newErrors.activationEndDate = "La fecha de fin debe ser posterior a la fecha de inicio.";
+      newErrors.activationEndDate =
+        "La fecha de fin debe ser posterior a la fecha de inicio.";
       isValid = false;
     }
 
     if (!isValid) {
       Swal.fire(
         "Error",
-        `${newErrors.activationStartDate || ""} ${newErrors.activationEndDate || ""}`,
+        `${newErrors.activationStartDate || ""} ${
+          newErrors.activationEndDate || ""
+        }`,
         "error"
       );
     }
     return isValid;
   };
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+  const handleDateChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: string
+  ) => {
     const value = e.target.value;
 
     setFormData((prev) => {
@@ -608,79 +642,82 @@ const EditPointPage: React.FC = () => {
       const endDate = new Date(updatedFormData.activationEndDate);
 
       if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
-        updatedFormData.isActive = startDate <= new Date() && endDate >= new Date();
+        updatedFormData.isActive =
+          startDate <= new Date() && endDate >= new Date();
       }
 
       return updatedFormData;
     });
   };
 
-const handleChange = (
-  e: React.ChangeEvent<
-    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  >
-) => {
-  const { name, value, type, checked } = e.target as HTMLInputElement;
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
 
-  if (name === "latitud") {
-    if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
-      const num = parseFloat(value);
-      if (value === "-" || value === "" || (num >= -90 && num <= 90)) {
-        setFormData({ ...formData, latitud: value });
+    if (name === "latitud") {
+      if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
+        const num = parseFloat(value);
+        if (value === "-" || value === "" || (num >= -90 && num <= 90)) {
+          setFormData({ ...formData, latitud: value });
+        }
       }
+      return;
     }
-    return;
-  }
 
-  if (name === "longitude") {
-    if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
-      const num = parseFloat(value);
-      if (value === "-" || value === "" || (num >= -180 && num <= 180)) {
-        setFormData({ ...formData, longitude: value });
+    if (name === "longitude") {
+      if (value === "-" || /^-?\d*\.?\d*$/.test(value)) {
+        const num = parseFloat(value);
+        if (value === "-" || value === "" || (num >= -180 && num <= 180)) {
+          setFormData({ ...formData, longitude: value });
+        }
       }
+      return;
     }
-    return;
-  }
 
-  if (name === "type") {
-    if (/^[1-5]?$/.test(value)) {
-      setFormData({ ...formData, type: value ? [{ label: value, value: value }] : [] });
+    if (name === "type") {
+      if (/^[1-5]?$/.test(value)) {
+        setFormData({
+          ...formData,
+          type: value ? [{ label: value, value: value }] : [],
+        });
+      }
+      return;
     }
-    return;
-  }
 
-  if (name === "highlighted") {
-    setFormData({ ...formData, highlighted: value === "true" });
-    return;
-  }
+    if (name === "highlighted") {
+      setFormData({ ...formData, highlighted: value === "true" });
+      return;
+    }
 
-  if (["facebook", "instagram", "other"].includes(name)) {
-    setFormData({
-      ...formData,
-      rrss: {
-        ...formData.rrss,
-        [name]: value,
-      },
-    });
-    return;
-  }
+    if (["facebook", "instagram", "other"].includes(name)) {
+      setFormData({
+        ...formData,
+        rrss: {
+          ...formData.rrss,
+          [name]: value,
+        },
+      });
+      return;
+    }
 
-  if (name === "galleryName" || name === "localNumber") {
-    setFormData({
-      ...formData,
-      gallery: {
-        ...formData.gallery,
-        [name]: value,
-      },
-    });
-  } else {
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  }
-};
-
+    if (name === "galleryName" || name === "localNumber") {
+      setFormData({
+        ...formData,
+        gallery: {
+          ...formData.gallery,
+          [name]: value,
+        },
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === "checkbox" ? checked : value,
+      });
+    }
+  };
 
   const handleCancel = () => {
     navigate("/");
@@ -696,23 +733,26 @@ const handleChange = (
     photo_url: "La URL de la foto debe ser válida",
     latitud: "La latitud debe ser un valor numérico válido",
     longitude: "La longitud debe ser un valor numérico válido",
-    'rrss.facebook': "La URL de Facebook debe ser válida",
-    'rrss.instagram': "La URL de Instagram debe ser válida",
-    'rrss.twitter': "La URL de Twitter debe ser válida",
-    'rrss.other': "La URL de otro RRSS debe ser válida"
+    "rrss.facebook": "La URL de Facebook debe ser válida",
+    "rrss.instagram": "La URL de Instagram debe ser válida",
+    "rrss.twitter": "La URL de Twitter debe ser válida",
+    "rrss.other": "La URL de otro RRSS debe ser válida",
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateDates()) {
-      Swal.fire("Error", "Por favor corrige los errores en las fechas.", "error");
+      Swal.fire(
+        "Error",
+        "Por favor corrige los errores en las fechas.",
+        "error"
+      );
       return;
     }
 
     const startDate = new Date(formData.activationStartDate);
     const endDate = new Date(formData.activationEndDate);
-
 
     // Función para validar si una URL es válida
     const isValidUrl = (url: string) => {
@@ -782,9 +822,15 @@ const handleChange = (
       ...formData,
       activationStartDate: startDate ? startDate.toISOString() : undefined,
       activationEndDate: endDate ? endDate.toISOString() : undefined,
-      latitud: formData.latitud.trim() === "" ? undefined : parseFloat(formData.latitud || "0"),  // Solo asigna undefined si está vacío
-      longitude: formData.longitude.trim() === "" ? undefined : parseFloat(formData.longitude || "0"),  // Lo mismo para longitud
-      type: type.map(({ value }) =>  parseInt(value, 10)),
+      latitud:
+        formData.latitud.trim() === ""
+          ? undefined
+          : parseFloat(formData.latitud || "0"), // Solo asigna undefined si está vacío
+      longitude:
+        formData.longitude.trim() === ""
+          ? undefined
+          : parseFloat(formData.longitude || "0"), // Lo mismo para longitud
+      type: type.map(({ value }) => parseInt(value, 10)),
       gallery: galleryData,
       services: services.map((service) => service.value),
       rrss: socialMediaLinks,
@@ -809,67 +855,73 @@ const handleChange = (
   </div>
 `;
 
-// Si el error es una instancia de Error
-if (error instanceof Error) {
-  console.log("Error instanceof Error:", error.message);
+      // Si el error es una instancia de Error
+      if (error instanceof Error) {
+        console.log("Error instanceof Error:", error.message);
 
-  if (error.message.includes("<ul>")) {
-    errorMessage += error.message;  
-  } else {
-    // Dividimos los errores usando '|'
-    const errorList = error.message.split("|").map(item => {
-      const field = item.trim().split(' ')[0];  
-      const translatedMessage = errorMessagesDict[field] || item;  
-      console.log("Mensaje traducido:", translatedMessage);
-      return `<li>${translatedMessage}</li>`;
-    }).join('');
+        if (error.message.includes("<ul>")) {
+          errorMessage += error.message;
+        } else {
+          // Dividimos los errores usando '|'
+          const errorList = error.message
+            .split("|")
+            .map((item) => {
+              const field = item.trim().split(" ")[0];
+              const translatedMessage = errorMessagesDict[field] || item;
+              console.log("Mensaje traducido:", translatedMessage);
+              return `<li>${translatedMessage}</li>`;
+            })
+            .join("");
 
-    errorMessage += `
+          errorMessage += `
       <ul style="text-align: left; margin: 10px auto; width: fit-content; padding: 10px; font-size: 16px;">
         ${errorList}
       </ul>
     `;
-  }
-}
+        }
+      }
 
-console.log("errorMessage final:", errorMessage);
+      console.log("errorMessage final:", errorMessage);
 
-// Mostrar en Swal
-Swal.fire({
-  title: 'Error',
-  html: `<div style="max-height: 400px; overflow-y: auto; padding: 10px;">${errorMessage}</div>`,
-  icon: 'error',
-  width: 'auto',
-});
-  }
-};
+      // Mostrar en Swal
+      Swal.fire({
+        title: "Error",
+        html: `<div style="max-height: 400px; overflow-y: auto; padding: 10px;">${errorMessage}</div>`,
+        icon: "error",
+        width: "auto",
+      });
+    }
+  };
 
-const validateStep1 = () => {
-  if (!formData.name) {
-    Swal.fire("Error", "Por favor ingresa un nombre.", "error");
-    return false;
-  }
+  const validateStep1 = () => {
+    if (!formData.name) {
+      Swal.fire("Error", "Por favor ingresa un nombre.", "error");
+      return false;
+    }
 
-  if (!formData.type || formData.type.length === 0) {
-    Swal.fire("Error", "Por favor selecciona al menos una categoría.", "error");
-    return false;
-  }
-  if (!formData.phone || formData.phone.length < 8) {
-    Swal.fire("Error", "Por favor ingresa un teléfono.", "error");
-    return false;
-  }
+    if (!formData.type || formData.type.length === 0) {
+      Swal.fire(
+        "Error",
+        "Por favor selecciona al menos una categoría.",
+        "error"
+      );
+      return false;
+    }
+    if (!formData.phone || formData.phone.length < 8) {
+      Swal.fire("Error", "Por favor ingresa un teléfono.", "error");
+      return false;
+    }
 
-
-  if (!validateDates()) {
-    return false;
-  }
-  return true;
-}
+    if (!validateDates()) {
+      return false;
+    }
+    return true;
+  };
 
   const handleNextStep = () => {
     // only go to the next step if the form is valid
     if (!validateStep1()) return;
-    
+
     setStep((prev) => Math.min(prev + 1, totalSteps));
   };
   const handleToggleChange = (value: boolean, field: string) => {
@@ -883,8 +935,7 @@ const validateStep1 = () => {
 
   const isOnEditPage = location.pathname.includes("edit-point");
   return (
-    <div className="gradient-background min-h-screen p-10 items-center justify-center ">
-      
+    <div className="gradient-background min-h-screen p-2 md:p-6 xs:p-4 items-center justify-center">
       <Wizard
         step={step}
         totalSteps={totalSteps}
@@ -904,7 +955,8 @@ const validateStep1 = () => {
             handleFileChange={handleFileChange}
             handleToggleChange={handleToggleChange}
             handlePhoneChange={handlePhoneChange}
-            handleDateChange={handleDateChange} isUploading={isUploading}
+            handleDateChange={handleDateChange}
+            isUploading={isUploading}
           />
         )}
         {step === 2 && (
