@@ -93,6 +93,20 @@ const Step1Form: React.FC<{
     }
   };
 
+  useEffect(() => {
+    const now = new Date();
+    const activationStartDate = new Date(formData.activationStartDate);
+    const activationEndDate = new Date(formData.activationEndDate);
+  
+    // Solo actualiza si el estado realmente cambia
+    const newIsActive = now >= activationStartDate && now <= activationEndDate;
+  
+    // Compara antes de hacer el cambio para evitar actualizaciones innecesarias
+    if (newIsActive !== formData.isActive) {
+      handleToggleChange(newIsActive, "isActive"); // Establecer como activo o inactivo
+    }
+  }, [formData.activationStartDate, formData.activationEndDate, formData.isActive, handleToggleChange]); // Añadir formData.isActive para evitar el ciclo  
+
   return (
     <>
       <h6 className="col-span-2 text-lg font-normal mb-4">
