@@ -176,7 +176,8 @@ const Map = () => {
     </div>
 
     {/* Barra Lateral */}
-    <div className="order-2 md:order-1 w-full md:w-2/5 lg:w-2/5 bg-white p-4 md:shadow-lg">
+    <div className="order-2 md:order-1 w-full lg:w-3/5 xl:w-2/5 bg-white p-4 md:shadow-lg flex justify-center">
+     <div className="w-full max-w-md xl:max-w-xl"> 
       <SidebarMenu
         points={id && selectedPoint ? [selectedPoint] : filteredPoints || []} 
         onPointSelect={(coords) => setSelectedCoords(coords)}
@@ -184,6 +185,7 @@ const Map = () => {
         onDeletePoint={(id, name) => handleDeletePoint(id, name)}
         onSearch={handleSearch}
       />
+      </div>
     </div>
 
     <SuccessModal

@@ -32,7 +32,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="relative p-3 bg-white shadow-md border border-gray-900/30 rounded-lg flex items-center w-full max-w-lg h-12">
+    <div className="relative p-3  bg-white shadow-md border border-gray-900/30 rounded-lg flex items-center w-full max-w-md mx-auto h-12">
       {/* Campo de entrada */}
       <input
         type="text"
@@ -40,7 +40,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder="Buscar"
-        className="pl-4 pr-20 py-2 w-full border-none focus:ring-0 outline-none bg-transparent text-gray-800 placeholder-[#146FB7]"
+        className="pl-2 pr-20 py-2 w-full border-none focus:ring-0 outline-none bg-transparent text-gray-800 placeholder-[#146FB7]"
       />
 
       {/* Contenedor de íconos (Lupa + X) */}

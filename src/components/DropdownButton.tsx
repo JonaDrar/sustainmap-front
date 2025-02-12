@@ -52,24 +52,25 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ onEdit, onDelete, point
 
   const dropdownMenu = (
     <div
-      className="bg-white border border-gray-300 rounded-md shadow-lg z-28"
+      className=" bg-white  border border-gray-300 rounded-md shadow-lg z-28"
       style={{
         position: "absolute",
         top: `${menuPosition.top}px`,
         left: `${menuPosition.left}px`,
         minWidth: "120px", // Ancho mínimo para pantallas pequeñas
         maxWidth: "200px", // Límite máximo para pantallas grandes
+        transform: menuPosition.left > window.innerWidth - 160 ? "translateX(-100%)" : "none", // Si está muy a la derecha, lo mueve a la izquierda
       }}
     >
       {/* Botón Editar */}
       <div
         onClick={(event) => onEdit(event)}
-        className="flex items-center px-3 sm:px-4 py-2 text-gray-700 hover:bg-red-500 hover:text-white cursor-pointer transition duration-200"
+        className="flex items-center px-3 sm:px-2 py-2 text-gray-700 hover:bg-red-500 hover:text-white cursor-pointer transition duration-200"
       >
         <img
           src="/images/editar info.png"
           alt="Editar"
-          className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" // Tamaños ajustables
+          className="h-4 w-4 md:h-5 md:w-5 object-contain" // Tamaños ajustables
         />
         <span className="text-xs sm:text-sm md:text-base font-medium">Editar</span>
       </div>
@@ -80,7 +81,7 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ onEdit, onDelete, point
       {/* Botón Eliminar */}
       <div
         onClick={handleDeleteClick}
-        className="flex items-center px-3 sm:px-4 py-2 text-gray-700  hover:bg-red-500 hover:text-white cursor-pointer transition duration-200"
+        className="flex items-center px-3 sm:px-2 py-2 text-gray-700  hover:bg-red-500 hover:text-white cursor-pointer transition duration-200"
       >
         <img
           src="/images/eliminar.png"
@@ -111,7 +112,7 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ onEdit, onDelete, point
         message={
           <>
             ¿Estás seguro que deseas eliminar{" "}
-            <span className="text-blue-500 font-bold">{pointName}</span>?
+            <span className="text-[#146FB7] font-bold">{pointName}</span>?
           </>
         }
         isOpen={showModal}
