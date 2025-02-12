@@ -70,7 +70,7 @@ const DropdownButton: React.FC<DropdownButtonProps> = ({ onEdit, onDelete, point
         <img
           src="/images/editar info.png"
           alt="Editar"
-          className="h-4 w-4 md:h-5 md:w-5 object-contain" // Tamaños ajustables
+          className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" // Tamaños ajustables
         />
         <span className="text-xs sm:text-sm md:text-base font-medium">Editar</span>
       </div>

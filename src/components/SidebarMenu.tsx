@@ -91,8 +91,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   };
 
   const handleShare = (point: Pointdata) => {
-    const baseURL = "http://localhost:5173";
-    const shareURL = `${baseURL}/mapa?lat=${point.latitud}&lng=${point.longitude}&id=${point.id}`;
+    const shareURL = `${window.location.origin}/mapa?lat=${point.latitud}&lng=${point.longitude}&id=${point.id}`;
 
     const shareData = {
       title: point.name,
@@ -161,7 +160,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                   {/* Contenedor superior: Nombre + Edición */}
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="font-semibold text-[#146FB7] text-sm md:text-base">{point.name}</h3>
-                    <button>
+                    <div>
                       {loggedInUser && (
                         <DropdownButton
                           onEdit={(event) => handleEdit(event, point)}
@@ -169,7 +168,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                           pointName={point.name}
                         />
                       )}
-                    </button>
+                    </div>
                   </div>
 
                   {/* Línea divisoria */}

@@ -22,8 +22,8 @@ const Map = () => {
   const { points, deletePoint, selectedTypes, setSelectedTypes } = UseFetchPoints();
   const [filteredPoints, setFilteredPoints] = useState<Pointdata[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const isMobileDevice = useIsMobile(); // ✅ Definimos isMobileDevice correctamente
-  const [isSidebarExpanded] = useState(false); // ✅ Definimos el estado
+  const isMobileDevice = useIsMobile(); //  Definimos isMobileDevice correctamente
+  const [isSidebarExpanded] = useState(false); // Definimos el estado
 
 
   const location = useLocation();
