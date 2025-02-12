@@ -169,7 +169,7 @@ const Signup: React.FC = () => {
           </div>
           <div className="relative">
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               placeholder="Repite tu contraseña"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -185,7 +185,9 @@ const Signup: React.FC = () => {
               ) : (
                 <EyeSlashIcon className="h-5 w-5 text-gray-500" />
               )}
-            </button>
+            </button>           
+          </div>
+          <div>
             {errors.confirmPassword && <p className="error-text text-sm">{errors.confirmPassword}</p>}
           </div>
 
