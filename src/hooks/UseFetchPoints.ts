@@ -48,7 +48,16 @@ const UseFetchPoints = () => {
             try {
                 const response= await axios.get(`${backendUrlBase}/points`);
                 // console.log("Datos recuperados:", response.data);
-                setPoints(response.data);
+                const pointsWithStatus = response.data.map((point: Pointdata) => {
+                    // Al cargar los puntos, asegura que el estado de isActive sea correcto
+                    const now = new Date();
+                    const startDate = point.activationStartDate ? new Date(point.activationStartDate) : null;
+                    const endDate = point.activationEndDate ? new Date(point.activationEndDate) : null;
+                    // Verifica si startDate y endDate son válidos antes de hacer la comparación
+                    point.isActive = startDate && endDate ? (now >= startDate && now <= endDate) : false;
+                    return point;
+                });
+                setPoints(pointsWithStatus);
             } catch (error) {
                 console.error('Error al obtener los marcadores:', error);
                 setError('Error al obtener los marcadores');
@@ -193,7 +202,21 @@ const UseFetchPoints = () => {
             const response = await axios.put(`${backendUrlBase}/points/${id}`, formattedData);
 
             if (response.status === 200) {
-                setPoints((prev) => prev.map((point) => (point.id === id ? { ...point, ...response.data } : point)));
+                // Actualiza el estado de los puntos con la nueva información
+                setPoints((prev) => {
+                    return prev.map((point) => {
+                        // Si el punto fue actualizado, actualiza su visibilidad (isActive)
+                        if (point.id === id) {
+                            const updatedPoint = { ...point, ...response.data };
+                            // Aquí verificas si el estado de `isActive` cambió y, si es necesario, actualizas la visibilidad del pin
+                            if (updatedPoint.isActive === false) {
+                                updatedPoint.isActive = false; // Establecer como inactivo
+                            }
+                            return updatedPoint;
+                        }
+                        return point;
+                    });
+                });
             }
         } catch (error: unknown) {
             console.error("Error al actualizar el punto:", error);
