@@ -137,12 +137,12 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
         )}
       </div>
       <div className="overflow-y-auto h-[calc(100%-80px)] px-2">
-       {/* Barra de busqueda */}
-<div className="sticky top-0 bg-white z-10 mb-4 flex justify-center">
-  <div className="w-full max-w-md">
-    <SearchBar onSearch={onSearch} />
-  </div>
-</div>
+        {/* Barra de busqueda */}
+        <div className="sticky top-0 bg-white z-10 mb-4 flex justify-center">
+          <div className="w-full max-w-md">
+            <SearchBar onSearch={onSearch} />
+          </div>
+        </div>
         {sortedPoints.length === 0 ? (
           <p className="text-gray-500 ml-4">No hay puntos disponibles cerca de tu ubicación.</p>
         ) : (
@@ -163,13 +163,13 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                     <h3 className="font-semibold text-[#146FB7] text-sm md:text-base">{point.name}</h3>
                     <button>
                       {loggedInUser && (
-                      <DropdownButton
-                        onEdit={(event) => handleEdit(event, point)}
-                        onDelete={() => onDeletePoint(point.id, point.name)}
-                        pointName={point.name}
-                      />
-                    )}
-                      </button>
+                        <DropdownButton
+                          onEdit={(event) => handleEdit(event, point)}
+                          onDelete={() => onDeletePoint(point.id, point.name)}
+                          pointName={point.name}
+                        />
+                      )}
+                    </button>
                   </div>
 
                   {/* Línea divisoria */}
