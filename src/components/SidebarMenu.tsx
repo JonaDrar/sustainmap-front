@@ -144,7 +144,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
           </div>
         </div>
         {sortedPoints.length === 0 ? (
-          <p className="text-gray-500 ml-4">No hay puntos disponibles cerca de tu ubicación.</p>
+          <p className="text-gray-500 flex justify-center">No hay puntos disponibles cerca de tu ubicación.</p>
         ) : (
           <ul className="space-y-6">
             {sortedPoints

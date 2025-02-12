@@ -28,12 +28,12 @@ const Navbar: React.FC = () => {
     }
   };
 
+  const showMapLink = pathname !== "/mapa";
+  const getLinkClass = (path: string) => pathname === path ? 'font-bold' : '';
+
   if (!loggedInUser) {
     return null;
   }
-
-  const showMapLink = pathname !== "/mapa";
-  const getLinkClass = (path: string) => pathname === path ? 'font-bold' : '';
 
 
 
@@ -90,12 +90,14 @@ const Navbar: React.FC = () => {
                     Registro
                   </Link>
                 </li>
+                {showMapLink && ( 
                 <li>
                   <Link to="/" className={`flex items-center text-gray-400 ${getLinkClass("/")}`}>
                     <img src="/images/mapa-menu.png" alt="Ver mapa" className="w-4 h-4 mr-2" />
                     Ver mapa
                   </Link>
                 </li>
+                )}
                 <li>
                   <Link to="/create-point" className={`flex items-center text-gray-400 ${getLinkClass("/create-point")}`}>
                     <img src="/images/crearpto-menu.png" alt="Crear punto de intéres" className="w-4 h-4 mr-2" />
