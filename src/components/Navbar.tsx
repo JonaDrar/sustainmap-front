@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Menú en pantallas grandes */}
-        <div className="hidden md:flex items-center space-x-6 text-[#146FB7]">
+        <div className="hidden md:flex items-center space-x-4 text-[#146FB7] ml-6">
           <span>Bienvenido, {loggedInUser}</span>
           <Link to="/AdminLogin" className={`${getLinkClass("/AdminLogin")}  hover:underline transition duration-200`}>
             Registrar Usuario

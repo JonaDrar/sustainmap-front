@@ -26,9 +26,9 @@ const App = () => {
   useEffect(() => {
     const updateImage = () => {
       if (window.innerWidth <= 768) {
-        setImageSrc("/images/celular-inicio.png");
+        setImageSrc("/images/inicio-celular.png");
       } else {
-        setImageSrc("/images/imagen-inicio.png");
+        setImageSrc("/images/inicio-pantalla.png");
       }
     };
 
