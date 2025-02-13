@@ -15,7 +15,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   // Manejo de envío del formulario
   const handleSubmit = (e?: React.FormEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault();
-    onSearch(searchTerm);
+    onSearch(searchTerm.trim() === "" ? "" : searchTerm);
   };
 
     // Manejo de la tecla Enter en el input
@@ -28,7 +28,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   // Función para borrar el contenido del input
   const handleClear = () => {
     setSearchTerm("");
-    onSearch(""); // Llama a la búsqueda con una cadena vacía
+    // onSearch(""); // Llama a la búsqueda con una cadena vacía
   };
 
   return (
