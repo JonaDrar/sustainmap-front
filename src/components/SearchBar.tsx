@@ -28,7 +28,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   // Función para borrar el contenido del input
   const handleClear = () => {
     setSearchTerm("");
-    // onSearch(""); // Llama a la búsqueda con una cadena vacía
   };
 
   return (
